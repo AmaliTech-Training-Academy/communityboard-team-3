@@ -10,9 +10,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
   sql:
     init:
       mode: always
+      platform: postgres
+
 
 jwt:
   secret: ${JWT_SECRET:communityboard-secret-key-amalitech-2024}
