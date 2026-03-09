@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+  /* ---------- Typography ---------- */
+  --font-family-sans: 'Inter', sans-serif;
+  --font-family-heading: 'Poppins', var(--font-family-sans);
+
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-xl: 20px;
+  --font-size-2md: 32px;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* ---------- Spacing ---------- */
+  --space-0: 0px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* ---------- Radius ---------- */
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 14px;
+  --radius-3xl: 24px;
+  --radius-pill: 21px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm:
+    0px 1px 2px -1px rgba(0, 0, 0, 0.1), 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+
+  /* ---------- Raw Color Tokens (from Figma components) ---------- */
+  --color-white: #ffffff;
+  --color-off-white: #fdfdfd;
+  --color-primary-900: #08283b;
+  --color-primary-950: #041620;
+
+  --color-slate-100: #f0f3f4;
+  --color-slate-200: #ececeb;
+  --color-slate-300: #e6eaeb;
+  --color-slate-400: #b2bcc2;
+  --color-slate-500: #9aa0a6;
+  --color-slate-600: #5a6f7c;
+  --color-slate-700: #395362;
+  --color-slate-800: #5f6367;
+  --color-slate-450: #adadad;
+
+  --color-purple-100: #edebfe;
+  --color-purple-300: #ac94fa;
+  --color-purple-700: #5521b5;
+
+  --color-success-100: #def7ec;
+  --color-success-700: #046c4e;
+
+  --color-error-100: #fde8e8;
+  --color-error-700: #c81e1e;
+  --color-accent-orange: #b54000;
+
+  /* ---------- Semantic Tokens ---------- */
+  --color-bg-page: var(--color-off-white);
+  --color-bg-surface: var(--color-off-white);
+  --color-bg-overlay: var(--color-slate-200);
+  --color-bg-navbar-field: var(--color-slate-100);
+
+  --color-text-primary: var(--color-primary-950);
+  --color-text-secondary: var(--color-slate-700);
+  --color-text-muted: var(--color-slate-600);
+  --color-text-subtle: var(--color-slate-450);
+  --color-text-inverse: var(--color-off-white);
+
+  --color-border-default: var(--color-slate-300);
+  --color-border-strong: var(--color-slate-400);
+
+  --color-primary: var(--color-primary-900);
+  --color-success: var(--color-success-700);
+  --color-danger: var(--color-error-700);
+
+  /* ---------- Component-level Tokens ---------- */
+  --button-bg-primary: var(--color-primary-900);
+  --button-text-primary: var(--color-off-white);
+  --button-radius: var(--radius-lg);
+  --button-px: var(--space-5);
+  --button-py: 10px;
+
+  --input-label: var(--color-primary-900);
+  --input-bg: var(--color-slate-200);
+  --input-border: var(--color-slate-400);
+  --input-placeholder: var(--color-slate-600);
+  --input-radius: var(--radius-lg);
+  --input-px: var(--space-4);
+  --input-py: var(--space-3);
+
+  --card-bg: var(--color-off-white);
+  --card-border: var(--color-slate-300);
+  --card-title: var(--color-primary-950);
+  --card-body: var(--color-slate-700);
+  --card-meta: var(--color-slate-600);
+  --card-radius: var(--radius-xl);
+  --card-padding: var(--space-6);
+
+  --navbar-bg: var(--color-white);
+  --navbar-field-bg: var(--color-slate-100);
+  --navbar-text: var(--color-slate-800);
+  --navbar-muted: var(--color-slate-450);
+  --navbar-lock: var(--color-slate-500);
+
+  --form-error-bg: var(--color-error-100);
+  --form-error-border: var(--color-error-700);
+  --form-error-text: var(--color-error-700);
+
+  --toast-success-bg: var(--color-success-100);
+  --toast-success-icon: var(--color-success-700);
+  --toast-success-text: var(--color-success-700);
+  --toast-shadow: var(--shadow-sm);
+
+  --chip-event-bg: var(--color-purple-100);
+  --chip-event-border: var(--color-purple-300);
+  --chip-event-text: var(--color-purple-700);
+}
