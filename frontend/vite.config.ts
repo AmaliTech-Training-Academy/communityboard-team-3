@@ -12,9 +12,6 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: true,
     target: 'esnext',
-    lib: {
-      entry: 'src/main.tsx',
-    },
   },
 
   resolve: {
