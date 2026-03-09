@@ -1,5 +1,7 @@
 package com.amalitech.communityboard.service;
 
+import com.amalitech.communityboard.Exceptions.DuplicateEmailException;
+import com.amalitech.communityboard.Exceptions.InvalidCredentialsException;
 import com.amalitech.communityboard.config.JwtService;
 import com.amalitech.communityboard.dto.*;
 import com.amalitech.communityboard.model.User;
@@ -19,7 +21,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new DuplicateEmailException("Email already registered");
         }
         User user = User.builder()
                 .name(request.getName())
@@ -36,9 +38,9 @@ public class AuthService {
 
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
