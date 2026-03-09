@@ -46,29 +46,33 @@ jobs:
         uses: actions/checkout@v3
       
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
+
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
       
       - name: Install dependencies
         run: |
           cd frontend
-          npm install
+          pnpm install --frozen-lockfile --prod=false
       
       - name: Run linting
         run: |
           cd frontend
-          npm run lint || echo "Lint step skipped - not configured"
+          pnpm run lint || echo "Lint step skipped - not configured"
       
       - name: Run frontend tests
         run: |
           cd frontend
-          npm test -- --watchAll=false || echo "No tests found"
+          pnpm test -- --watchAll=false || echo "No tests found"
       
       - name: Build frontend
         run: |
           cd frontend
-          npm run build
+          pnpm run build
 
   docker-build:
     name: Docker Build Test
