@@ -31,4 +31,7 @@ public class Post {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Builder.Default
+    private boolean isDeleted= false;
 }
