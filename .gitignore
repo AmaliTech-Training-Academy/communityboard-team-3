@@ -10,6 +10,7 @@ dist/
 build/
 __pycache__/
 *.pyc
+logs/
 .DS_Store
 docs/
 .husky/

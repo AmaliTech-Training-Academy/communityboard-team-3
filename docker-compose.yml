@@ -6,11 +6,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -25,7 +25,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: communityboard-secret-key-amalitech-2024
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/api/categories || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
 
   frontend:
     build: ./frontend
@@ -33,6 +40,32 @@ services:
       - "3000:80"
     depends_on:
       - backend
+
+  data-seed:
+    build: ./data-engineering
+    command: python seed_data.py
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: communityboard
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  data-etl:
+    build: ./data-engineering
+    command: python etl_pipeline.py
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: communityboard
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      data-seed:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:
