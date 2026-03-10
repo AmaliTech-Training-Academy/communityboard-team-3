@@ -40,7 +40,7 @@ The CommunityBoard ETL pipeline extracts data from the application's PostgreSQL 
 | **Upsert (no data loss)**  | `INSERT … ON CONFLICT UPDATE` replaces `if_exists="replace"`      |
 | **8 analytics outputs**    | Daily activity, engagement, trends, content, contributors, weekly, category status, hidden metrics |
 | **Structured logging**     | Dual console + file logging via shared `db.py` helper              |
-| **Full or incremental**    | `--full` flag to reprocess everything when needed                  |
+| **Incremental only**       | Watermark-based extraction ensures only new rows are processed    |
 
 ---
 
@@ -248,7 +248,7 @@ Ranked leaderboard of community contributors with anonymized identifiers.
 
 | Output Column         | Type    | Description                                |
 |-----------------------|---------|--------------------------------------------|
-| user_hash             | VARCHAR | SHA-256 hash of email (PII-safe)           |
+| encrypted_name        | TEXT    | AES-256-GCM encrypted real name (PK, reversible)|
 | posts_created         | INTEGER | Total posts by this user                   |
 | comments_made         | INTEGER | Total comments by this user                |
 | total_contributions   | INTEGER | posts_created + comments_made              |
@@ -388,7 +388,7 @@ CREATE TABLE analytics_content_stats (
 
 ```sql
 CREATE TABLE analytics_top_contributors (
-    user_hash             VARCHAR(16) PRIMARY KEY,
+    encrypted_name        TEXT    PRIMARY KEY,
     posts_created         INTEGER NOT NULL DEFAULT 0,
     comments_made         INTEGER NOT NULL DEFAULT 0,
     total_contributions   INTEGER NOT NULL DEFAULT 0,
@@ -469,13 +469,13 @@ Run N:
   Only ever processes NEW data since last successful run
 ```
 
-### Force Full Reload
+To reset watermarks and reprocess everything, delete the `etl_watermarks` table rows:
 
-```bash
-python -m etl.pipeline --full
+```sql
+DELETE FROM etl_watermarks;
 ```
 
-This ignores watermarks and reprocesses everything. Useful after schema changes or data corrections.
+Then re-run `python -m etl.pipeline`.
 
 ---
 
@@ -531,9 +531,6 @@ cp .env.example .env
 # Run incremental (only new data since last run)
 python -m etl.pipeline
 
-# Run full reload (reprocess everything)
-python -m etl.pipeline --full
-
 # Legacy entry point (same behavior)
 python etl_pipeline.py
 ```
@@ -573,7 +570,7 @@ The `docker-compose.yml` defines the service:
 ```yaml
 data-etl:
   build: ./data-engineering
-  command: python -m etl.pipeline --full
+  command: python -m etl.pipeline
   environment:
     DB_HOST: postgres
     DB_PORT: 5432
@@ -645,7 +642,7 @@ docker run --rm \
 |-----------------------------------|--------------------------------|-----------------------------------------------|
 | `relation "posts" does not exist` | DB not initialized             | Run `seed_data.py` first or start backend     |
 | Empty analytics tables            | No data in source tables       | Seed data: `python seed_data.py`              |
-| "No new data" message             | Watermarks ahead of data       | Run with `--full` flag                        |
+| "No new data" message             | Watermarks ahead of data       | Delete watermark rows: `DELETE FROM etl_watermarks` |
 | Connection refused                | Wrong DB_HOST or DB_PORT       | Check `.env` matches your database            |
 | Permission denied on tables       | DB user lacks privileges       | Grant SELECT on source + ALL on analytics     |
 
@@ -694,4 +691,4 @@ DROP TABLE IF EXISTS analytics_hidden_metrics;
 DROP TABLE IF EXISTS etl_watermarks;
 ```
 
-Then run: `python -m etl.pipeline --full`
+Then run: `python -m etl.pipeline`
