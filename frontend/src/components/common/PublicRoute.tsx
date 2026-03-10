@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
+import { PageLoader } from '@/components/ui';
 
 export function PublicRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <p>Checking session...</p>;
+    return <PageLoader label="Checking session..." />;
   }
 
   if (isAuthenticated) {
