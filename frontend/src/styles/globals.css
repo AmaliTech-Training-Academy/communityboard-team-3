@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+@import './tokens.css';
+@import 'tailwindcss';
+
+:root {
+  font-family: var(--font-family-sans);
+}
+
+body {
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
+
+@layer utilities {
+  /* Typography */
+  .text-body-sm {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .text-body-sm-regular {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .text-body-base {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .text-heading-auth {
+    font-size: var(--font-size-2md);
+    line-height: var(--line-height-normal);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family-heading);
+    color: var(--card-title);
+  }
+
+  /* Semantic text colors */
+  .text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-muted {
+    color: var(--color-text-muted);
+  }
+
+  .text-inverse {
+    color: var(--color-text-inverse);
+  }
+
+  .text-danger {
+    color: var(--color-danger);
+  }
+
+  .text-accent {
+    color: var(--color-accent-orange);
+  }
+
+  /* Semantic backgrounds */
+  .bg-page {
+    background-color: var(--color-bg-page);
+  }
+
+  .bg-surface {
+    background-color: var(--color-bg-surface);
+  }
+
+  .bg-overlay {
+    background-color: var(--color-bg-overlay);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .bg-danger-soft {
+    background-color: var(--form-error-bg);
+  }
+
+  /* Borders and radius */
+  .border-default {
+    border-color: var(--color-border-default);
+  }
+
+  .border-strong {
+    border-color: var(--color-border-strong);
+  }
+
+  .border-danger {
+    border-color: var(--form-error-border);
+  }
+
+  .rounded-input {
+    border-radius: var(--input-radius);
+  }
+
+  .rounded-button {
+    border-radius: var(--button-radius);
+  }
+
+  .rounded-card {
+    border-radius: var(--radius-3xl);
+  }
+
+  /* Auth control primitives */
+  .input-token {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    padding: var(--input-py) var(--input-px);
+  }
+
+  .input-token-error {
+    background-color: var(--form-error-bg);
+    border: 1px solid var(--form-error-border);
+    border-radius: var(--input-radius);
+    padding: var(--input-py) var(--input-px);
+    color: var(--form-error-text);
+  }
+
+  .btn-primary-token {
+    background-color: var(--button-bg-primary);
+    color: var(--button-text-primary);
+    border-radius: var(--button-radius);
+    padding: var(--button-py) var(--button-px);
+  }
+
+  .gap-auth-section {
+    gap: 30px;
+  }
+}
