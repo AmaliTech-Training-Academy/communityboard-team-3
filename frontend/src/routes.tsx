@@ -1,10 +1,8 @@
 import type { RouteObject } from 'react-router';
 import { PublicRoute, ProtectedRoute } from '@/components/common';
 import RegisterPage from '@/pages/RegisterPage';
-
-function HomePage() {
-  return <div>Home</div>;
-}
+import LoginPage from '@/pages/LoginPage';
+import HomePage from '@/pages/HomePage';
 
 export const routes: RouteObject[] = [
   {
@@ -14,7 +12,10 @@ export const routes: RouteObject[] = [
   },
   {
     element: <PublicRoute />,
-    children: [{ path: '/register', element: <RegisterPage /> }],
+    children: [
+      { path: '/register', element: <RegisterPage /> },
+      { path: '/login', element: <LoginPage /> },
+    ],
   },
   {
     path: '*',
