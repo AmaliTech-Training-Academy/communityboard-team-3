@@ -55,13 +55,13 @@ INSERT INTO categories (name, description) VALUES
     ('EVENT', 'Upcoming events'),
     ('DISCUSSION', 'Community discussions'),
     ('ALERT', 'Urgent alerts')
-    ON CONFLICT (name) DO NOTHING;
+    ON CONFLICT (id) DO NOTHING;
 
 -- Default Users (passwords in plain text for now;)
 INSERT INTO users (email, name, password, role)
-SELECT 'admin@amalitech.com', 'Admin User', 'password123', 'ADMIN'
+SELECT 'admin@amalitech.com', 'Admin User', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', 'ADMIN'
     WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='admin@amalitech.com');
 
 INSERT INTO users (email, name, password, role)
-SELECT 'user@amalitech.com', 'Default User', 'password123', 'USER'
+SELECT 'user@amalitech.com', 'Default User','$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', 'USER'
     WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='user@amalitech.com');
