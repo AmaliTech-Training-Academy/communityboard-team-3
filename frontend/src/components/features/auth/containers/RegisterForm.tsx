@@ -17,7 +17,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 
 export function RegisterForm() {
-  const { register: registerUser, isLoading, error } = useAuth();
+  const { register: registerUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
@@ -142,8 +142,6 @@ export function RegisterForm() {
             cta="Log in"
           />
         </div>
-        {/* remove inline error message later when toast setup */}
-        {error ? <p className="text-body-sm text-danger">{error}</p> : null}
       </form>
     </AuthCard>
   );
