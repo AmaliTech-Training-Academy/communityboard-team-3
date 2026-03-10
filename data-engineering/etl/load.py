@@ -72,7 +72,7 @@ _ANALYTICS_DDL: dict[str, str] = {
     """,
     pipeline_config.table_top_contributors: """
         CREATE TABLE IF NOT EXISTS {table} (
-            user_hash             VARCHAR(16) PRIMARY KEY,
+            encrypted_name        TEXT    PRIMARY KEY,
             posts_created         INTEGER NOT NULL DEFAULT 0,
             comments_made         INTEGER NOT NULL DEFAULT 0,
             total_contributions   INTEGER NOT NULL DEFAULT 0,
@@ -114,6 +114,20 @@ _ANALYTICS_DDL: dict[str, str] = {
             comments_per_active_user  REAL    NOT NULL DEFAULT 0,
             single_post_author_pct    REAL    NOT NULL DEFAULT 0,
             weekend_post_pct          REAL    NOT NULL DEFAULT 0
+        );
+    """,
+    pipeline_config.table_summary: """
+        CREATE TABLE IF NOT EXISTS {table} (
+            metric_key      VARCHAR(64) PRIMARY KEY,
+            total_posts     INTEGER NOT NULL DEFAULT 0,
+            total_comments  INTEGER NOT NULL DEFAULT 0
+        );
+    """,
+    pipeline_config.table_posts_by_day_of_week: """
+        CREATE TABLE IF NOT EXISTS {table} (
+            day_of_week   INTEGER NOT NULL PRIMARY KEY,
+            day_name      VARCHAR(16) NOT NULL,
+            post_count    INTEGER NOT NULL DEFAULT 0
         );
     """,
 }
@@ -165,11 +179,11 @@ _UPSERT_SQL: dict[str, str] = {
             avg_comments_per_post = EXCLUDED.avg_comments_per_post
     """,
     pipeline_config.table_top_contributors: """
-        INSERT INTO {table} (user_hash, posts_created, comments_made,
+        INSERT INTO {table} (encrypted_name, posts_created, comments_made,
                              total_contributions, contribution_rank)
-        VALUES (:user_hash, :posts_created, :comments_made,
+        VALUES (:encrypted_name, :posts_created, :comments_made,
                 :total_contributions, :contribution_rank)
-        ON CONFLICT (user_hash) DO UPDATE SET
+        ON CONFLICT (encrypted_name) DO UPDATE SET
             posts_created       = EXCLUDED.posts_created,
             comments_made       = EXCLUDED.comments_made,
             total_contributions = EXCLUDED.total_contributions,
@@ -215,6 +229,20 @@ _UPSERT_SQL: dict[str, str] = {
             comments_per_active_user = EXCLUDED.comments_per_active_user,
             single_post_author_pct   = EXCLUDED.single_post_author_pct,
             weekend_post_pct         = EXCLUDED.weekend_post_pct
+    """,
+    pipeline_config.table_summary: """
+        INSERT INTO {table} (metric_key, total_posts, total_comments)
+        VALUES (:metric_key, :total_posts, :total_comments)
+        ON CONFLICT (metric_key) DO UPDATE SET
+            total_posts    = EXCLUDED.total_posts,
+            total_comments = EXCLUDED.total_comments
+    """,
+    pipeline_config.table_posts_by_day_of_week: """
+        INSERT INTO {table} (day_of_week, day_name, post_count)
+        VALUES (:day_of_week, :day_name, :post_count)
+        ON CONFLICT (day_of_week) DO UPDATE SET
+            day_name   = EXCLUDED.day_name,
+            post_count = EXCLUDED.post_count
     """,
 }
 
