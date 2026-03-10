@@ -11,4 +11,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCategoryIdOrderByCreatedAtDesc(Long categoryId);
     List<Post> findByAuthorIdOrderByCreatedAtDesc(Long authorId);
     // TODO: Add search methods - findByTitleContainingIgnoreCase, full-text search
+    Page<Post> findAllByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
+
 }

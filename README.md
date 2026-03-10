@@ -14,7 +14,7 @@ A community notice board where users can post announcements, events, and discuss
 ```bash
 docker-compose up --build
 ```
-- Backend API: http://localhost:8080/swagger-ui.html
+- Backend API: http://localhost:8080/swagger-ui/index.html#/
 - Frontend: http://localhost:3000
 
 ## Default Users (seeded)

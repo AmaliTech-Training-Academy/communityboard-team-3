@@ -1,5 +1,7 @@
 package com.amalitech.communityboard.service;
 
+import com.amalitech.communityboard.Exceptions.PostNotFoundException;
+import com.amalitech.communityboard.Exceptions.UnauthorizedException;
 import com.amalitech.communityboard.dto.*;
 import com.amalitech.communityboard.model.*;
 import com.amalitech.communityboard.repository.*;
@@ -18,13 +20,14 @@ public class PostService {
 
     public Page<PostResponse> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findAllByOrderByCreatedAtDesc(pageable)
+        return postRepository.findAllByIsDeletedFalseOrderByCreatedAtDesc(pageable)
                 .map(this::toResponse);
     }
 
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .filter(p-> !p.isDeleted())
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
         return toResponse(post);
     }
 
@@ -45,7 +48,8 @@ public class PostService {
 
     public PostResponse updatePost(Long id, PostRequest request, User author) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .filter(post1 -> !post1.isDeleted())
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
         if (!post.getAuthor().getId().equals(author.getId())) {
             throw new RuntimeException("Not authorized to update this post");
         }
@@ -61,12 +65,13 @@ public class PostService {
 
     public void deletePost(Long id, User author) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
         if (!post.getAuthor().getId().equals(author.getId())
                 && !author.getRole().name().equals("ADMIN")) {
-            throw new RuntimeException("Not authorized to delete this post");
+            throw new UnauthorizedException("Not authorized to delete this post");
         }
-        postRepository.delete(post);
+        post.setDeleted(true);
+        postRepository.save(post);
     }
 
     // TODO: Implement search functionality
