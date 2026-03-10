@@ -4,6 +4,8 @@ import RegisterPage from '@/pages/RegisterPage';
 import LoginPage from '@/pages/LoginPage';
 import HomePage from '@/pages/HomePage';
 import PostDetailPage from '@/pages/PostDetailPage';
+import CreatePostPage from '@/pages/CreatePostPage';
+import EditPostPage from '@/pages/EditPostPage';
 
 export const routes: RouteObject[] = [
   {
@@ -11,7 +13,9 @@ export const routes: RouteObject[] = [
     element: <ProtectedRoute />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'posts/new', element: <CreatePostPage /> },
       { path: 'posts/:id', element: <PostDetailPage /> },
+      { path: 'posts/:id/edit', element: <EditPostPage /> },
     ],
   },
   {

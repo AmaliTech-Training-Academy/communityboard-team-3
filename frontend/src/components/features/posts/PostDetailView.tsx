@@ -13,6 +13,7 @@ export type PostDetailViewProps = {
   content: string;
   authorName: string;
   createdRelative: string;
+  updatedRelative?: string | null;
   categoryLabel: string;
   chipVariant: ChipVariant;
   comments: Comment[] | null;
@@ -22,6 +23,8 @@ export type PostDetailViewProps = {
   onCommentDraftChange: (next: string) => void;
   onAddComment: () => void;
   onBackHome: () => void;
+  canEdit?: boolean;
+  onEdit?: () => void;
 };
 
 export function PostDetailView({
@@ -29,6 +32,7 @@ export function PostDetailView({
   content,
   authorName,
   createdRelative,
+  updatedRelative,
   categoryLabel,
   chipVariant,
   comments,
@@ -38,6 +42,8 @@ export function PostDetailView({
   onCommentDraftChange,
   onAddComment,
   onBackHome,
+  canEdit = false,
+  onEdit,
 }: Readonly<PostDetailViewProps>) {
   const totalComments = comments?.length ?? 0;
   const hasComments = totalComments > 0;
@@ -65,11 +71,24 @@ export function PostDetailView({
       <section className="flex flex-col gap-10">
         {/* Post details block */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-11">
+          <div className="flex items-start justify-between gap-6">
             <Text as="h1" variant="headingAuth" className="text-primary">
               {title}
             </Text>
-            <Chip variant={chipVariant}>{categoryLabel}</Chip>
+
+            <div className="flex items-center gap-3">
+              <Chip variant={chipVariant}>{categoryLabel}</Chip>
+              {canEdit && onEdit ? (
+                <button
+                  type="button"
+                  aria-label="Edit post"
+                  onClick={onEdit}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-button hover:bg-overlay"
+                >
+                  <img src={penIcon} alt="" className="h-5 w-5" />
+                </button>
+              ) : null}
+            </div>
           </div>
 
           <Text variant="bodyBase" className="text-secondary">
@@ -97,6 +116,11 @@ export function PostDetailView({
                 {createdRelative}
               </Text>
             </div>
+            {updatedRelative ? (
+              <Text as="span" variant="bodySmRegular" className="text-muted">
+                · Updated {updatedRelative}
+              </Text>
+            ) : null}
           </div>
 
           <div className="h-px w-full border-t border-default" />

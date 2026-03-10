@@ -9,6 +9,14 @@ export interface GetPostsParams {
   size?: number;
 }
 
+export interface CreatePostRequest {
+  title: string;
+  content: string;
+  categoryId: number | null;
+}
+
+export type UpdatePostRequest = CreatePostRequest;
+
 export const postService = {
   /**
    * Fetch a paginated list of posts from the backend.
@@ -43,6 +51,32 @@ export const postService = {
   async getComments(postId: number): Promise<Comment[]> {
     const { data } = await apiClient.get<Comment[]>(
       `${BASE_PATH}/${postId.toString()}/comments`,
+    );
+    return data;
+  },
+
+  /**
+   * Create a new post.
+   * Mirrors:
+   *   POST /api/posts
+   */
+  async createPost(payload: CreatePostRequest): Promise<PostSummary> {
+    const { data } = await apiClient.post<PostSummary>(BASE_PATH, payload);
+    return data;
+  },
+
+  /**
+   * Update an existing post.
+   * Mirrors:
+   *   PUT /api/posts/{id}
+   */
+  async updatePost(
+    id: number,
+    payload: UpdatePostRequest,
+  ): Promise<PostSummary> {
+    const { data } = await apiClient.put<PostSummary>(
+      `${BASE_PATH}/${id.toString()}`,
+      payload,
     );
     return data;
   },

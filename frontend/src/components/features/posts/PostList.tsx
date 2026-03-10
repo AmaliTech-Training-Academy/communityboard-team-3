@@ -39,6 +39,13 @@ export function PostList() {
         if (!data) return;
         setPage((current) => Math.min(data.totalPages - 1, current + 1));
       }}
+      onPageChange={(nextPage: number) => {
+        setPage((current) => {
+          const maxPage = Math.max(0, totalPages - 1);
+          const normalizedNext = Number.isFinite(nextPage) ? nextPage : current;
+          return Math.max(0, Math.min(maxPage, normalizedNext));
+        });
+      }}
     />
   );
 }

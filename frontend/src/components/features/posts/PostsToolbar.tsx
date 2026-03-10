@@ -15,6 +15,7 @@ export type PostsToolbarProps = {
    */
   activeCategory?: string;
   onCategoryChange?: (category: string) => void;
+  onCreatePostClick?: () => void;
 };
 
 /**
@@ -28,6 +29,7 @@ export function PostsToolbar({
   categories,
   activeCategory = 'All',
   onCategoryChange,
+  onCreatePostClick,
 }: Readonly<PostsToolbarProps>) {
   return (
     <section className="space-y-4">
@@ -41,6 +43,7 @@ export function PostsToolbar({
             variant="primary"
             leftIcon={<img src={plusIcon} alt="" className="h-5 w-5" />}
             className="gap-2 px-[20px] py-[10px]"
+            onClick={onCreatePostClick}
           >
             Create post
           </Button>
