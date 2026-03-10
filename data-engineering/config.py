@@ -26,9 +26,13 @@ class PipelineConfig:
     extract_batch_size: int = int(os.getenv("ETL_EXTRACT_BATCH_SIZE", "10000"))
     load_batch_size: int = int(os.getenv("ETL_LOAD_BATCH_SIZE", "5000"))
 
-    # --- Anonymization ---
+    # --- Anonymization & Encryption ---
     anonymize_pii: bool = os.getenv("ETL_ANONYMIZE_PII", "true").lower() == "true"
     hash_salt: str = os.getenv("ETL_HASH_SALT", "communityboard-etl-salt-2024")
+    kms_provider: str = os.getenv("ETL_KMS_PROVIDER", "local")   # "local" | "aws"
+    kms_key: str = os.getenv("ETL_KMS_KEY", "")                   # 256-bit key (hex or base64) for local provider
+    # AWS KMS (only when kms_provider=aws)
+    # ETL_KMS_AWS_KEY_ID and ETL_KMS_AWS_REGION are read directly in etl/kms.py
 
     # --- Target analytics tables ---
     table_daily_activity: str = "analytics_daily_activity"
@@ -39,6 +43,8 @@ class PipelineConfig:
     table_posts_by_category: str = "analytics_posts_by_category"
     table_weekly_report: str = "analytics_weekly_report"
     table_hidden_metrics: str = "analytics_hidden_metrics"
+    table_summary: str = "analytics_summary"
+    table_posts_by_day_of_week: str = "analytics_posts_by_day_of_week"
     table_watermarks: str = "etl_watermarks"
 
     # --- Analytics schema ---

@@ -22,8 +22,19 @@ from typing import Callable
 import pandas as pd
 
 from config import pipeline_config
+from etl.kms import encrypt, decrypt
 
 logger = logging.getLogger("etl.transform")
+
+
+def encrypt_value(value: str) -> str:
+    """Encrypt *value* with AES-256-GCM via the KMS layer."""
+    return encrypt(value)
+
+
+def decrypt_value(token: str) -> str:
+    """Decrypt an AES-256-GCM token back to the original string."""
+    return decrypt(token)
 
 
 # Anonymization helpers
@@ -301,14 +312,12 @@ def transform_top_contributors(
     posts: pd.DataFrame,
     comments: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Rank users by total contribution (posts + comments), anonymized.
+    """Rank users by total contribution (posts + comments).
 
     Output columns:
-        user_hash, posts_created, comments_made, total_contributions,
+        encrypted_name, posts_created, comments_made, total_contributions,
         contribution_rank
     """
-    users_anon = anonymize_df(users, ["email", "name"])
-
     active_posts = posts[~posts["is_deleted"]].copy()
     active_comments = comments[~comments["is_deleted"]].copy()
 
@@ -319,9 +328,11 @@ def transform_top_contributors(
         active_comments.groupby("author_id").size().reset_index(name="comments_made")
     )
 
-    contrib = users_anon[["id", "email"]].rename(
-        columns={"id": "author_id", "email": "user_hash"}
-    )
+    # Build contributor frame with encrypted name as identifier
+    contrib = users[["id", "name"]].rename(columns={"id": "author_id"})
+    contrib["encrypted_name"] = contrib["name"].fillna("").apply(encrypt_value)
+    contrib = contrib.drop(columns=["name"])
+
     contrib = contrib.merge(post_counts, on="author_id", how="left")
     contrib = contrib.merge(comment_counts, on="author_id", how="left")
 
@@ -546,3 +557,57 @@ def transform_hidden_metrics(
         peak_hour, avg_response, dormant_pct, survival_rate,
     )
     return result
+
+
+# 9. Summary totals (Total Posts, Total Comments)
+# ---------------------------------------------------------------------------
+
+def transform_summary(posts: pd.DataFrame, comments: pd.DataFrame) -> pd.DataFrame:
+    """Compute grand totals for the dashboard header cards.
+
+    Output columns:
+        metric_key, total_posts, total_comments
+    """
+    total_posts = int((~posts["is_deleted"]).sum()) if not posts.empty else 0
+    total_comments = int((~comments["is_deleted"]).sum()) if not comments.empty else 0
+
+    result = pd.DataFrame([{
+        "metric_key": "global",
+        "total_posts": total_posts,
+        "total_comments": total_comments,
+    }])
+
+    logger.info("Summary: %d posts, %d comments", total_posts, total_comments)
+    return result
+
+
+# 10. Posts by day of week (Mon–Sun bar chart)
+# ---------------------------------------------------------------------------
+
+_DAY_NAMES = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
+
+
+def transform_posts_by_day_of_week(posts: pd.DataFrame) -> pd.DataFrame:
+    """Count active posts per day of week (0=Mon … 6=Sun).
+
+    Output columns:
+        day_of_week, day_name, post_count
+    """
+    if posts.empty:
+        return pd.DataFrame(
+            columns=["day_of_week", "day_name", "post_count"]
+        )
+
+    active = posts[~posts["is_deleted"]].copy()
+    active["day_of_week"] = pd.to_datetime(active["created_at"]).dt.dayofweek  # Mon=0
+
+    counts = active.groupby("day_of_week").size().reset_index(name="post_count")
+
+    # Ensure all 7 days present
+    all_days = pd.DataFrame({"day_of_week": range(7)})
+    counts = all_days.merge(counts, on="day_of_week", how="left").fillna(0)
+    counts["post_count"] = counts["post_count"].astype(int)
+    counts["day_name"] = counts["day_of_week"].map(lambda d: _DAY_NAMES[d])
+
+    logger.info("Posts by day of week: %d rows", len(counts))
+    return counts
