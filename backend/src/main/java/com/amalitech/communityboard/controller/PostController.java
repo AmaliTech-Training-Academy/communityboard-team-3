@@ -11,9 +11,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -87,6 +90,18 @@ public class PostController {
     }
 
     // TODO: Add search endpoint
-    // @GetMapping("/search")
-    // public ResponseEntity<Page<PostResponse>> searchPosts(@RequestParam String q, ...) { ... }
+    @Operation(summary = "Search posts", description = "Filter posts by category, keyword, and date range")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search results returned")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<Page<PostResponse>> searchPosts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(postService.searchPosts(categoryId, keyword, startDate, endDate, page, size));
+    }
 }

@@ -5,8 +5,10 @@ import com.amalitech.communityboard.Exceptions.UnauthorizedException;
 import com.amalitech.communityboard.dto.*;
 import com.amalitech.communityboard.model.*;
 import com.amalitech.communityboard.repository.*;
+import com.amalitech.communityboard.specification.PostSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
@@ -75,7 +77,13 @@ public class PostService {
     }
 
     // TODO: Implement search functionality
-    // public Page<PostResponse> searchPosts(String query, Pageable pageable) { ... }
+     public Page<PostResponse> searchPosts(Long categoryId, String keyword,
+                                           LocalDateTime startDate, LocalDateTime endDate,
+                                           int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("CreatedAt").descending());
+         Specification<Post> spec = PostSpecification.filter(categoryId, keyword, startDate, endDate);
+        return postRepository.findAll(spec,pageable).map(this::toResponse);
+     }
 
     private PostResponse toResponse(Post post) {
         return PostResponse.builder()
