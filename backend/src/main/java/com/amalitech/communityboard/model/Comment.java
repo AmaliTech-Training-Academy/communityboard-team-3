@@ -26,7 +26,8 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @Column
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted= false;
+
 }
