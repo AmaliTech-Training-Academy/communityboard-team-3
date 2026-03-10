@@ -1,5 +1,7 @@
 package com.amalitech.communityboard.service;
 
+import com.amalitech.communityboard.Exceptions.PostNotFoundException;
+import com.amalitech.communityboard.Exceptions.UnauthorizedException;
 import com.amalitech.communityboard.dto.*;
 import com.amalitech.communityboard.model.*;
 import com.amalitech.communityboard.repository.*;
@@ -20,11 +22,32 @@ public class CommentService {
                 .map(this::toResponse).toList();
     }
 
-    // TODO: Implement createComment
-    // public CommentResponse createComment(Long postId, CommentRequest request, User author) { ... }
+     public CommentResponse createComment(Long postId, CommentRequest request, User author) {
+        Post post = postRepository.findById(postId)
+                  .filter(p -> !p.isDeleted())
+                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
 
-    // TODO: Implement deleteComment
-    // public void deleteComment(Long commentId, User author) { ... }
+         Comment comment = Comment.builder()
+                 .content(request.getContent())
+                 .post(post)
+                 .author(author)
+                 .build();
+
+         return toResponse(commentRepository.save(comment));
+     }
+
+     public void deleteComment(Long commentId, User author) {
+        Comment comment = commentRepository.findById(commentId)
+                .filter(p-> !p.isDeleted()).
+                orElseThrow(()-> new CommentNotFoundException("Comment not found"));
+         if (!comment.getAuthor().getId().equals(author.getId())
+                 && !author.getRole().name().equals("ADMIN")) {
+             throw new UnauthorizedException("Not authorized to delete this comment");
+         }
+
+         comment.setDeleted(true);
+         commentRepository.save(comment);
+     }
 
     private CommentResponse toResponse(Comment comment) {
         return CommentResponse.builder()
