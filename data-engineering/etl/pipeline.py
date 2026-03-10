@@ -1,17 +1,16 @@
 """
 ETL Pipeline Orchestrator — the main entry point.
 
-Coordinates the full Extract → Transform → Load flow:
+Coordinates the incremental Extract → Transform → Load flow:
   1. Ensures analytics target tables exist
   2. Reads high-water-marks for incremental extraction
-  3. Extracts posts, comments, users in batches
+  3. Extracts posts, comments, users in batches (only new rows since last run)
   4. Runs all transformations (anonymization, aggregation, trends)
   5. Loads results via upsert into analytics tables
   6. Updates watermarks on success
 
 Usage:
-    python -m etl.pipeline              # incremental run
-    python -m etl.pipeline --full       # ignore watermarks, reprocess everything
+    python -m etl.pipeline
 """
 
 from __future__ import annotations
@@ -47,6 +46,8 @@ from etl.transform import (                       # noqa: E402
     transform_posts_by_category,
     transform_weekly_report,
     transform_hidden_metrics,
+    transform_summary,
+    transform_posts_by_day_of_week,
 )
 from etl.load import ensure_analytics_tables, load_dataframe  # noqa: E402
 
@@ -75,8 +76,8 @@ def _max_timestamp(df: pd.DataFrame, col: str) -> datetime | None:
 # Pipeline
 # ---------------------------------------------------------------------------
 
-def run_pipeline(engine: Engine, full: bool = False) -> dict:
-    """Execute the complete ETL pipeline. Returns a summary dict."""
+def run_pipeline(engine: Engine) -> dict:
+    """Execute the incremental ETL pipeline. Returns a summary dict."""
     t0 = time.time()
     summary: dict = {"started_at": datetime.utcnow().isoformat(), "tables": {}}
 
@@ -85,13 +86,12 @@ def run_pipeline(engine: Engine, full: bool = False) -> dict:
         ensure_watermark_table(conn)
         ensure_analytics_tables(conn)
 
-        # --- 1. Extract ---------------------------------------------------
-        posts_wm = None if full else get_watermark(conn, "posts")
-        comments_wm = None if full else get_watermark(conn, "comments")
+        # --- 1. Extract (incremental — only new rows since last run) ------
+        posts_wm = get_watermark(conn, "posts")
+        comments_wm = get_watermark(conn, "comments")
 
         logger.info(
-            "Mode: %s | posts watermark: %s | comments watermark: %s",
-            "FULL" if full else "INCREMENTAL",
+            "Mode: INCREMENTAL | posts watermark: %s | comments watermark: %s",
             posts_wm or "none",
             comments_wm or "none",
         )
@@ -119,6 +119,8 @@ def run_pipeline(engine: Engine, full: bool = False) -> dict:
         posts_by_category = transform_posts_by_category(posts_df)
         weekly_report = transform_weekly_report(posts_df, comments_df)
         hidden_metrics = transform_hidden_metrics(posts_df, comments_df, users_df)
+        summary = transform_summary(posts_df, comments_df)
+        posts_by_day_of_week = transform_posts_by_day_of_week(posts_df)
 
         # --- 3. Load -----------------------------------------------------
         for table, df in [
@@ -130,6 +132,8 @@ def run_pipeline(engine: Engine, full: bool = False) -> dict:
             (pipeline_config.table_posts_by_category, posts_by_category),
             (pipeline_config.table_weekly_report, weekly_report),
             (pipeline_config.table_hidden_metrics, hidden_metrics),
+            (pipeline_config.table_summary, summary),
+            (pipeline_config.table_posts_by_day_of_week, posts_by_day_of_week),
         ]:
             rows = load_dataframe(conn, df, table)
             summary["tables"][table] = rows
@@ -154,19 +158,14 @@ def run_pipeline(engine: Engine, full: bool = False) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="CommunityBoard ETL Pipeline")
-    parser.add_argument(
-        "--full",
-        action="store_true",
-        help="Ignore watermarks and reprocess all data",
-    )
-    args = parser.parse_args()
+    parser.parse_args()
 
     logger.info("=" * 60)
-    logger.info("CommunityBoard ETL Pipeline v1.0")
+    logger.info("CommunityBoard ETL Pipeline v1.0 (incremental)")
     logger.info("=" * 60)
 
     engine = get_engine()
-    summary = run_pipeline(engine, full=args.full)
+    summary = run_pipeline(engine)
 
     logger.info("─" * 60)
     logger.info("Summary:")
