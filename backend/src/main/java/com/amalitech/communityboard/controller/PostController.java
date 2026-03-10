@@ -2,6 +2,7 @@ package com.amalitech.communityboard.controller;
 
 import com.amalitech.communityboard.dto.*;
 import com.amalitech.communityboard.model.User;
+import com.amalitech.communityboard.model.UserPrincipal;
 import com.amalitech.communityboard.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @Valid @RequestBody PostRequest request,
-            @AuthenticationPrincipal User author) {
-        return ResponseEntity.ok(postService.createPost(request, author));
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(postService.createPost(request, principal.getUser()));
     }
 
     @PutMapping("/{id}")

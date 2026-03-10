@@ -8,6 +8,8 @@ import com.amalitech.communityboard.model.User;
 import com.amalitech.communityboard.model.enums.Role;
 import com.amalitech.communityboard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -37,11 +40,13 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("Invalid credentials");
-        }
+
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
                 .token(token).email(user.getEmail())

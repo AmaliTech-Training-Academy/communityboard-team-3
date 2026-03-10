@@ -28,4 +28,8 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column
+    @Builder.Default
+    private boolean isActive = true;
 }
