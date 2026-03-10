@@ -85,7 +85,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         const remainingSeconds = Math.ceil(
           (loginLockedUntil - Date.now()) / 1000,
         );
-        const lockMessage = `Too many attempts. Please wait ${remainingSeconds} seconds before trying again.`;
+        const lockMessage = `Too many attempts. Please wait ${remainingSeconds.toString()} seconds before trying again.`;
         setError(lockMessage);
         toast.error({
           title: 'Too many login attempts',
@@ -103,13 +103,14 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
           name: response.name,
           role: response.role,
         });
-         // Successful login → clear any previous failures/lock.
+        // Successful login → clear any previous failures/lock.
         setFailedLoginAttempts(0);
         setLoginLockedUntil(null);
         toast.success({ title: 'Authenticated successfully' });
       } catch (err) {
-        const apiError = err as Error & ApiError;
-        const status = apiError.status ?? 0;
+        const apiError = err as Error & Partial<ApiError>;
+        const status =
+          typeof apiError.status === 'number' ? apiError.status : 0;
 
         const isAuthError = status === 401;
 
