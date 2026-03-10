@@ -1,8 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Skeleton, Text } from '@/components/ui';
 import { usePosts } from '@/hooks/usePosts';
-import emptyIllustration from '@/assets/Messages 03.svg';
-import { PostCard } from './PostCard';
+import { PostListView } from './PostListView';
 
 /**
  * Post list container for the /posts route.
@@ -13,42 +12,33 @@ import { PostCard } from './PostCard';
  */
 export function PostList() {
   const navigate = useNavigate();
-  const { data, isLoading } = usePosts({ page: 0, size: 10 });
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <Skeleton key={index} variant="card" />
-        ))}
-      </div>
-    );
-  }
+  const [page, setPage] = useState(0);
+  const size = 10;
+  const { data, isLoading } = usePosts({ page, size });
 
   const posts = data?.content ?? [];
-
-  if (posts.length === 0) {
-    return (
-      <div className="flex flex-col items-center gap-3 py-12">
-        <img src={emptyIllustration} alt="" className="h-48 w-auto md:h-64" />
-        <Text variant="bodyBase" className="text-primary">
-          No posts have been made yet
-        </Text>
-      </div>
-    );
-  }
+  const totalPages = data?.totalPages ?? 1;
+  const canPrev = page > 0;
+  const canNext = data ? page < data.totalPages - 1 : false;
 
   return (
-    <div className="flex flex-col gap-4">
-      {posts.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onClick={() => {
-            void navigate(`/posts/${post.id.toString()}`);
-          }}
-        />
-      ))}
-    </div>
+    <PostListView
+      isLoading={isLoading}
+      posts={posts}
+      onPostClick={(postId) => {
+        void navigate(`/posts/${postId.toString()}`);
+      }}
+      page={page}
+      totalPages={totalPages}
+      canPrev={canPrev}
+      canNext={canNext}
+      onPrev={() => {
+        setPage((current) => Math.max(0, current - 1));
+      }}
+      onNext={() => {
+        if (!data) return;
+        setPage((current) => Math.min(data.totalPages - 1, current + 1));
+      }}
+    />
   );
 }

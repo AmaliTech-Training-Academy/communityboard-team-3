@@ -2,24 +2,19 @@ import { Button, Chip, Text } from '@/components/ui';
 import plusIcon from '@/assets/plus.svg';
 import { PostsSearchBar } from './PostsSearchBar';
 
-const CATEGORIES = [
-  'All',
-  'Events',
-  'Lost & Found',
-  'Recommendations',
-  'Help Requests',
-] as const;
-
-type Category = (typeof CATEGORIES)[number];
-
 export type PostsToolbarProps = {
   /**
-   * Currently active category filter.
-   * The initial implementation is purely visual; wiring to
+   * List of category labels to display in the chip row.
+   * Typically built from backend categories plus an "All" entry.
+   */
+  categories: string[];
+  /**
+   * Currently active category label.
+   * The implementation is purely visual for now; wiring to
    * post filters can be added once the API supports it.
    */
-  activeCategory?: Category;
-  onCategoryChange?: (category: Category) => void;
+  activeCategory?: string;
+  onCategoryChange?: (category: string) => void;
 };
 
 /**
@@ -30,6 +25,7 @@ export type PostsToolbarProps = {
  * - row of category badges
  */
 export function PostsToolbar({
+  categories,
   activeCategory = 'All',
   onCategoryChange,
 }: Readonly<PostsToolbarProps>) {
@@ -57,18 +53,23 @@ export function PostsToolbar({
           Categories:
         </Text>
         <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((category) => {
+          {categories.map((category) => {
             const isActive = category === activeCategory;
+            const activeClasses =
+              'bg-[color:var(--color-slate-400)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
+            const inactiveClasses =
+              'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
+
             return (
               <Chip
                 key={category}
-                variant={isActive ? 'event' : 'default'}
+                variant="default"
                 onClick={() => {
                   if (onCategoryChange) {
                     onCategoryChange(category);
                   }
                 }}
-                className="cursor-pointer"
+                className={`cursor-pointer ${isActive ? activeClasses : inactiveClasses}`}
               >
                 {category}
               </Chip>

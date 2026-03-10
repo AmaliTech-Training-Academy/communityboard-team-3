@@ -30,7 +30,7 @@ export function Chip({
         return 'bg-[color:var(--chip-help-request-bg)] text-[color:var(--chip-help-request-text)] border-[color:var(--chip-help-request-border)]';
       case 'default':
       default:
-        return 'bg-surface text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]';
+        return 'bg-surface text-[color:var(--color-text-primary)] border-[color:var(--color-border-default)]';
     }
   })();
 

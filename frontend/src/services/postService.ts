@@ -1,5 +1,6 @@
 import { apiClient } from '@/services/api';
 import type { PaginatedPosts, PostSummary } from '@/types/post';
+import type { Comment } from '@/types/comment';
 
 const BASE_PATH = '/posts';
 
@@ -30,6 +31,18 @@ export const postService = {
   async getPostById(id: number): Promise<PostSummary> {
     const { data } = await apiClient.get<PostSummary>(
       `${BASE_PATH}/${id.toString()}`,
+    );
+    return data;
+  },
+
+  /**
+   * Fetch all comments for a given post.
+   * Mirrors:
+   *   GET /api/posts/{postId}/comments
+   */
+  async getComments(postId: number): Promise<Comment[]> {
+    const { data } = await apiClient.get<Comment[]>(
+      `${BASE_PATH}/${postId.toString()}/comments`,
     );
     return data;
   },
