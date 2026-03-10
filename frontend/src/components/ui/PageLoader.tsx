@@ -47,4 +47,3 @@ export function PageLoader({ label, description }: PageLoaderProps) {
     </main>
   );
 }
-

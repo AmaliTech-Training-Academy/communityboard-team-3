@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { AuthProvider } from '@/context/AuthContext';
+import { ToastProvider } from '@/context/ToastContext';
 import { useAuth } from '@/hooks/useAuth';
 import { server } from '@/test/server';
 
@@ -50,9 +51,11 @@ describe('AuthContext', () => {
     );
 
     render(
-      <AuthProvider>
-        <AuthProbe />
-      </AuthProvider>,
+      <ToastProvider>
+        <AuthProvider>
+          <AuthProbe />
+        </AuthProvider>
+      </ToastProvider>,
     );
 
     await waitFor(() => {
@@ -80,9 +83,11 @@ describe('AuthContext', () => {
     );
 
     render(
-      <AuthProvider>
-        <AuthProbe />
-      </AuthProvider>,
+      <ToastProvider>
+        <AuthProvider>
+          <AuthProbe />
+        </AuthProvider>
+      </ToastProvider>,
     );
 
     await waitFor(() => {

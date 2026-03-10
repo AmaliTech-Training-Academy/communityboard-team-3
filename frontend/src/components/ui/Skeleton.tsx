@@ -46,4 +46,3 @@ export function Skeleton({
 
   return <div {...props} className={skeletonClassName} />;
 }
-
