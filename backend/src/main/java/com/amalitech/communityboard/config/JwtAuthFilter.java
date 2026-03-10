@@ -1,5 +1,6 @@
 package com.amalitech.communityboard.config;
 
+import com.amalitech.communityboard.model.UserPrincipal;
 import com.amalitech.communityboard.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,10 +36,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (jwtService.isTokenValid(token)) {
             String email = jwtService.extractEmail(token);
             userRepository.findByEmail(email).ifPresent(user -> {
+
+                UserPrincipal principal = new UserPrincipal(user);
                 var auth = new UsernamePasswordAuthenticationToken(
-                        user, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-                );
+                        principal, null,
+                        principal.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             });
         }

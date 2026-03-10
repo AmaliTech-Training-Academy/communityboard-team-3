@@ -31,6 +31,7 @@ public class User {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column
     @Builder.Default
-    private boolean isActive =true;
+    private boolean isActive = true;
 }
