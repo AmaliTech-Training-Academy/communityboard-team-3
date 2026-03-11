@@ -73,7 +73,8 @@ public class PostService extends BaseSecurityService{
                 .filter(post1 -> !post1.isDeleted())
                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
         verifyOwnerOrAdmin(post.getAuthor().getId(), author);
-        // soft delete all comments on this post
+        // Soft delete all comments on this post before deleting the post
+        // This ensures cascade consistency without using hard deletes
         List<Comment> comments = commentRepository.findByPostIdOrderByCreatedAtAsc(post.getId());
         comments.forEach(c -> c.setDeleted(true));
         commentRepository.saveAll(comments);
@@ -83,12 +84,12 @@ public class PostService extends BaseSecurityService{
         postRepository.save(post);
     }
 
-    // TODO: Implement search functionality
-    public Page<PostResponse> searchPosts(Long categoryId, String keyword,
+    // Search posts with optional filters - all params are independent and combinable
+    public Page<PostResponse> searchPosts(String categoryName, String keyword,
                                           LocalDateTime startDate, LocalDateTime endDate,
                                           int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("CreatedAt").descending());
-        Specification<Post> spec = PostSpecification.filter(categoryId, keyword, startDate, endDate);
+        Specification<Post> spec = PostSpecification.filter(categoryName, keyword, startDate, endDate);
         return postRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
