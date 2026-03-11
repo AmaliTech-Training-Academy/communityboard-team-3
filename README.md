@@ -32,6 +32,9 @@ qa/               - API & UI test suites
 devops/           - Docker, CI/CD configs
 ```
 
+## Documentation
+- [Database Schema & Structure](data-engineering/docs/DATABASE.md) — Full reference for all tables, columns, relationships, and seed data.
+
 ## What's Implemented (~30%)
 - [x] User authentication (register/login with JWT)
 - [x] Basic post CRUD (create, read, update, delete)
