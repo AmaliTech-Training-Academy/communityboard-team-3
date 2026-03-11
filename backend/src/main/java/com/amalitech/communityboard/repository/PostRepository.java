@@ -15,4 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     // TODO: Add search methods - findByTitleContainingIgnoreCase, full-text search
     Page<Post> findAllByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
 
+    boolean existsByCategoryId(Long categoryId);
 }
