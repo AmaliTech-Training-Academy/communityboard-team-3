@@ -13,6 +13,7 @@ import { EditPostModal } from '@/components/features/posts/EditPostModal';
 import type { PostFormModalValues } from '@/components/features/posts/PostFormModal';
 import { useCategories } from '@/hooks/useCategories';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function PostDetailPage() {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ export default function PostDetailPage() {
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { user } = useAuth();
   const { data: categories } = useCategories();
   const isMobile = useIsMobile();
@@ -38,10 +41,25 @@ export default function PostDetailPage() {
     return isAdmin || isAuthor;
   }, [effectivePost, user]);
 
+  const canDelete = canEdit;
+
   const updatedRelative =
     effectivePost && effectivePost.updatedAt !== effectivePost.createdAt
       ? formatRelativeTime(effectivePost.updatedAt)
       : null;
+
+  const handleDelete = async (postIdToDelete: number): Promise<void> => {
+    try {
+      setIsDeleting(true);
+      await (postService.deletePost as (id: number) => Promise<void>)(
+        postIdToDelete,
+      );
+      void navigate('/');
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
 
   if (isPostLoading) {
     return <PageLoader label="Loading post details..." />;
@@ -112,6 +130,26 @@ export default function PostDetailPage() {
           }
           setCurrentPost(effectivePost);
           setIsEditOpen(true);
+        }}
+        canDelete={canDelete}
+        onDelete={() => {
+          setIsDeleteDialogOpen(true);
+        }}
+      />
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        title="Delete post?"
+        description="Are you sure you want to delete this post? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        isConfirming={isDeleting}
+        onCancel={() => {
+          if (isDeleting) return;
+          setIsDeleteDialogOpen(false);
+        }}
+        onConfirm={() => {
+          if (!postId) return;
+          void handleDelete(postId);
         }}
       />
     </AppShell>
