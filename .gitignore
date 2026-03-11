@@ -14,3 +14,12 @@ logs/
 .DS_Store
 .husky/
 AGENTS.md
+docs-f/
+# Environment files (keep .example only)
+.env.dev
+.env.test
+.env.local
+
+# Terraform
+devops/terraform/.terraform/
+devops/terraform/terraform.tfstate*

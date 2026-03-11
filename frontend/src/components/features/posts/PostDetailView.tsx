@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import { Button, Chip, Text } from '@/components/ui';
 import houseIcon from '@/assets/house.svg';
 import chevronRightIcon from '@/assets/chevron-right.svg';
@@ -25,6 +26,8 @@ export type PostDetailViewProps = {
   onBackHome: () => void;
   canEdit?: boolean;
   onEdit?: () => void;
+  canDelete?: boolean;
+  onDelete?: () => void;
 };
 
 export function PostDetailView({
@@ -44,6 +47,8 @@ export function PostDetailView({
   onBackHome,
   canEdit = false,
   onEdit,
+  canDelete = false,
+  onDelete,
 }: Readonly<PostDetailViewProps>) {
   const totalComments = comments?.length ?? 0;
   const hasComments = totalComments > 0;
@@ -72,23 +77,37 @@ export function PostDetailView({
         {/* Post details block */}
         <div className="flex flex-col gap-4">
           <div className="flex items-start justify-between gap-6">
-            <Text as="h1" variant="headingAuth" className="text-primary">
-              {title}
-            </Text>
-
             <div className="flex items-center gap-3">
-              <Chip variant={chipVariant}>{categoryLabel}</Chip>
-              {canEdit && onEdit ? (
-                <button
-                  type="button"
-                  aria-label="Edit post"
-                  onClick={onEdit}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-button hover:bg-overlay"
-                >
-                  <img src={penIcon} alt="" className="h-5 w-5" />
-                </button>
-              ) : null}
+              <Text as="h1" variant="headingAuth" className="text-primary">
+                {title}
+              </Text>
             </div>
+
+            {(canEdit && onEdit) || (canDelete && onDelete) ? (
+              <div className="flex items-center gap-2">
+                <Chip variant={chipVariant}>{categoryLabel}</Chip>
+                {canEdit && onEdit ? (
+                  <button
+                    type="button"
+                    aria-label="Edit post"
+                    onClick={onEdit}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-button hover:bg-overlay"
+                  >
+                    <img src={penIcon} alt="" className="h-5 w-5" />
+                  </button>
+                ) : null}
+                {canDelete && onDelete ? (
+                  <button
+                    type="button"
+                    aria-label="Delete post"
+                    onClick={onDelete}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-button text-danger hover:bg-overlay"
+                  >
+                    <Trash2 className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <Text variant="bodyBase" className="text-secondary">

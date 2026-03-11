@@ -50,7 +50,15 @@ export function usePosts(params?: GetPostsParams): UsePostsResult {
     return () => {
       isMounted = false;
     };
-  }, [params?.page, params?.size, toast]);
+  }, [
+    params?.page,
+    params?.size,
+    params?.categoryId,
+    params?.keyword,
+    params?.startDate,
+    params?.endDate,
+    toast,
+  ]);
 
   return { data, isLoading, error };
 }

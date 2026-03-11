@@ -6,6 +6,7 @@ import HomePage from '@/pages/HomePage';
 import PostDetailPage from '@/pages/PostDetailPage';
 import CreatePostPage from '@/pages/CreatePostPage';
 import EditPostPage from '@/pages/EditPostPage';
+import AnalyticsDashboardPage from '@/pages/AnalyticsDashboardPage';
 
 export const routes: RouteObject[] = [
   {
@@ -16,6 +17,7 @@ export const routes: RouteObject[] = [
       { path: 'posts/new', element: <CreatePostPage /> },
       { path: 'posts/:id', element: <PostDetailPage /> },
       { path: 'posts/:id/edit', element: <EditPostPage /> },
+      { path: 'analytics', element: <AnalyticsDashboardPage /> },
     ],
   },
   {
