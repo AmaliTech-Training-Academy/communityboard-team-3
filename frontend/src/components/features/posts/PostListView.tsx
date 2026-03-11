@@ -14,6 +14,7 @@ export type PostListViewProps = {
   onPrev: () => void;
   onNext: () => void;
   onPageChange: (page: number) => void;
+  hasActiveFilters: boolean;
 };
 
 export function PostListView({
@@ -27,6 +28,7 @@ export function PostListView({
   onPrev,
   onNext,
   onPageChange,
+  hasActiveFilters,
 }: Readonly<PostListViewProps>) {
   if (isLoading) {
     const skeletonKeys = Array.from({ length: 3 }, (_, i) => `skeleton-${i}`);
@@ -44,7 +46,9 @@ export function PostListView({
       <div className="flex flex-col items-center gap-3 py-12">
         <img src={emptyIllustration} alt="" className="h-48 w-auto md:h-64" />
         <Text variant="bodyBase" className="text-primary">
-          No posts have been made yet
+          {hasActiveFilters
+            ? 'No posts match your filters. Try clearing your search or changing filters.'
+            : 'No posts have been made yet'}
         </Text>
       </div>
     );
