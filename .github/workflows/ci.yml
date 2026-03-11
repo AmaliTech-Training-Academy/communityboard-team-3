@@ -7,10 +7,14 @@ on:
     branches: [ main ]
 
 env:
-  POSTGRES_DB: communityboard
-  POSTGRES_USER: postgres
+  DB_NAME: ${{ vars.DB_NAME }}
+  DB_USER: ${{ vars.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  ETL_KMS_KEY: ${{ secrets.ETL_KMS_KEY }}
+  ANALYTICS_DB_NAME: ${{ vars.ANALYTICS_DB_NAME }}
+  ANALYTICS_DB_USER: ${{ vars.ANALYTICS_DB_USER }}
+  ANALYTICS_DB_PASSWORD: ${{ secrets.ANALYTICS_DB_PASSWORD }}
 
 jobs:
   backend-build-test:
