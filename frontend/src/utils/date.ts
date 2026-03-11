@@ -17,17 +17,17 @@ export function formatRelativeTime(isoString: string): string {
 
   if (diffMs < hour) {
     const minutes = Math.round(diffMs / minute);
-    return `about ${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    return `about ${String(minutes)} minute${minutes === 1 ? '' : 's'} ago`;
   }
 
   if (diffMs < day) {
     const hours = Math.round(diffMs / hour);
-    return `about ${hours} hour${hours === 1 ? '' : 's'} ago`;
+    return `about ${String(hours)} hour${hours === 1 ? '' : 's'} ago`;
   }
 
   if (diffMs < 7 * day) {
     const days = Math.round(diffMs / day);
-    return `${days} day${days === 1 ? '' : 's'} ago`;
+    return `${String(days)} day${days === 1 ? '' : 's'} ago`;
   }
 
   return created.toLocaleDateString(undefined, {
