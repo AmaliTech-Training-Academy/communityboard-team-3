@@ -120,24 +120,8 @@
   --toast-success-text: var(--color-success-700);
   --toast-shadow: var(--shadow-sm);
 
-  /* Category / badge chips (from Figma) */
-  /* Events – purple */
-  --chip-event-bg: #edebfe;
-  --chip-event-border: #ac94fa;
-  --chip-event-text: #5521b5;
-
-  /* Lost & Found – red */
-  --chip-lost-found-bg: #fde8e8;
-  --chip-lost-found-border: #f98080;
-  --chip-lost-found-text: #9b1c1c;
-
-  /* Recommendations – green */
-  --chip-recommendation-bg: #def7ec;
-  --chip-recommendation-border: #31c48d;
-  --chip-recommendation-text: #03543f;
-
-  /* Help Requests – yellow */
-  --chip-help-request-bg: #ffebb0;
-  --chip-help-request-border: #fecb33;
-  --chip-help-request-text: #8c6900;
+  /* Category / badge chips (dark blue theme from Figma) */
+  --chip-event-bg: var(--color-slate-400); /* Badge-Dark-Blue-Fill */
+  --chip-event-border: var(--color-slate-700); /* Badge-Dark-Blue-Stroke */
+  --chip-event-text: var(--color-primary-900); /* Badge-Dark-Blue-Text */
 }
