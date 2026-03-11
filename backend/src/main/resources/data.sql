@@ -49,19 +49,23 @@ CREATE TABLE IF NOT EXISTS comments (
 -- INITIAL DATA
 
 
--- Categories
-INSERT INTO categories (name, description) VALUES
-    ('NEWS', 'General news for the community'),
-    ('EVENT', 'Upcoming events'),
-    ('DISCUSSION', 'Community discussions'),
-    ('ALERT', 'Urgent alerts')
-    ON CONFLICT (name) DO NOTHING;
+--      TO DELETE LATER
+-- =======================
 
--- Default Users (passwords in plain text for now;)
-INSERT INTO users (email, name, password, role)
-SELECT 'admin@amalitech.com', 'Admin User', '$2a$10$mKBW03MPj/Ncpj/grnSdFOXeujXO/5FI4SjUNzvi3okXiW1tevLZy', 'ADMIN'
-    WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='admin@amalitech.com');
 
-INSERT INTO users (email, name, password, role)
-SELECT 'user@amalitech.com', 'Default User','$2a$10$mKBW03MPj/Ncpj/grnSdFOXeujXO/5FI4SjUNzvi3okXiW1tevLZy', 'USER'
-    WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='user@amalitech.com');
+-- -- Categories
+-- INSERT INTO categories (name, description) VALUES
+--     ('NEWS', 'General news for the community'),
+--     ('EVENT', 'Upcoming events'),
+--     ('DISCUSSION', 'Community discussions'),
+--     ('ALERT', 'Urgent alerts')
+--     ON CONFLICT DO NOTHING;
+--
+-- -- Default Users (passwords in plain text for now;)
+-- INSERT INTO users (email, name, password, role)
+-- SELECT 'admin@amalitech.com', 'Admin User', '$2a$10$mKBW03MPj/Ncpj/grnSdFOXeujXO/5FI4SjUNzvi3okXiW1tevLZy', 'ADMIN'
+--     WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='admin@amalitech.com');
+--
+-- INSERT INTO users (email, name, password, role)
+-- SELECT 'user@amalitech.com', 'Default User','$2a$10$mKBW03MPj/Ncpj/grnSdFOXeujXO/5FI4SjUNzvi3okXiW1tevLZy', 'USER'
+--     WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='user@amalitech.com');
