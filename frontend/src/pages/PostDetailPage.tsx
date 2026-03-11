@@ -7,20 +7,19 @@ import { usePostDetail } from '@/hooks/usePostDetail';
 import { PostDetailView } from '@/components/features/posts/PostDetailView';
 import { Text } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
-import { postService } from '@/services/postService';
 import type { PostSummary } from '@/types/post';
 import { EditPostModal } from '@/components/features/posts/EditPostModal';
 import type { PostFormModalValues } from '@/components/features/posts/PostFormModal';
 import { useCategories } from '@/hooks/useCategories';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { postService } from '@/services/postService';
+import { usePostComments } from '@/hooks/usePostComments';
 
 export default function PostDetailPage() {
   const navigate = useNavigate();
   const { postId, post, isPostLoading, comments, isCommentsLoading, derived } =
     usePostDetail();
-
-  const [commentDraft, setCommentDraft] = useState('');
   const [currentPost, setCurrentPost] = useState<PostSummary | null>(
     post ?? null,
   );
@@ -28,9 +27,17 @@ export default function PostDetailPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { data: categories } = useCategories();
   const isMobile = useIsMobile();
+
+  const {
+    comments: commentsState,
+    commentDraft,
+    isSubmitting: isSubmittingComment,
+    setCommentDraft,
+    addComment,
+  } = usePostComments(postId, comments, isCommentsLoading);
 
   const effectivePost = currentPost ?? post ?? null;
 
@@ -111,13 +118,18 @@ export default function PostDetailPage() {
         updatedRelative={updatedRelative}
         categoryLabel={derived.categoryLabel}
         chipVariant={derived.chipVariant}
-        comments={comments}
+        comments={commentsState}
         isCommentsLoading={isCommentsLoading}
         getCommentTimeLabel={(iso) => formatRelativeTime(iso)}
         commentDraft={commentDraft}
         onCommentDraftChange={setCommentDraft}
         onAddComment={() => {
-          // Stub: wire to POST /comments when backend is ready.
+          void addComment();
+        }}
+        isAuthenticated={isAuthenticated}
+        isSubmittingComment={isSubmittingComment}
+        onRequestLogin={() => {
+          void navigate('/login');
         }}
         onBackHome={() => {
           void navigate('/');

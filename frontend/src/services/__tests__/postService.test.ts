@@ -128,6 +128,34 @@ describe('postService', () => {
     expect(comments[0]?.content).toBe('Nice post');
   });
 
+  it('creates a comment for a post', async () => {
+    const createSpy = vi.fn();
+
+    server.use(
+      http.post('/api/posts/2/comments', async ({ request }) => {
+        const body = (await request.json()) as { content?: string };
+        createSpy(body.content);
+        return HttpResponse.json(
+          {
+            id: 11,
+            content: body.content ?? '',
+            authorName: 'Jane',
+            createdAt: '2024-01-03T00:00:00Z',
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    const created = await postService.createComment(2, {
+      content: 'New comment',
+    });
+
+    expect(createSpy).toHaveBeenCalledWith('New comment');
+    expect(created.id).toBe(11);
+    expect(created.content).toBe('New comment');
+  });
+
   it('deletes a post', async () => {
     const deleteSpy = vi.fn();
 

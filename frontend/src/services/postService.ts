@@ -89,6 +89,22 @@ export const postService = {
   },
 
   /**
+   * Create a new comment on a post.
+   * Mirrors:
+   *   POST /api/posts/{postId}/comments
+   */
+  async createComment(
+    postId: number,
+    payload: { content: string },
+  ): Promise<Comment> {
+    const { data } = await apiClient.post<Comment>(
+      `${BASE_PATH}/${postId.toString()}/comments`,
+      payload,
+    );
+    return data;
+  },
+
+  /**
    * Create a new post.
    * Mirrors:
    *   POST /api/posts

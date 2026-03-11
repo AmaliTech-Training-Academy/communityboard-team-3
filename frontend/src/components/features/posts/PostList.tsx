@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { usePosts } from '@/hooks/usePosts';
 import { PostListView } from './PostListView';
+
+type PostListProps = {
+  categoryId?: number;
+  keyword?: string;
+  startDate?: string;
+  endDate?: string;
+};
 
 /**
  * Post list container for the /posts route.
@@ -10,16 +17,37 @@ import { PostListView } from './PostListView';
  * - an empty state when there are no posts
  * - a card for each post when data is available
  */
-export function PostList() {
+export function PostList({
+  categoryId,
+  keyword,
+  startDate,
+  endDate,
+}: Readonly<PostListProps>) {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const size = 10;
-  const { data, isLoading } = usePosts({ page, size });
+  const { data, isLoading } = usePosts({
+    page,
+    size,
+    categoryId,
+    keyword,
+    startDate,
+    endDate,
+  });
+
+  useEffect(() => {
+    setPage(0);
+  }, [categoryId, keyword, startDate, endDate]);
 
   const posts = data?.content ?? [];
   const totalPages = data?.totalPages ?? 1;
   const canPrev = page > 0;
   const canNext = data ? page < data.totalPages - 1 : false;
+  const hasActiveFilters =
+    Boolean(categoryId) ||
+    Boolean(keyword) ||
+    Boolean(startDate) ||
+    Boolean(endDate);
 
   return (
     <PostListView
@@ -46,6 +74,7 @@ export function PostList() {
           return Math.max(0, Math.min(maxPage, normalizedNext));
         });
       }}
+      hasActiveFilters={hasActiveFilters}
     />
   );
 }

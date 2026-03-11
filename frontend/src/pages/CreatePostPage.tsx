@@ -51,7 +51,7 @@ function CreatePostForm({
       : '';
 
   const handleSubmit = async (
-    event: React.SyntheticEvent<HTMLFormElement, Event>,
+    event: React.SyntheticEvent<HTMLFormElement>,
   ): Promise<void> => {
     event.preventDefault();
 

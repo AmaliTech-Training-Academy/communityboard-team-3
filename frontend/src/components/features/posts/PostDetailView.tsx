@@ -23,6 +23,9 @@ export type PostDetailViewProps = {
   commentDraft: string;
   onCommentDraftChange: (next: string) => void;
   onAddComment: () => void;
+  isAuthenticated: boolean;
+  isSubmittingComment: boolean;
+  onRequestLogin?: () => void;
   onBackHome: () => void;
   canEdit?: boolean;
   onEdit?: () => void;
@@ -44,6 +47,9 @@ export function PostDetailView({
   commentDraft,
   onCommentDraftChange,
   onAddComment,
+  isAuthenticated,
+  isSubmittingComment,
+  onRequestLogin,
   onBackHome,
   canEdit = false,
   onEdit,
@@ -81,11 +87,11 @@ export function PostDetailView({
               <Text as="h1" variant="headingAuth" className="text-primary">
                 {title}
               </Text>
-              <Chip variant={chipVariant}>{categoryLabel}</Chip>
             </div>
 
             {(canEdit && onEdit) || (canDelete && onDelete) ? (
               <div className="flex items-center gap-2">
+                <Chip variant={chipVariant}>{categoryLabel}</Chip>
                 {canEdit && onEdit ? (
                   <button
                     type="button"
@@ -146,30 +152,50 @@ export function PostDetailView({
         </div>
 
         {/* Comment input + button block */}
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col items-end gap-2.5">
-            <div className="flex h-56 w-full flex-col items-center gap-3">
-              <div className="flex-1 w-full rounded-lg border border-default bg-overlay px-4 py-3">
-                <textarea
-                  value={commentDraft}
-                  onChange={(event) => {
-                    onCommentDraftChange(event.target.value);
-                  }}
-                  className="h-full w-full resize-none bg-transparent text-body-sm-regular text-secondary outline-none"
-                  placeholder="Share your thoughts..."
-                />
+        {isAuthenticated ? (
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col items-end gap-2.5">
+              <div className="flex h-56 w-full flex-col items-center gap-3">
+                <div className="flex-1 w-full rounded-lg border border-default bg-overlay px-4 py-3">
+                  <textarea
+                    value={commentDraft}
+                    onChange={(event) => {
+                      onCommentDraftChange(event.target.value);
+                    }}
+                    className="h-full w-full resize-none bg-transparent text-body-sm-regular text-secondary outline-none"
+                    placeholder="Share your thoughts..."
+                  />
+                </div>
               </div>
+              <Button
+                type="button"
+                variant="primary"
+                className="w-80 px-5 py-2.5"
+                onClick={onAddComment}
+                disabled={isSubmittingComment}
+              >
+                {isSubmittingComment ? 'Adding comment...' : 'Add comment'}
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="primary"
-              className="w-80 px-5 py-2.5"
-              onClick={onAddComment}
-            >
-              Add comment
-            </Button>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-3 rounded-lg border border-dashed border-default bg-overlay px-5 py-4">
+            <Text variant="bodyBase" className="text-secondary">
+              Comments are read-only for guests. Please log in to add your
+              comment.
+            </Text>
+            <div>
+              <Button
+                type="button"
+                variant="secondary"
+                className="px-5 py-2.5"
+                onClick={onRequestLogin}
+              >
+                Log in to comment
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Comments section */}
         <section className="space-y-10">
