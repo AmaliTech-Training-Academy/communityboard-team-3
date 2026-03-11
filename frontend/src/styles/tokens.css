@@ -120,7 +120,8 @@
   --toast-success-text: var(--color-success-700);
   --toast-shadow: var(--shadow-sm);
 
-  --chip-event-bg: var(--color-purple-100);
-  --chip-event-border: var(--color-purple-300);
-  --chip-event-text: var(--color-purple-700);
+  /* Category / badge chips (dark blue theme from Figma) */
+  --chip-event-bg: var(--color-slate-400); /* Badge-Dark-Blue-Fill */
+  --chip-event-border: var(--color-slate-700); /* Badge-Dark-Blue-Stroke */
+  --chip-event-text: var(--color-primary-900); /* Badge-Dark-Blue-Text */
 }

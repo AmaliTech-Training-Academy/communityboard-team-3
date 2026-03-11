@@ -1,7 +1,15 @@
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 
 export type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
+  /**
+   * Visible label text shown above the input.
+   *
+   * For fields where the design does not show a label
+   * (e.g. the home page search bar), you can omit this
+   * prop and rely on `placeholder` + `aria-label` for
+   * accessibility instead.
+   */
+  label?: string;
   error?: string;
   helperText?: string;
   leftIcon?: ReactNode;
@@ -47,9 +55,11 @@ export function TextField({
 
   return (
     <div className="w-full space-y-2">
-      <label htmlFor={inputId} className="block text-body-sm text-primary">
-        {label}
-      </label>
+      {label ? (
+        <label htmlFor={inputId} className="block text-body-sm text-primary">
+          {label}
+        </label>
+      ) : null}
 
       <div className={fieldClassName}>
         {leftIcon ? (

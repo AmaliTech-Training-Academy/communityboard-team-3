@@ -16,11 +16,11 @@ export function Chip({
   const variantClassName =
     variant === 'event'
       ? 'bg-[color:var(--chip-event-bg)] text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]'
-      : 'bg-surface text-primary border-default';
+      : 'bg-surface text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]';
 
   const chipClassName = [
     'inline-flex items-center justify-center whitespace-nowrap',
-    'rounded-[var(--radius-pill)] border px-3 py-1 text-body-sm',
+    'rounded-[var(--radius-md)] border px-3 py-0.5 text-body-sm',
     variantClassName,
     className,
   ]
