@@ -94,14 +94,17 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search results returned")
     })
+
+    // US-11: filter by category name, US-12: keyword search, US-13: date range filter
+    // All params are optional and combinable in a single request
     @GetMapping("/search")
     public ResponseEntity<Page<PostResponse>> searchPosts(
-            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.searchPosts(categoryId, keyword, startDate, endDate, page, size));
+        return ResponseEntity.ok(postService.searchPosts(categoryName, keyword, startDate, endDate, page, size));
     }
 }
