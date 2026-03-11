@@ -42,9 +42,6 @@ export function RegisterForm() {
         password: values.password,
       });
 
-      // show success message
-      // toast.success('Registration successful')
-
       void navigate('/');
     } catch {
       //
