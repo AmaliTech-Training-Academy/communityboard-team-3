@@ -46,7 +46,7 @@ export function LoginForm() {
   return (
     <AuthCard
       title="Welcome back"
-      subtitle="Log in to continue"
+      subtitle="Sign in to your neighborhood community"
       logo={
         <img
           src={pingLogo}
@@ -77,9 +77,9 @@ export function LoginForm() {
             leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               isPasswordVisible ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
                 <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
               )
             }
             onRightIconClick={() => {
@@ -95,12 +95,12 @@ export function LoginForm() {
 
         <div className="flex flex-col gap-5">
           <AuthSubmitButton type="submit" loading={isLoading}>
-            Log in
+            Log In
           </AuthSubmitButton>
           <AuthSwitchLink
             prompt="Don’t have an account?"
             to="/register"
-            cta="Register"
+            cta="Create one now"
           />
         </div>
       </form>
