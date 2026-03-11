@@ -34,6 +34,7 @@ export default function PostDetailPage() {
   const {
     comments: commentsState,
     commentDraft,
+    commentError,
     isSubmitting: isSubmittingComment,
     setCommentDraft,
     addComment,
@@ -127,6 +128,7 @@ export default function PostDetailPage() {
           void addComment();
         }}
         isAuthenticated={isAuthenticated}
+        commentError={typeof commentError === 'string' ? commentError : null}
         isSubmittingComment={isSubmittingComment}
         onRequestLogin={() => {
           void navigate('/login');

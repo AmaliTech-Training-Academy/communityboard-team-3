@@ -21,6 +21,7 @@ export type PostDetailViewProps = {
   isCommentsLoading: boolean;
   getCommentTimeLabel: (iso: string) => string;
   commentDraft: string;
+  commentError?: string | null;
   onCommentDraftChange: (next: string) => void;
   onAddComment: () => void;
   isAuthenticated: boolean;
@@ -45,6 +46,7 @@ export function PostDetailView({
   isCommentsLoading,
   getCommentTimeLabel,
   commentDraft,
+  commentError,
   onCommentDraftChange,
   onAddComment,
   isAuthenticated,
@@ -164,15 +166,24 @@ export function PostDetailView({
                     }}
                     className="h-full w-full resize-none bg-transparent text-body-sm-regular text-secondary outline-none"
                     placeholder="Share your thoughts..."
+                    aria-invalid={Boolean(commentError)}
                   />
                 </div>
               </div>
+              {commentError ? (
+                <Text
+                  variant="bodySmRegular"
+                  className="self-start text-danger"
+                >
+                  {commentError}
+                </Text>
+              ) : null}
               <Button
                 type="button"
                 variant="primary"
                 className="w-80 px-5 py-2.5"
                 onClick={onAddComment}
-                disabled={isSubmittingComment}
+                disabled={isSubmittingComment || !commentDraft.trim()}
               >
                 {isSubmittingComment ? 'Adding comment...' : 'Add comment'}
               </Button>
