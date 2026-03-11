@@ -3,12 +3,16 @@ import { PublicRoute, ProtectedRoute } from '@/components/common';
 import RegisterPage from '@/pages/RegisterPage';
 import LoginPage from '@/pages/LoginPage';
 import HomePage from '@/pages/HomePage';
+import PostDetailPage from '@/pages/PostDetailPage';
 
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <ProtectedRoute />,
-    children: [{ index: true, element: <HomePage /> }],
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'posts/:id', element: <PostDetailPage /> },
+    ],
   },
   {
     element: <PublicRoute />,
