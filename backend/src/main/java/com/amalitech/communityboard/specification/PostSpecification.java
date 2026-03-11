@@ -9,7 +9,9 @@ import java.util.List;
 
 public class PostSpecification {
 
-    public static Specification<Post> filter(Long categoryId, String keyword,
+    // Use Specifications instead of JPQL to handle nullable filters dynamically
+    // Avoids PostgreSQL type inference issues with null parameters
+    public static Specification<Post> filter(String categoryName, String keyword,
                                               LocalDateTime startDate, LocalDateTime endDate) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -17,9 +19,12 @@ public class PostSpecification {
             // always exclude deleted posts
             predicates.add(cb.isFalse(root.get("isDeleted")));
 
-            // only add if categoryId was provided
-            if (categoryId != null) {
-                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+        // Filter by category name if provided and not 'ALL'
+        // Allows frontend to pass category names directly without needing to know IDs
+            if (categoryName != null && !categoryName.isBlank() && !categoryName.equalsIgnoreCase("ALL")) {
+                predicates.add(cb.equal(
+                        cb.upper(root.get("category").get("name")), categoryName.toUpperCase()
+                ));
             }
 
             // only add if keyword was provided
