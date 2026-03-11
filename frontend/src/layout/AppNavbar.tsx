@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { Button, Text } from '@/components/ui';
 import pingLogo from '@/assets/ping-logo.svg';
@@ -13,6 +14,7 @@ type AppNavbarProps = {
 
 export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -31,6 +33,9 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
             variant="ghost"
             size="sm"
             leftIcon={<img src={chartColumnsIcon} alt="" className="h-4 w-4" />}
+            onClick={() => {
+              void navigate('/analytics');
+            }}
           >
             Analytics
           </Button>
@@ -132,6 +137,10 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
             <button
               type="button"
               className="flex w-full items-center gap-2.5 rounded-lg px-5 py-2.5"
+              onClick={() => {
+                void navigate('/analytics');
+                setIsMobileMenuOpen(false);
+              }}
             >
               <img src={chartColumnsIcon} alt="" className="h-5 w-5" />
               <Text variant="bodySm" className="text-primary font-medium">
