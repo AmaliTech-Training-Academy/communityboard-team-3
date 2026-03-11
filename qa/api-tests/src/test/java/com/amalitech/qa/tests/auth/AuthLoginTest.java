@@ -32,7 +32,7 @@ public class AuthLoginTest extends TestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideLoginData")
-    @DisplayName("Verify Login Functionality with Various Data")
+    @DisplayName("verifying that logging in with various credentials behaves according to security rules")
     @Description("Verifies the login process using multiple scenarios defined in the JSON data file. " +
             "Expected Outcome: The system returns the status code specified in the data (e.g., 200 for valid, 401 for invalid). " +
             "Actual Result: The API correctly grants access with a token or restricts it with a generic error message based on inputs.")
@@ -59,7 +59,7 @@ public class AuthLoginTest extends TestBase {
     }
 
     @Test
-    @DisplayName("Verify Token Behavior and JWT Format")
+    @DisplayName("verifying that the generated token is structural valid and works on protected endpoints")
     @Description("Ensures that the authentication token received after a successful login is a valid JWT and functional. " +
             "Expected Outcome: A 3-segment JWT is returned, work on protected endpoints, and fakes are rejected. " +
             "Actual Result: The token system correctly manages access and rejects malformed credentials.")
@@ -94,7 +94,7 @@ public class AuthLoginTest extends TestBase {
     }
 
     @Test
-    @DisplayName("Verify Login Response Contract")
+    @DisplayName("verifying that the login response adheres to the expected security contract")
     @Description("Validates the security and format of the login response body and headers. " +
             "Expected Outcome: Response has JSON content type and contains no password field. " +
             "Actual Result: The response body follows security protocols by excluding sensitive data.")

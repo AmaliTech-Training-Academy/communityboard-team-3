@@ -1,0 +1,37 @@
+[
+  {
+    "testName": "verifying that a post can be successfully created with valid data",
+    "title": "A Valid Post Title",
+    "content": "This is a valid post content that meets all requirements.",
+    "categoryId": 1,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that creating a post fails when the title is missing",
+    "content": "Content remains but title is gone.",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "verifying that creating a post fails when the content is missing",
+    "title": "Title remains but content is gone.",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "verifying that creating a post fails when the title is an empty string",
+    "title": "",
+    "content": "Valid content.",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "verifying that creating a post fails when the content is a blank string",
+    "title": "Valid Title",
+    "content": "   ",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "verifying that creating a post fails when the title exceeds the character limit",
+    "title": "This title is intentionally made very long to exceed the 255 character limit usually imposed on string columns in relational databases like H2 or MySQL. Let's see if the validation accurately catches this and prevents a database error by returning a 400 instead of a 500.",
+    "content": "Valid content.",
+    "expectedStatusCode": 400
+  }
+]

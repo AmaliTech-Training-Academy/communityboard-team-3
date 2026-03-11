@@ -1,0 +1,31 @@
+[
+  {
+    "testName": "Get post by valid ID",
+    "postId": 1,
+    "method": "GET",
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "Update post by valid ID",
+    "postId": 1,
+    "method": "PUT",
+    "body": {
+      "title": "Updated Title",
+      "content": "Updated content here...",
+      "categoryId": 1
+    },
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "Delete post by valid ID",
+    "postId": 2,
+    "method": "DELETE",
+    "expectedStatusCode": 204
+  },
+  {
+    "testName": "Get post by non-existent ID",
+    "postId": 9999,
+    "method": "GET",
+    "expectedStatusCode": 404
+  }
+]

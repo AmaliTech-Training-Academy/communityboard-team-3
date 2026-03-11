@@ -1,0 +1,23 @@
+[
+  {
+    "testName": "verifying that a post can be successfully updated with valid data by the owner",
+    "postId": 1,
+    "title": "Updated Title via PUT",
+    "content": "Updated content via PUT that should overwrite the old one.",
+    "categoryId": 1,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that updating a post fails when required fields are missing",
+    "postId": 1,
+    "content": "Trying to update without title",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "verifying that updating a non-existent post returns a 404 error",
+    "postId": 9999,
+    "title": "Doesn't exist",
+    "content": "Doesn't matter",
+    "expectedStatusCode": 404
+  }
+]

@@ -38,7 +38,7 @@ public class AuthRegisterTest extends TestBase {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("provideRegisterData")
-        @DisplayName("Verify Registration Functionality with Various Data")
+        @DisplayName("verifying that user registration works correctly with multiple data scenarios")
         @Description("Covers the user registration flow by iterating through various data sets defined in JSON. " +
                         "Expected Outcome: Returns 201 Created for valid data and 400 Bad Request for invalid/missing fields. "
                         +
@@ -70,7 +70,7 @@ public class AuthRegisterTest extends TestBase {
         }
 
         @Test
-        @DisplayName("Verify Registration Fails for Duplicate Email")
+        @DisplayName("verifying that the system prevents multiple registrations with the same email")
         @Description("Confirms the system's ability to prevent duplicate registrations. " +
                         "Expected Outcome: Returns 400 Bad Request with message 'This email is already in use' on second attempt. "
                         +
@@ -95,7 +95,7 @@ public class AuthRegisterTest extends TestBase {
         }
 
         @Test
-        @DisplayName("Verify Registration Response Contract")
+        @DisplayName("verifying that the registration response contract meets all security requirements")
         @Description("Ensures that the registration response meets the API's security standards. " +
                         "Expected Outcome: 201 Created, token presence, and absence of password in body. " +
                         "Actual Result: The response schema adheres to the defined security contract.")
