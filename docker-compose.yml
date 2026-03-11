@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: communityboard
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -49,7 +49,7 @@ services:
       DB_PORT: 5432
       DB_NAME: communityboard
       DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       DB_PORT: 5432
       DB_NAME: communityboard
       DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       data-seed:
         condition: service_completed_successfully
