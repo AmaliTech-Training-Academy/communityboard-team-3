@@ -61,7 +61,7 @@ public class DataInitializer implements ApplicationRunner {
             User admin = new User();
             admin.setEmail("admin@amalitech.com");
             admin.setName("Admin User");
-            admin.setPassword(passwordEncoder.encode("password"));
+            admin.setPassword(passwordEncoder.encode("password123"));
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
         }
@@ -72,7 +72,7 @@ public class DataInitializer implements ApplicationRunner {
             User user = new User();
             user.setEmail("user@amalitech.com");
             user.setName("Default User");
-            user.setPassword(passwordEncoder.encode("password"));
+            user.setPassword(passwordEncoder.encode("password123"));
             user.setRole(Role.USER);
             userRepository.save(user);
         }

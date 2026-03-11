@@ -1,6 +1,7 @@
 package com.amalitech.communityboard.config;
 
 import com.amalitech.communityboard.Exceptions.TokenExpiredException;
+import com.amalitech.communityboard.model.User;
 import com.amalitech.communityboard.model.UserPrincipal;
 import com.amalitech.communityboard.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -13,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Optional;
+
 /**
  * JWT authentication filter that runs once per request.
  * Extracts and validates the Bearer token from the Authorization header,
@@ -49,13 +52,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // Load user and set authentication in the security context
                 // so downstream filters and controllers can access the principal
-                userRepository.findByEmail(email).ifPresent(user -> {
-                    UserPrincipal principal = new UserPrincipal(user);
+
+                Optional<User> userOpt = userRepository.findByEmail(email);
+                if (userOpt.isPresent()) {
+                    UserPrincipal principal = new UserPrincipal(userOpt.get());
                     var auth = new UsernamePasswordAuthenticationToken(
                             principal, null,
                             principal.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                });
+                }else{
+                    // Token valid but user not found — reject early
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"User not found\"}");
+                    return;
+                }
             }
         } catch (TokenExpiredException e) {
             // Return 401 with a clear message instead of falling through to a generic 403
