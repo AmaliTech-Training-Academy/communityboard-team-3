@@ -1,33 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
+import { describe, expect, it } from 'vitest';
 import { analyticsService } from '@/services/analyticsService';
-
-const server = setupServer();
-
-vi.mock('@/services/api', async () => {
-  const actual = await vi.importActual<typeof import('@/services/api')>(
-    '@/services/api',
-  );
-  return {
-    ...actual,
-    apiClient: actual.apiClient,
-  };
-});
+import { server } from '@/test/server';
 
 describe('analyticsService', () => {
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   it('fetches posts per category', async () => {
     server.use(
       http.get('/api/analytics/posts-per-category', () =>
@@ -50,9 +26,7 @@ describe('analyticsService', () => {
       http.get('/api/analytics/daily-activity', ({ request }) => {
         const url = new URL(request.url);
         const days = url.searchParams.get('days');
-        return HttpResponse.json([
-          { date: '2024-01-01', count: Number(days) },
-        ]);
+        return HttpResponse.json([{ date: '2024-01-01', count: Number(days) }]);
       }),
     );
 
@@ -66,7 +40,7 @@ describe('analyticsService', () => {
         const url = new URL(request.url);
         const limit = Number(url.searchParams.get('limit') ?? '0');
         const items = Array.from({ length: limit }, (_, index) => ({
-          username: `user-${index + 1}`,
+          username: `user-${String(index + 1)}`,
           postCount: index + 1,
         }));
         return HttpResponse.json(items);
@@ -77,5 +51,4 @@ describe('analyticsService', () => {
     expect(data).toHaveLength(5);
     expect(data[0]?.username).toBe('user-1');
   });
-}
-
+});
