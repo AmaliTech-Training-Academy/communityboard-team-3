@@ -1,17 +1,13 @@
 package com.amalitech.communityboard.initializer;
 
-import com.amalitech.communityboard.model.Category;
 import com.amalitech.communityboard.model.User;
 import com.amalitech.communityboard.model.enums.Role;
-import com.amalitech.communityboard.repository.CategoryRepository;
+
 import com.amalitech.communityboard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * This class seeds initial data into the database when the application starts.
@@ -19,44 +15,14 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-public class DataInitializer implements ApplicationRunner {
+public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(ApplicationArguments args) {
-        // Seed categories and users when the app starts
-        seedCategories();
-        seedUsers();
-    }
-    /**
-     * Seed default categories if they do not exist.
-     */
-    private void seedCategories() {
-        List<String[]> categories = List.of(
-            new String[]{"NEWS", "General news for the community"},
-            new String[]{"EVENT", "Upcoming events"},
-            new String[]{"DISCUSSION", "Community discussions"},
-            new String[]{"ALERT", "Urgent alerts"}
-        );
-
-        for (String[] cat : categories) {
-            if (categoryRepository.findByName(cat[0]).isEmpty()) {
-                Category category = new Category();
-                category.setName(cat[0]);
-                category.setDescription(cat[1]);
-                categoryRepository.save(category);// Save category to DB
-            }
-        }
-    }
-
-    /**
-     * Seed default admin and user accounts if they do not exist.
-     */
-    private void seedUsers() {
-        // Create admin account if it doesn't exist
+    public void run(String... args) {
+       // Create admin account if it doesn't exist
         if (userRepository.findByEmail("admin@amalitech.com").isEmpty()) {
             User admin = new User();
             admin.setEmail("admin@amalitech.com");
