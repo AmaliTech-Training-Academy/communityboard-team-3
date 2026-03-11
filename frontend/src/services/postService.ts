@@ -105,6 +105,17 @@ export const postService = {
   },
 
   /**
+   * Delete a comment from a post.
+   * Mirrors:
+   *   DELETE /api/posts/{postId}/comments/{commentId}
+   */
+  async deleteComment(postId: number, commentId: number): Promise<void> {
+    await apiClient.delete(
+      `${BASE_PATH}/${postId.toString()}/comments/${commentId.toString()}`,
+    );
+  },
+
+  /**
    * Create a new post.
    * Mirrors:
    *   POST /api/posts

@@ -12,6 +12,7 @@ export interface UsePostCommentsResult {
   isSubmitting: boolean;
   setCommentDraft: (next: string) => void;
   addComment: () => Promise<void>;
+  deleteComment: (commentId: number) => Promise<void>;
 }
 
 export function usePostComments(
@@ -87,6 +88,69 @@ export function usePostComments(
     }
   };
 
+  const deleteComment = async (commentId: number): Promise<void> => {
+    if (!postId) return;
+
+    if (!isAuthenticated || !user) {
+      toast.error({
+        title: 'Login required',
+        description: 'Please log in to delete a comment.',
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await postService.deleteComment(postId, commentId);
+      setComments((prev) =>
+        prev
+          ? prev.filter((comment) => Number(comment.id) !== Number(commentId))
+          : prev,
+      );
+    } catch (error) {
+      const apiError = error as ApiError | (Error & ApiError);
+
+      if (typeof apiError === 'object' && apiError && 'status' in apiError) {
+        const status = (apiError as ApiError).status;
+
+        if (status === 401) {
+          toast.error({
+            title: 'Session expired',
+            description: 'Please log in again to manage comments.',
+          });
+          return;
+        }
+
+        if (status === 403) {
+          toast.error({
+            title: 'Not allowed',
+            description: 'You can only delete your own comments.',
+          });
+          return;
+        }
+
+        if (status === 404) {
+          // Comment does not exist on the server anymore – treat as deleted.
+          setComments((prev) =>
+            prev
+              ? prev.filter(
+                  (comment) => Number(comment.id) !== Number(commentId),
+                )
+              : prev,
+          );
+          return;
+        }
+      }
+
+      toast.error({
+        title: 'Failed to delete comment',
+        description: 'Something went wrong while deleting this comment.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     comments,
     commentDraft,
@@ -99,5 +163,6 @@ export function usePostComments(
       }
     },
     addComment,
+    deleteComment,
   };
 }

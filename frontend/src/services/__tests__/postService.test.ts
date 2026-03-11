@@ -156,6 +156,21 @@ describe('postService', () => {
     expect(created.content).toBe('New comment');
   });
 
+  it('deletes a comment from a post', async () => {
+    const deleteSpy = vi.fn();
+
+    server.use(
+      http.delete('/api/posts/2/comments/11', () => {
+        deleteSpy();
+        return HttpResponse.json(null, { status: 204 });
+      }),
+    );
+
+    await postService.deleteComment(2, 11);
+
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('deletes a post', async () => {
     const deleteSpy = vi.fn();
 

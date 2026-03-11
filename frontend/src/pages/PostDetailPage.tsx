@@ -38,6 +38,7 @@ export default function PostDetailPage() {
     isSubmitting: isSubmittingComment,
     setCommentDraft,
     addComment,
+    deleteComment,
   } = usePostComments(postId, comments, isCommentsLoading);
 
   const effectivePost = currentPost ?? post ?? null;
@@ -50,6 +51,14 @@ export default function PostDetailPage() {
   }, [effectivePost, user]);
 
   const canDelete = canEdit;
+
+  const currentUserName = user?.name ?? null;
+  const isAdmin = user?.role === 'ADMIN';
+
+  const handleDeleteComment = (commentId: number): void => {
+    const fn = deleteComment as (id: number) => Promise<void>;
+    void fn(commentId);
+  };
 
   const updatedRelative =
     effectivePost && effectivePost.updatedAt !== effectivePost.createdAt
@@ -130,6 +139,9 @@ export default function PostDetailPage() {
         isAuthenticated={isAuthenticated}
         commentError={typeof commentError === 'string' ? commentError : null}
         isSubmittingComment={isSubmittingComment}
+        currentUserName={currentUserName}
+        isAdmin={isAdmin}
+        onDeleteComment={handleDeleteComment}
         onRequestLogin={() => {
           void navigate('/login');
         }}

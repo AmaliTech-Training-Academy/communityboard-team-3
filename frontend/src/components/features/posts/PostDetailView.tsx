@@ -27,6 +27,9 @@ export type PostDetailViewProps = {
   isAuthenticated: boolean;
   isSubmittingComment: boolean;
   onRequestLogin?: () => void;
+  currentUserName?: string | null;
+  isAdmin?: boolean;
+  onDeleteComment?: (commentId: number) => void;
   onBackHome: () => void;
   canEdit?: boolean;
   onEdit?: () => void;
@@ -52,6 +55,9 @@ export function PostDetailView({
   isAuthenticated,
   isSubmittingComment,
   onRequestLogin,
+  currentUserName,
+  isAdmin = false,
+  onDeleteComment,
   onBackHome,
   canEdit = false,
   onEdit,
@@ -252,6 +258,10 @@ export function PostDetailView({
                   .slice(0, 2)
                   .join('');
 
+                const canDeleteComment =
+                  Boolean(currentUserName) &&
+                  (isAdmin || comment.authorName === currentUserName);
+
                 return (
                   <div
                     key={comment.id}
@@ -282,22 +292,20 @@ export function PostDetailView({
                       </Text>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-4 opacity-0 transition-opacity duration-150 group-hover:opacity-100 md:mt-0">
-                      <button
-                        type="button"
-                        aria-label="Edit comment"
-                        className="inline-flex h-6 w-6 items-center justify-center"
-                      >
-                        <img src={penIcon} alt="" className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Delete comment"
-                        className="inline-flex h-6 w-6 items-center justify-center"
-                      >
-                        <img src={trashIcon} alt="" className="h-5 w-5" />
-                      </button>
-                    </div>
+                    {canDeleteComment ? (
+                      <div className="mt-2 flex items-center gap-4 md:mt-0">
+                        <button
+                          type="button"
+                          aria-label="Delete comment"
+                          className="inline-flex h-6 w-6 items-center justify-center"
+                          onClick={() => {
+                            onDeleteComment?.(comment.id);
+                          }}
+                        >
+                          <img src={trashIcon} alt="" className="h-5 w-5" />
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}
