@@ -1,59 +1,46 @@
 package com.amalitech.communityboard.initializer;
 
-import com.amalitech.communityboard.model.Category;
 import com.amalitech.communityboard.model.User;
 import com.amalitech.communityboard.model.enums.Role;
-import com.amalitech.communityboard.repository.CategoryRepository;
+
 import com.amalitech.communityboard.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
+/**
+ * This class seeds initial data into the database when the application starts.
+ * It implements ApplicationRunner so the `run` method is executed after Spring Boot starts.
+ */
 @Component
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final CategoryRepository categoryRepo;
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(CategoryRepository categoryRepo, UserRepository userRepo, PasswordEncoder passwordEncoder) {
-        this.categoryRepo = categoryRepo;
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     @Override
-    public void run(String... args) throws Exception {
-        if(categoryRepo.count() == 0) {
-            categoryRepo.saveAll(List.of(
-
-                            Category.builder().name("NEWS").description("Neighborhood news").build(),
-                            Category.builder().name("EVENT").description("Community events").build(),
-                            Category.builder().name("DISCUSSION").description("Community discussions").build(),
-                            Category.builder().name("ALERT").description("Urgent alerts").build()
-                    ));
+    public void run(String... args) {
+       // Create admin account if it doesn't exist
+        if (userRepository.findByEmail("admin@amalitech.com").isEmpty()) {
+            User admin = new User();
+            admin.setEmail("admin@amalitech.com");
+            admin.setName("Admin User");
+            admin.setPassword(passwordEncoder.encode("password123"));
+            admin.setRole(Role.ADMIN);
+            userRepository.save(admin);
         }
 
-        if(userRepo.count() == 0) {
-            if (userRepo.count() == 0) {
-                userRepo.saveAll(List.of(
-                        User.builder()
-                                .email("admin@amalitech.com")
-                                .name("Admin")
-                                .password(passwordEncoder.encode("password123"))
-                                .role(Role.ADMIN)
-                                .build(),
 
-                        User.builder()
-                                .email("user@amalitech.com")
-                                .name("User")
-                                .password(passwordEncoder.encode("password123"))
-                                .role(Role.USER)
-                                .build()
-                ));
-            }
+        // Create a default user account if it doesn't exist
+        if (userRepository.findByEmail("user@amalitech.com").isEmpty()) {
+            User user = new User();
+            user.setEmail("user@amalitech.com");
+            user.setName("Default User");
+            user.setPassword(passwordEncoder.encode("password123"));
+            user.setRole(Role.USER);
+            userRepository.save(user);
         }
     }
 }
