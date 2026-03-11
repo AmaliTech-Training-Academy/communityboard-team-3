@@ -76,7 +76,7 @@ export function PostListView({
         />
       ))}
 
-      <div className="mt-4 flex items-center justify-center border-t border-default pt-4">
+      <div className="mt-6 flex items-center justify-end">
         <div className="inline-flex overflow-hidden rounded-lg border border-default bg-page">
           <button
             type="button"
