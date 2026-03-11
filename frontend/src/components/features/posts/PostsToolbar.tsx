@@ -62,7 +62,6 @@ export function PostsToolbar({
               'bg-[color:var(--color-slate-400)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
             const inactiveClasses =
               'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
-
             return (
               <Chip
                 key={category}

@@ -1,11 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  RouterProvider,
-  createMemoryRouter,
-  type RouteObject,
-} from 'react-router';
+import { RouterProvider, createMemoryRouter } from 'react-router';
 import { routes } from '@/routes';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
@@ -13,7 +9,7 @@ import * as postServiceModule from '@/services/postService';
 import type { PostSummary } from '@/types/post';
 
 function renderWithProviders(initialEntries: string[]) {
-  const router = createMemoryRouter(routes as RouteObject[], {
+  const router = createMemoryRouter(routes, {
     initialEntries,
   });
 
@@ -49,7 +45,6 @@ describe('HomePage create post flow', () => {
       } satisfies PostSummary);
 
     const { renderResult } = renderWithProviders(['/']);
-    // eslint-disable-next-line testing-library/render-result-naming-convention
     expect(renderResult).toBeTruthy();
 
     const createButton = await screen.findByRole('button', {

@@ -13,7 +13,7 @@ export type ChipProps = HTMLAttributes<HTMLSpanElement> & {
 };
 
 export function Chip({
-  variant = 'event',
+  variant = 'default',
   className,
   children,
   ...props
