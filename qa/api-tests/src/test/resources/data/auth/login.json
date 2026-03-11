@@ -1,0 +1,42 @@
+[
+  {
+    "testName": "Login with regular user email and correct password",
+    "email": "user@amalitech.com",
+    "password": "password123",
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "Login with admin user email and correct password",
+    "email": "admin@amalitech.com",
+    "password": "password123",
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "Login with correct email but incorrect password",
+    "email": "user@amalitech.com",
+    "password": "wrong_password",
+    "expectedStatusCode": 401
+  },
+  {
+    "testName": "Login with non-existent email address",
+    "email": "non_existent_email@test.com",
+    "password": "password123",
+    "expectedStatusCode": 401
+  },
+  {
+    "testName": "Login with missing password field",
+    "email": "user@amalitech.com",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Login with missing email field",
+    "password": "password123",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Login with empty strings",
+    "email": "",
+    "password": "",
+    "expectedStatusCode": 400
+  }
+]
