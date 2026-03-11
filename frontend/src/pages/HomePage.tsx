@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { AppShell } from '@/layout/AppShell';
 import { PostsToolbar } from '@/components/features/posts/PostsToolbar';
 import { PostList } from '@/components/features/posts/PostList';
+import { PostDateRangeFilter } from '@/components/features/posts/PostDateRangeFilter';
 import { useCategories } from '@/hooks/useCategories';
 import { getCategoryDisplayName } from '@/utils/postCategory';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +19,10 @@ export default function HomePage() {
   const [activeCategoryId, setActiveCategoryId] = useState<'ALL' | number>(
     'ALL',
   );
+  const [searchInput, setSearchInput] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
   const { createPost, isLoading: isCreatingPost } = useCreatePost();
@@ -37,11 +42,22 @@ export default function HomePage() {
     toolbarCategories.find((entry) => entry.id === activeCategoryId)?.label ??
     'All';
 
+  const activeCategoryFilterId =
+    activeCategoryId === 'ALL' ? undefined : activeCategoryId;
+
+  const effectiveStartDate = startDate && endDate ? startDate : undefined;
+  const effectiveEndDate = startDate && endDate ? endDate : undefined;
+
   return (
     <AppShell>
       <PostsToolbar
         categories={toolbarCategories.map((entry) => entry.label)}
         activeCategory={activeCategoryLabel}
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        onSearchSubmit={() => {
+          setKeyword(searchInput.trim());
+        }}
         onCategoryChange={(categoryLabel) => {
           const match = toolbarCategories.find(
             (entry) => entry.label === categoryLabel,
@@ -60,7 +76,22 @@ export default function HomePage() {
           }
         }}
       />
-      <PostList />
+      <PostDateRangeFilter
+        startDate={startDate}
+        endDate={endDate}
+        onStartChange={setStartDate}
+        onEndChange={setEndDate}
+        onClear={() => {
+          setStartDate('');
+          setEndDate('');
+        }}
+      />
+      <PostList
+        categoryId={activeCategoryFilterId}
+        keyword={keyword}
+        startDate={effectiveStartDate}
+        endDate={effectiveEndDate}
+      />
       <CreatePostModal
         isOpen={isCreatePostOpen}
         isSubmitting={isCreatingPost}
