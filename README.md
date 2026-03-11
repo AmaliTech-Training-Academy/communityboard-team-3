@@ -41,3 +41,33 @@ devops/           - Docker, CI/CD configs
 - [ ] User profiles (TODO)
 - [ ] Notifications (TODO)
 - [ ] Analytics dashboard (TODO)
+
+## Environment Setup
+
+**IMPORTANT:** This project requires environment variables.
+
+### Quick Start
+```bash
+# 1. Copy the example environment file
+cp .env.example .env
+
+# 2. Edit with your values
+nano .env
+
+# 3. Update these required variables:
+POSTGRES_DB=communityboard
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your-secure-password-here
+JWT_SECRET=your-jwt-secret-minimum-32-characters
+
+# 4. Start the application
+docker compose up --build
+```
+
+### Security Notes
+
+- **NEVER** commit the `.env` file
+- Use strong passwords in production
+- For production, use proper secret management (AWS Secrets Manager, etc.)
+- The `.env.example` file contains placeholders only
+
