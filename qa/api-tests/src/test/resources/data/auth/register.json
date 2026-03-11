@@ -1,0 +1,55 @@
+[
+  {
+    "testName": "Register with valid credentials",
+    "name": "Valid User",
+    "email": "GENERATE_UNIQUE",
+    "password": "password123",
+    "expectedStatusCode": 201
+  },
+  {
+    "testName": "Register with password of exactly 8 characters",
+    "name": "Boundary User",
+    "email": "GENERATE_UNIQUE",
+    "password": "12345678",
+    "expectedStatusCode": 201
+  },
+  {
+    "testName": "Register with invalid email format (no @ symbol)",
+    "name": "Invalid User",
+    "email": "no_at_symbol",
+    "password": "password123",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Register with invalid email format (no domain)",
+    "name": "Invalid User",
+    "email": "user@",
+    "password": "password123",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Register with password below minimum length (5 characters)",
+    "name": "Short Pass User",
+    "email": "GENERATE_UNIQUE",
+    "password": "12345",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Register with missing name field",
+    "email": "GENERATE_UNIQUE",
+    "password": "password123",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Register with missing email field",
+    "name": "No Email User",
+    "password": "password123",
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Register with missing password field",
+    "name": "No Pass User",
+    "email": "GENERATE_UNIQUE",
+    "expectedStatusCode": 400
+  }
+]
