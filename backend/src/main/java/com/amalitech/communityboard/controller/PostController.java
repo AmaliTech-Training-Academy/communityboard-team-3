@@ -99,12 +99,12 @@ public class PostController {
     // All params are optional and combinable in a single request
     @GetMapping("/search")
     public ResponseEntity<Page<PostResponse>> searchPosts(
-            @RequestParam(required = false) String categoryName,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.searchPosts(categoryName, keyword, startDate, endDate, page, size));
+        return ResponseEntity.ok(postService.searchPosts(category, keyword, startDate, endDate, page, size));
     }
 }
