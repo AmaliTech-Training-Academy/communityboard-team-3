@@ -87,11 +87,11 @@ export function PostDetailView({
               <Text as="h1" variant="headingAuth" className="text-primary">
                 {title}
               </Text>
-              <Chip variant={chipVariant}>{categoryLabel}</Chip>
             </div>
 
             {(canEdit && onEdit) || (canDelete && onDelete) ? (
               <div className="flex items-center gap-2">
+                <Chip variant={chipVariant}>{categoryLabel}</Chip>
                 {canEdit && onEdit ? (
                   <button
                     type="button"
