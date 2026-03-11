@@ -29,7 +29,10 @@ export function PostListView({
   onPageChange,
 }: Readonly<PostListViewProps>) {
   if (isLoading) {
-    const skeletonKeys = Array.from({ length: 3 }, (_, i) => `skeleton-${i}`);
+    const skeletonKeys = Array.from(
+      { length: 3 },
+      (_, i) => `skeleton-${String(i)}`,
+    );
     return (
       <div className="flex flex-col gap-4">
         {skeletonKeys.map((key) => (
@@ -56,7 +59,7 @@ export function PostListView({
     const maxPage = Math.max(1, totalPages);
 
     let start = Math.max(1, current - 1);
-    let end = Math.min(maxPage, start + windowSize - 1);
+    const end = Math.min(maxPage, start + windowSize - 1);
     start = Math.max(1, end - windowSize + 1);
 
     const pages: number[] = [];
