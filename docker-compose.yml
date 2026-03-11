@@ -63,6 +63,7 @@ services:
       DB_NAME: communityboard
       DB_USER: postgres
       DB_PASSWORD: ${DB_PASSWORD}
+      ETL_KMS_KEY: ${ETL_KMS_KEY}
     depends_on:
       data-seed:
         condition: service_completed_successfully
