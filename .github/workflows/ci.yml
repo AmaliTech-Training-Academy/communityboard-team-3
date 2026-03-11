@@ -9,7 +9,7 @@ on:
 env:
   POSTGRES_DB: communityboard
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
