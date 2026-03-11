@@ -4,6 +4,7 @@ export type TextVariant =
   | 'bodySm'
   | 'bodySmRegular'
   | 'bodyBase'
+  | 'cardTitle'
   | 'headingAuth';
 
 type TextOwnProps = {
@@ -33,6 +34,8 @@ export function Text<C extends ElementType = 'p'>({
         return 'text-body-sm-regular';
       case 'bodyBase':
         return 'text-body-base';
+      case 'cardTitle':
+        return 'text-card-title';
       case 'headingAuth':
         return 'text-heading-auth';
     }

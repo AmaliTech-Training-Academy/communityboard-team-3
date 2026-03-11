@@ -34,11 +34,7 @@ export function PostCard({ post, onClick }: Readonly<PostCardProps>) {
         <div className="flex flex-col gap-3">
           {/* Header row: title + category badge */}
           <div className="flex items-start justify-between gap-3">
-            <Text
-              as="h2"
-              variant="bodyBase"
-              className="text-primary text-xl font-semibold leading-8"
-            >
+            <Text as="h2" variant="cardTitle" className="text-primary">
               {post.title}
             </Text>
             <Chip variant={chipVariant}>{categoryLabel}</Chip>

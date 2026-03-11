@@ -5,6 +5,7 @@ import pingLogo from '@/assets/ping-logo.svg';
 import chartColumnsIcon from '@/assets/chart-column.svg';
 import logoutIcon from '@/assets/log-out.svg';
 import menuIcon from '@/assets/menu.svg';
+import closeIcon from '@/assets/x.svg';
 
 type AppNavbarProps = {
   showUserInfo?: boolean;
@@ -73,57 +74,84 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
 
         <button
           type="button"
-          aria-label="Open navigation"
+          aria-label={isMobileMenuOpen ? 'Close navigation' : 'Open navigation'}
           className="inline-flex h-6 w-6 items-center justify-center"
           onClick={() => {
             setIsMobileMenuOpen((prev) => !prev);
           }}
         >
-          <img src={menuIcon} alt="" className="h-6 w-6" />
+          <img
+            src={isMobileMenuOpen ? closeIcon : menuIcon}
+            alt=""
+            className="h-6 w-6"
+          />
         </button>
       </div>
 
-      {/* Mobile dropdown menu */}
+      {/* Mobile fullscreen sheet menu (Figma mobile sidebar) */}
       {isMobileMenuOpen ? (
-        <div className="mx-auto flex w-full max-w-[1201px] flex-col gap-3 pb-3 md:hidden">
-          <div className="flex items-center justify-between">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              leftIcon={
-                <img src={chartColumnsIcon} alt="" className="h-4 w-4" />
-              }
-            >
-              Analytics
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-danger"
-              leftIcon={<img src={logoutIcon} alt="" className="h-4 w-4" />}
-              onClick={logout}
-            >
-              Log out
-            </Button>
+        <div className="fixed inset-0 z-40 flex h-full w-full flex-col bg-page md:hidden">
+          {/* Header: user info + close icon */}
+          <div className="w-full px-6 pt-6 border-b border-default">
+            <div className="flex items-center justify-between gap-6 pb-4">
+              {showUserInfo ? (
+                <div className="flex flex-1 items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-overlay text-xs font-medium text-inverse">
+                    {user?.name ? user.name.charAt(0) : 'JD'}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Text
+                      variant="bodySm"
+                      className="text-primary font-semibold"
+                    >
+                      {user?.name ?? 'John Doe'}
+                    </Text>
+                    <Text variant="bodySmRegular" className="text-secondary">
+                      {user?.email ?? 'Johndoe@gmail.com'}
+                    </Text>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1" />
+              )}
+              <button
+                type="button"
+                aria-label="Close navigation"
+                className="inline-flex h-6 w-6 items-center justify-center"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <img src={closeIcon} alt="" className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
-          {showUserInfo ? (
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-overlay text-xs font-medium text-inverse">
-                {user?.name ? user.name.charAt(0) : 'JD'}
-              </div>
-              <div className="flex flex-col">
-                <Text variant="bodySm" className="text-primary">
-                  {user?.name ?? 'John Doe'}
-                </Text>
-                <Text variant="bodySmRegular" className="text-muted">
-                  {user?.email ?? 'johndoe@gmail.com'}
-                </Text>
-              </div>
-            </div>
-          ) : null}
+          {/* Body actions */}
+          <div className="w-full flex-1 px-6 pt-6">
+            <button
+              type="button"
+              className="flex w-full items-center gap-2.5 rounded-lg px-5 py-2.5"
+            >
+              <img src={chartColumnsIcon} alt="" className="h-5 w-5" />
+              <Text variant="bodySm" className="text-primary font-medium">
+                Analytics
+              </Text>
+            </button>
+
+            <div className="my-4 h-px w-full border-t border-default" />
+
+            <button
+              type="button"
+              className="flex w-full items-center gap-2.5 rounded-lg px-5 py-2.5"
+              onClick={logout}
+            >
+              <img src={logoutIcon} alt="" className="h-5 w-5" />
+              <Text variant="bodySm" className="text-danger font-medium">
+                Log out
+              </Text>
+            </button>
+          </div>
         </div>
       ) : null}
     </header>

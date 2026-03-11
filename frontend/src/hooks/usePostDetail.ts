@@ -7,8 +7,26 @@ import {
   getCategoryDisplayName,
   getChipVariantForCategory,
 } from '@/utils/postCategory';
+import type { ChipVariant } from '@/components/ui/Chip';
+import type { PostSummary } from '@/types/post';
+import type { Comment } from '@/types/comment';
 
-export function usePostDetail() {
+type PostDetailDerived = {
+  chipVariant: ChipVariant;
+  categoryLabel: string;
+  createdRelative: string;
+};
+
+type UsePostDetailResult = {
+  postId: number | null;
+  post: PostSummary | null;
+  isPostLoading: boolean;
+  comments: Comment[] | null;
+  isCommentsLoading: boolean;
+  derived: PostDetailDerived | null;
+};
+
+export function usePostDetail(): UsePostDetailResult {
   const { id } = useParams<{ id: string }>();
 
   const postId = useMemo(() => {
@@ -21,7 +39,7 @@ export function usePostDetail() {
   const { data: comments, isLoading: isCommentsLoading } =
     useCommentsQuery(postId);
 
-  const derived = useMemo(() => {
+  const derived: PostDetailDerived | null = useMemo(() => {
     if (!post) return null;
     return {
       chipVariant: getChipVariantForCategory(post.categoryName),

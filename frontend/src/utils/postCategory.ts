@@ -1,7 +1,13 @@
 import type { ChipVariant } from '@/components/ui/Chip';
 import type { PostCategory } from '@/types/post';
 
-export function getCategoryDisplayName(categoryName: string): string {
+export function getCategoryDisplayName(
+  categoryName: string | null | undefined,
+): string {
+  if (!categoryName) {
+    return 'Uncategorized';
+  }
+
   const normalized = categoryName.trim().toUpperCase() as PostCategory | string;
 
   switch (normalized) {
@@ -33,7 +39,13 @@ export function getCategoryDisplayName(categoryName: string): string {
  * - recommendation → green
  * - helpRequest  → yellow
  */
-export function getChipVariantForCategory(categoryName: string): ChipVariant {
+export function getChipVariantForCategory(
+  categoryName: string | null | undefined,
+): ChipVariant {
+  if (!categoryName) {
+    return 'default';
+  }
+
   const normalized = categoryName.trim().toUpperCase() as PostCategory | string;
 
   switch (normalized) {

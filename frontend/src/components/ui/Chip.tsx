@@ -13,15 +13,26 @@ export type ChipProps = HTMLAttributes<HTMLSpanElement> & {
 };
 
 export function Chip({
-  variant = 'event',
+  variant = 'default',
   className,
   children,
   ...props
 }: ChipProps) {
-  const variantClassName =
-    variant === 'event'
-      ? 'bg-[color:var(--chip-event-bg)] text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]'
-      : 'bg-surface text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]';
+  const variantClassName = (() => {
+    switch (variant) {
+      case 'event':
+        return 'bg-[color:var(--chip-event-bg)] text-[color:var(--chip-event-text)] border-[color:var(--chip-event-border)]';
+      case 'lostFound':
+        return 'bg-[color:var(--chip-lost-found-bg)] text-[color:var(--chip-lost-found-text)] border-[color:var(--chip-lost-found-border)]';
+      case 'recommendation':
+        return 'bg-[color:var(--chip-recommendation-bg)] text-[color:var(--chip-recommendation-text)] border-[color:var(--chip-recommendation-border)]';
+      case 'helpRequest':
+        return 'bg-[color:var(--chip-help-request-bg)] text-[color:var(--chip-help-request-text)] border-[color:var(--chip-help-request-border)]';
+      case 'default':
+      default:
+        return 'bg-surface text-[color:var(--color-text-primary)] border-[color:var(--color-border-default)]';
+    }
+  })();
 
   const chipClassName = [
     'inline-flex items-center justify-center whitespace-nowrap',
