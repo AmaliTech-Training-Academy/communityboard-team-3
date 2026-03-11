@@ -119,7 +119,7 @@ def run_pipeline(engine: Engine) -> dict:
         posts_by_category = transform_posts_by_category(posts_df)
         weekly_report = transform_weekly_report(posts_df, comments_df)
         hidden_metrics = transform_hidden_metrics(posts_df, comments_df, users_df)
-        summary = transform_summary(posts_df, comments_df)
+        summary_df = transform_summary(posts_df, comments_df)
         posts_by_day_of_week = transform_posts_by_day_of_week(posts_df)
 
         # --- 3. Load -----------------------------------------------------
@@ -132,7 +132,7 @@ def run_pipeline(engine: Engine) -> dict:
             (pipeline_config.table_posts_by_category, posts_by_category),
             (pipeline_config.table_weekly_report, weekly_report),
             (pipeline_config.table_hidden_metrics, hidden_metrics),
-            (pipeline_config.table_summary, summary),
+            (pipeline_config.table_summary, summary_df),
             (pipeline_config.table_posts_by_day_of_week, posts_by_day_of_week),
         ]:
             rows = load_dataframe(conn, df, table)
