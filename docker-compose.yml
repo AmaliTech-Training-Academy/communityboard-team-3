@@ -49,7 +49,7 @@ services:
       DB_PORT: 5432
       DB_NAME: communityboard
       DB_USER: postgres
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       DB_PORT: 5432
       DB_NAME: communityboard
       DB_USER: postgres
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD}
       ETL_KMS_KEY: ${ETL_KMS_KEY}
     depends_on:
       data-seed:
