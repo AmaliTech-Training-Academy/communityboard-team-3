@@ -1,5 +1,6 @@
 package com.amalitech.communityboard.config;
 
+import com.amalitech.communityboard.Exceptions.TokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +40,10 @@ public class JwtService {
         try {
             Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException("Token has expired, please login again");
         } catch (JwtException e) {
-            return false;
+            throw new TokenExpiredException("Invalid token");
         }
     }
 }

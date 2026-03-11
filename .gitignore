@@ -12,6 +12,10 @@ __pycache__/
 *.pyc
 logs/
 .DS_Store
-docs/
 .husky/
 AGENTS.md
+docs-f/
+# Environment files (keep .example only)
+.env.dev
+.env.test
+.env.local

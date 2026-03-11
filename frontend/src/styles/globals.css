@@ -32,6 +32,13 @@ body {
     font-weight: var(--font-weight-medium);
   }
 
+  .text-card-title {
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-normal);
+    font-weight: var(--font-weight-semibold);
+    color: var(--card-title);
+  }
+
   .text-heading-auth {
     font-size: var(--font-size-2md);
     line-height: var(--line-height-normal);

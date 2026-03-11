@@ -42,9 +42,6 @@ export function RegisterForm() {
         password: values.password,
       });
 
-      // show success message
-      // toast.success('Registration successful')
-
       void navigate('/');
     } catch {
       //
@@ -92,9 +89,9 @@ export function RegisterForm() {
             leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               isPasswordVisible ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
                 <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
               )
             }
             onRightIconClick={() => {
@@ -114,9 +111,9 @@ export function RegisterForm() {
             leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               isConfirmPasswordVisible ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
                 <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
               )
             }
             onRightIconClick={() => {
