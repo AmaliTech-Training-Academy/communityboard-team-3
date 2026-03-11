@@ -1,6 +1,11 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-export type ChipVariant = 'event' | 'default';
+export type ChipVariant =
+  | 'event'
+  | 'lostFound'
+  | 'recommendation'
+  | 'helpRequest'
+  | 'default';
 
 export type ChipProps = HTMLAttributes<HTMLSpanElement> & {
   variant?: ChipVariant;
