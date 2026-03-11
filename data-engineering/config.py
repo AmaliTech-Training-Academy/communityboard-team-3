@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Source database — operational tables (users, posts, comments, categories)
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": os.getenv("DB_PORT", "5432"),
@@ -13,6 +14,17 @@ DB_CONFIG = {
 }
 
 DATABASE_URL = f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+
+# Analytics database — ETL output tables (separate from source)
+ANALYTICS_DB_CONFIG = {
+    "host": os.getenv("ANALYTICS_DB_HOST", DB_CONFIG["host"]),
+    "port": os.getenv("ANALYTICS_DB_PORT", DB_CONFIG["port"]),
+    "database": os.getenv("ANALYTICS_DB_NAME", "communityboard_analytics"),
+    "user": os.getenv("ANALYTICS_DB_USER", DB_CONFIG["user"]),
+    "password": os.getenv("ANALYTICS_DB_PASSWORD", DB_CONFIG["password"]),
+}
+
+ANALYTICS_DATABASE_URL = f"postgresql://{ANALYTICS_DB_CONFIG['user']}:{ANALYTICS_DB_CONFIG['password']}@{ANALYTICS_DB_CONFIG['host']}:{ANALYTICS_DB_CONFIG['port']}/{ANALYTICS_DB_CONFIG['database']}"
 
 
 # Pipeline configuration — controls ETL behaviour
