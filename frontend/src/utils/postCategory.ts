@@ -1,5 +1,4 @@
 import type { ChipVariant } from '@/components/ui/Chip';
-import type { PostCategory } from '@/types/post';
 
 export function getCategoryDisplayName(
   categoryName: string | null | undefined,
@@ -8,7 +7,7 @@ export function getCategoryDisplayName(
     return 'Uncategorized';
   }
 
-  const normalized = categoryName.trim().toUpperCase() as PostCategory | string;
+  const normalized = categoryName.trim().toUpperCase();
 
   switch (normalized) {
     case 'NEWS':
@@ -46,7 +45,7 @@ export function getChipVariantForCategory(
     return 'default';
   }
 
-  const normalized = categoryName.trim().toUpperCase() as PostCategory | string;
+  const normalized = categoryName.trim().toUpperCase();
 
   switch (normalized) {
     case 'EVENT':
