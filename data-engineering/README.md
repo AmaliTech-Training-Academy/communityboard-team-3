@@ -37,11 +37,15 @@ A production-grade ETL pipeline that extracts operational data from the Communit
 │                            ▼           │  │        │   SQL reads  ││
 │                     ┌────────────┐     │  ├────────┤              ││
 │                     │ PostgreSQL │◄────│  │Transform│──► Anonymize││
-│                     │ :5433      │     │  │        │   Aggregate  ││
-│                     │            │◄────│  ├────────┤              ││
-│                     │ Source +   │     │  │  Load  │──► Upsert    ││
-│                     │ Analytics  │     │  └────────┘              ││
-│                     └────────────┘     └──────────────────────────┘│
+│                     │ Source DB  │     │  │        │   Aggregate  ││
+│                     │ :5433      │     │  ├────────┤              ││
+│                     └────────────┘     │  │  Load  │──► Upsert    ││
+│                                        │  └───┬────┘              ││
+│                     ┌────────────┐     │      │                   ││
+│                     │ PostgreSQL │◄────│──────┘                   ││
+│                     │ Analytics  │     │                          ││
+│                     │ :5434      │     └──────────────────────────┘│
+│                     └────────────┘                                 │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -355,11 +359,16 @@ All settings are controlled via environment variables with sensible defaults:
 
 | Variable | Default | Description |
 |---|---|---|
-| `DB_HOST` | `localhost` | PostgreSQL host |
-| `DB_PORT` | `5432` | PostgreSQL port |
-| `DB_NAME` | `communityboard` | Database name |
-| `DB_USER` | `postgres` | Database user |
-| `DB_PASSWORD` | `your_db_password` | Database password |
+| `DB_HOST` | `localhost` | Source PostgreSQL host |
+| `DB_PORT` | `5432` | Source PostgreSQL port |
+| `DB_NAME` | `communityboard` | Source database name |
+| `DB_USER` | `postgres` | Source database user |
+| `DB_PASSWORD` | `your_db_password` | Source database password |
+| `ANALYTICS_DB_HOST` | *(falls back to DB_HOST)* | Analytics PostgreSQL host |
+| `ANALYTICS_DB_PORT` | *(falls back to DB_PORT)* | Analytics PostgreSQL port |
+| `ANALYTICS_DB_NAME` | `communityboard_analytics` | Analytics database name |
+| `ANALYTICS_DB_USER` | *(falls back to DB_USER)* | Analytics database user |
+| `ANALYTICS_DB_PASSWORD` | *(falls back to DB_PASSWORD)* | Analytics database password |
 
 ### Pipeline
 
@@ -434,20 +443,31 @@ data-etl:
     DB_NAME: communityboard
     DB_USER: postgres
     DB_PASSWORD: ${DB_PASSWORD}
+    ANALYTICS_DB_HOST: postgres-analytics
+    ANALYTICS_DB_PORT: 5432
+    ANALYTICS_DB_NAME: communityboard_analytics
+    ANALYTICS_DB_USER: postgres
+    ANALYTICS_DB_PASSWORD: ${DB_PASSWORD}
   depends_on:
     data-seed:
       condition: service_completed_successfully
+    postgres-analytics:
+      condition: service_healthy
 ```
 
-**Service startup order:** `postgres` → `backend` → `data-seed` → `data-etl`
+**Service startup order:** `postgres` + `postgres-analytics` → `backend` → `data-seed` → `data-etl`
+
+The analytics data is written to a separate `postgres-analytics` container (port `5434` on host), keeping the operational and analytical workloads isolated.
 
 ---
 
 ## Verification Queries
 
-After running the pipeline, verify the analytics tables:
+After running the pipeline, verify the analytics tables (connect to the **analytics** database on port `5434`):
 
 ```sql
+-- Connect to analytics DB
+-- psql -h localhost -p 5434 -U postgres -d communityboard_analytics
 -- Daily activity breakdown
 SELECT * FROM analytics_daily_activity ORDER BY activity_date DESC LIMIT 10;
 
@@ -568,4 +588,5 @@ cat data-engineering/logs/seed_data.log
 | **AES-256-GCM + KMS for `encrypted_name`** | Authenticated encryption — confidentiality + integrity; KMS abstraction supports local keys and AWS |
 | **Denormalized analytics** | Single-query reads — no joins needed for dashboards |
 | **No FK on analytics tables** | Independent loads, faster upserts, different granularities |
-| **Single PostgreSQL instance** | Cost-effective — no separate data warehouse needed at this scale |
+| **Separate analytics database** | Isolates read-heavy analytics from operational writes; independent scaling |
+| **Single PostgreSQL engine** | Cost-effective — lightweight separate instance, no data warehouse needed at this scale |
