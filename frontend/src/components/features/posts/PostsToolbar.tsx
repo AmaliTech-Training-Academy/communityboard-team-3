@@ -15,6 +15,9 @@ export type PostsToolbarProps = {
    */
   activeCategory?: string;
   onCategoryChange?: (category: string) => void;
+  searchValue: string;
+  onSearchChange: (next: string) => void;
+  onSearchSubmit?: () => void;
   onCreatePostClick?: () => void;
 };
 
@@ -29,6 +32,9 @@ export function PostsToolbar({
   categories,
   activeCategory = 'All',
   onCategoryChange,
+  searchValue,
+  onSearchChange,
+  onSearchSubmit,
   onCreatePostClick,
 }: Readonly<PostsToolbarProps>) {
   return (
@@ -36,7 +42,17 @@ export function PostsToolbar({
       {/* Top row: search + primary action */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="w-full max-w-[691px]">
-          <PostsSearchBar />
+          <PostsSearchBar
+            value={searchValue}
+            onChange={onSearchChange}
+            onSubmit={onSearchSubmit}
+            onClear={() => {
+              onSearchChange('');
+              if (onSearchSubmit) {
+                onSearchSubmit();
+              }
+            }}
+          />
         </div>
         <div className="lg:self-stretch">
           <Button
