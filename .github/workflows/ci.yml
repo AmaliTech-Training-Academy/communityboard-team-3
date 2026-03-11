@@ -117,6 +117,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Create .env file
+        run: |
+          cat > .env << ENVFILE
+          DB_NAME=${{ vars.DB_NAME }}
+          DB_USER=${{ vars.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          ETL_KMS_KEY=${{ secrets.ETL_KMS_KEY }}
+          ANALYTICS_DB_NAME=${{ vars.ANALYTICS_DB_NAME }}
+          ANALYTICS_DB_USER=${{ vars.ANALYTICS_DB_USER }}
+          ANALYTICS_DB_PASSWORD=${{ secrets.ANALYTICS_DB_PASSWORD }}
+          ENVFILE
+
       - name: Start services with docker compose
         run: |
           docker compose up -d
