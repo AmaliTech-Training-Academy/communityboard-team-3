@@ -55,7 +55,7 @@ INSERT INTO categories (name, description) VALUES
     ('EVENT', 'Upcoming events'),
     ('DISCUSSION', 'Community discussions'),
     ('ALERT', 'Urgent alerts')
-    ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (name) DO NOTHING;
 
 -- Default Users (passwords in plain text for now;)
 INSERT INTO users (email, name, password, role)

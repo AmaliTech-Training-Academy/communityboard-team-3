@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PostService {
+public class PostService extends BaseSecurityService{
 
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
@@ -72,10 +72,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .filter(post1 -> !post1.isDeleted())
                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
-        if (!post.getAuthor().getId().equals(author.getId())
-                && !author.getRole().name().equals("ADMIN")) {
-            throw new UnauthorizedException("Not authorized to delete this post");
-        }
+        verifyOwnerOrAdmin(post.getAuthor().getId(), author);
         // soft delete all comments on this post
         List<Comment> comments = commentRepository.findByPostIdOrderByCreatedAtAsc(post.getId());
         comments.forEach(c -> c.setDeleted(true));

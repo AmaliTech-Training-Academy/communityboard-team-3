@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class CommentService extends BaseSecurityService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -41,10 +41,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .filter(p-> !p.isDeleted()).
                 orElseThrow(()-> new CommentNotFoundException("Comment not found"));
-         if (!comment.getAuthor().getId().equals(author.getId())
-                 && !author.getRole().name().equals("ADMIN")) {
-             throw new UnauthorizedException("Not authorized to delete this comment");
-         }
+verifyOwnerOrAdmin(comment.getAuthor().getId(), author);
 
          comment.setDeleted(true);
          commentRepository.save(comment);
