@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { routes } from '@/routes';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import * as postServiceModule from '@/services/postService';
+import { authService } from '@/services/authService';
+import { categoryService } from '@/services/categoryService';
 import type { PostSummary } from '@/types/post';
 
 function renderWithProviders(initialEntries: string[]) {
@@ -13,21 +15,48 @@ function renderWithProviders(initialEntries: string[]) {
     initialEntries,
   });
 
+  const renderResult = render(
+    <ToastProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ToastProvider>,
+  );
+
   return {
     router,
-    renderResult: (
-      <ToastProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </ToastProvider>
-    ),
+    renderResult,
   };
 }
 
 describe('HomePage create post flow', () => {
   it('opens the create post modal, validates required fields, and calls createPost on submit', async () => {
     const user = userEvent.setup();
+
+    vi.spyOn(authService, 'getSession').mockReturnValue({
+      user: {
+        email: 'john@example.com',
+        name: 'John Doe',
+        role: 'USER',
+      },
+      isAuthenticated: true,
+    });
+
+    vi.spyOn(postServiceModule.postService, 'getPosts').mockResolvedValue({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 10,
+      number: 0,
+    });
+
+    vi.spyOn(categoryService, 'getCategories').mockResolvedValue([
+      {
+        id: 1,
+        name: 'NEWS',
+        description: null,
+      },
+    ]);
 
     const createPostSpy = vi
       .spyOn(postServiceModule.postService, 'createPost')
@@ -44,6 +73,23 @@ describe('HomePage create post flow', () => {
         commentCount: 0,
       } satisfies PostSummary);
 
+    vi.spyOn(postServiceModule.postService, 'getPostById').mockResolvedValue({
+      id: 123,
+      title: 'New title',
+      content: 'New content',
+      categoryName: 'NEWS',
+      categoryId: 1,
+      authorName: 'John Doe',
+      authorEmail: 'john@example.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      commentCount: 0,
+    } satisfies PostSummary);
+
+    vi.spyOn(postServiceModule.postService, 'getComments').mockResolvedValue(
+      [],
+    );
+
     const { renderResult } = renderWithProviders(['/']);
     expect(renderResult).toBeTruthy();
 
@@ -53,14 +99,12 @@ describe('HomePage create post flow', () => {
 
     await user.click(createButton);
 
-    const dialogTitle = await screen.findByRole('heading', {
+    await screen.findByRole('heading', {
       name: /create new post/i,
     });
-    expect(dialogTitle).toBeInTheDocument();
-
-    const submitButton = screen.getByRole('button', {
+    const submitButton = screen.getAllByRole('button', {
       name: /^create post$/i,
-    });
+    })[1];
     await user.click(submitButton);
 
     expect(await screen.findByText(/title is required/i)).toBeInTheDocument();
@@ -68,12 +112,21 @@ describe('HomePage create post flow', () => {
     expect(screen.getByText(/content is required/i)).toBeInTheDocument();
 
     const titleInput = screen.getByLabelText(/post title/i);
-    const categorySelect = screen.getByLabelText(/category/i);
     const contentTextarea = screen.getByLabelText(/content/i);
 
     await user.type(titleInput, 'New title');
-    await user.selectOptions(categorySelect, 'NEWS');
     await user.type(contentTextarea, 'New content');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /select/i,
+      }),
+    );
+    await user.click(
+      screen.getByRole('button', {
+        name: /news/i,
+      }),
+    );
 
     await user.click(submitButton);
 

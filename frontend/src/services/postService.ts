@@ -7,6 +7,15 @@ const BASE_PATH = '/posts';
 export interface GetPostsParams {
   page?: number;
   size?: number;
+  /**
+   * Optional filters; when any are present we delegate
+   * to the backend search endpoint:
+   *   GET /api/posts/search
+   */
+  categoryId?: number;
+  keyword?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface CreatePostRequest {
@@ -20,13 +29,37 @@ export type UpdatePostRequest = CreatePostRequest;
 export const postService = {
   /**
    * Fetch a paginated list of posts from the backend.
-   * Mirrors the Spring endpoint:
+   * Mirrors the Spring endpoints:
    *   GET /api/posts?page=0&size=10
+   *   GET /api/posts/search?... (when filters are provided)
    */
   async getPosts(params: GetPostsParams = {}): Promise<PaginatedPosts> {
-    const { page = 0, size = 10 } = params;
-    const { data } = await apiClient.get<PaginatedPosts>(BASE_PATH, {
-      params: { page, size },
+    const {
+      page = 0,
+      size = 10,
+      categoryId,
+      keyword,
+      startDate,
+      endDate,
+    } = params;
+
+    const hasSearchFilters =
+      categoryId !== undefined ||
+      Boolean(keyword) ||
+      Boolean(startDate) ||
+      Boolean(endDate);
+
+    const path = hasSearchFilters ? `${BASE_PATH}/search` : BASE_PATH;
+
+    const { data } = await apiClient.get<PaginatedPosts>(path, {
+      params: {
+        page,
+        size,
+        categoryId,
+        keyword,
+        startDate,
+        endDate,
+      },
     });
     return data;
   },
@@ -79,5 +112,14 @@ export const postService = {
       payload,
     );
     return data;
+  },
+
+  /**
+   * Delete a post.
+   * Mirrors:
+   *   DELETE /api/posts/{id}
+   */
+  async deletePost(id: number): Promise<void> {
+    await apiClient.delete(`${BASE_PATH}/${id.toString()}`);
   },
 };
