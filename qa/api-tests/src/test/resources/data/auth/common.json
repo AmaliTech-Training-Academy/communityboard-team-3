@@ -1,0 +1,10 @@
+{
+  "validUser": {
+    "email": "user@amalitech.com",
+    "password": "password123"
+  },
+  "adminUser": {
+    "email": "admin@amalitech.com",
+    "password": "password123"
+  }
+}

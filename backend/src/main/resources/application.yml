@@ -13,9 +13,17 @@ spring:
         format_sql: true
   sql:
     init:
-      mode: always
+      mode: never
       platform: postgres
 
+# Secondary analytics datasource
+analytics:
+  datasource:
+    url: ${ANALYTICS_DATASOURCE_URL:jdbc:postgresql://localhost:5434/analyticsdb}
+    username: ${ANALYTICS_DB_USER:postgres}
+    password: ${ANALYTICS_DB_PASSWORD:postgres}
+  encryption:
+    key: ${ETL_KMS_KEY}
 
 jwt:
   secret: ${JWT_SECRET:communityboard-secret-key-amalitech-2024}

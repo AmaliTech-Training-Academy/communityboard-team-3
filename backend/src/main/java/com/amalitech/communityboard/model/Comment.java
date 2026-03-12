@@ -24,6 +24,7 @@ public class Comment {
     private User author;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column

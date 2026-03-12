@@ -9,6 +9,7 @@ import com.amalitech.communityboard.model.enums.Role;
 import com.amalitech.communityboard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,21 +36,35 @@ public class AuthService {
         userRepository.save(user);
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
-                .token(token).email(user.getEmail())
-                .name(user.getName()).role(user.getRole().name()).build();
-    }
+                .token(token)
+                .data(AuthResponse.UserData.builder()
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .role(user.getRole().name())
+                        .build())
+                .build();}
 
     public AuthResponse login(AuthRequest request) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid credentials");
+        }
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
-                .token(token).email(user.getEmail())
-                .name(user.getName()).role(user.getRole().name()).build();
+                .token(token)
+                .data(AuthResponse.UserData.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole().name())
+                .build())
+             .build();
     }
 }

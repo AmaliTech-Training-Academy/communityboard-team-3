@@ -1,11 +1,14 @@
+import { RouterProvider } from 'react-router';
+import { router } from '@/router';
+import { AuthProvider, ToastProvider } from '@/context';
 
 function App() {
   return (
-   <div>
-    <h1>Community Board</h1>
-    <p>Welcome to the Community Board</p>
-   </div>
-
+    <ToastProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 
