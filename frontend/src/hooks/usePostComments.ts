@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { postService } from '@/services/postService';
 import type { Comment } from '@/types/comment';
+import type { ApiError } from '@/types/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 
 export interface UsePostCommentsResult {
   comments: Comment[] | null;
   commentDraft: string;
+  commentError: string | null;
   isSubmitting: boolean;
   setCommentDraft: (next: string) => void;
   addComment: () => Promise<void>;
@@ -22,6 +24,7 @@ export function usePostComments(
 
   const [comments, setComments] = useState<Comment[] | null>(initialComments);
   const [commentDraft, setCommentDraft] = useState('');
+  const [commentError, setCommentError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -43,12 +46,11 @@ export function usePostComments(
 
     const trimmed = commentDraft.trim();
     if (!trimmed) {
-      toast.error({
-        title: 'Comment required',
-        description: 'Please enter a comment before submitting.',
-      });
+      setCommentError('Comment is required.');
       return;
     }
+
+    setCommentError(null);
 
     try {
       setIsSubmitting(true);
@@ -60,7 +62,22 @@ export function usePostComments(
         return [...prev, next];
       });
       setCommentDraft('');
-    } catch {
+      setCommentError(null);
+    } catch (error) {
+      const apiError = error as ApiError | (Error & ApiError);
+
+      if (typeof apiError === 'object' && apiError && 'status' in apiError) {
+        const status = (apiError as ApiError).status;
+
+        if (status === 401) {
+          toast.error({
+            title: 'Session expired',
+            description: 'Please log in again to add a comment.',
+          });
+          return;
+        }
+      }
+
       toast.error({
         title: 'Failed to add comment',
         description: 'Something went wrong while adding your comment.',
@@ -73,8 +90,14 @@ export function usePostComments(
   return {
     comments,
     commentDraft,
+    commentError,
     isSubmitting,
-    setCommentDraft,
+    setCommentDraft: (next: string) => {
+      setCommentDraft(next);
+      if (commentError) {
+        setCommentError(null);
+      }
+    },
     addComment,
   };
 }
