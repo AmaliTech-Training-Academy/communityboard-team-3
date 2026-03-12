@@ -40,9 +40,18 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      ETL_KMS_KEY: ${ETL_KMS_KEY}
+
+      ANALYTICS_DATASOURCE_URL: jdbc:postgresql://postgres-analytics:5432/${ANALYTICS_DB_NAME}
+      ANALYTICS_DB_USER: ${ANALYTICS_DB_USER}
+      ANALYTICS_DB_PASSWORD: ${ANALYTICS_DB_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
+        # Add this too:
+      postgres-analytics:
+        condition: service_healthy
+
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/api/categories || exit 1"]
       interval: 10s
