@@ -23,7 +23,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthResponse  register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException("Email already registered");
         }
@@ -36,9 +36,13 @@ public class AuthService {
         userRepository.save(user);
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
-                .token(token).email(user.getEmail())
-                .name(user.getName()).role(user.getRole().name()).build();
-    }
+                .token(token)
+                .data(AuthResponse.UserData.builder()
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .role(user.getRole().name())
+                        .build())
+                .build();}
 
     public AuthResponse login(AuthRequest request) {
 
@@ -55,7 +59,12 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
-                .token(token).email(user.getEmail())
-                .name(user.getName()).role(user.getRole().name()).build();
+                .token(token)
+                .data(AuthResponse.UserData.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole().name())
+                .build())
+             .build();
     }
 }
