@@ -6,9 +6,10 @@ from pathlib import Path
 
 from sqlalchemy import create_engine, text
 
-from config import DATABASE_URL
+from config import DATABASE_URL, ANALYTICS_DATABASE_URL
 
 _engine = None
+_analytics_engine = None
 
 # Log files go into data-engineering/logs/<script_name>.log
 LOGS_DIR = Path(__file__).parent / "logs"
@@ -43,11 +44,19 @@ def setup_logging(name: str) -> logging.Logger:
 
 
 def get_engine():
-    """Return a singleton SQLAlchemy engine (created once, reused everywhere)."""
+    """Return a singleton SQLAlchemy engine for the source database."""
     global _engine
     if _engine is None:
         _engine = create_engine(DATABASE_URL, pool_pre_ping=True)
     return _engine
+
+
+def get_analytics_engine():
+    """Return a singleton SQLAlchemy engine for the analytics database."""
+    global _analytics_engine
+    if _analytics_engine is None:
+        _analytics_engine = create_engine(ANALYTICS_DATABASE_URL, pool_pre_ping=True)
+    return _analytics_engine
 
 
 # ---------------------------------------------------------------------------
