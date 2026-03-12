@@ -55,23 +55,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     const session = authService.getSession();
     if (session.isAuthenticated && session.user) {
       setUser(session.user);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const refreshed = await authService.refreshSession();
-      setUser({
-        email: refreshed.email,
-        name: refreshed.name,
-        role: refreshed.role,
-      });
-    } catch {
+    } else {
       authService.logout();
       setUser(null);
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {

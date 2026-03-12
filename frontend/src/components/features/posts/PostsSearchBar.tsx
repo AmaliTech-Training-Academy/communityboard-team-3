@@ -26,7 +26,7 @@ export function PostsSearchBar({
   onClear,
 }: Readonly<PostsSearchBarProps>) {
   return (
-    <div className="flex w-full items-stretch gap-[10px]">
+    <div className="flex h-[44px] w-full items-stretch gap-[10px]">
       <div className="flex-1">
         <TextField
           value={value}
@@ -57,7 +57,7 @@ export function PostsSearchBar({
         <Button
           aria-label="Search posts"
           variant="primary"
-          className="h-full px-[12px] py-[10px]"
+          className="h-full px-[12px]"
           onClick={onSubmit}
         >
           <img src={searchOnDarkIcon} alt="Search" className="h-4 w-4" />

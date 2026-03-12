@@ -106,6 +106,10 @@ export function usePostComments(
       setComments((prev) =>
         prev ? prev.filter((comment) => comment.id !== commentId) : prev,
       );
+      toast.success({
+        title: 'Comment deleted',
+        description: 'Your comment has been removed.',
+      });
     } catch (error) {
       const status = getErrorStatus(error);
       if (status === 401) {

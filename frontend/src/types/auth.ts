@@ -17,9 +17,25 @@ export interface RegisterRequest {
   password: string;
 }
 
+/**
+ * Shape returned by the backend authentication endpoints.
+ * Mirrors:
+ * {
+ *   "token": "...",
+ *   "data": { "email": "...", "name": "...", "role": "USER" }
+ * }
+ */
+export interface BackendAuthResponse {
+  token: string;
+  data: AuthUser;
+}
+
+/**
+ * Flattened auth response used throughout the frontend.
+ * Keeps user fields at the top level for convenience.
+ */
 export interface AuthResponse extends AuthUser {
   token: string;
-  refreshToken?: string;
 }
 
 export interface StoredAuth {
