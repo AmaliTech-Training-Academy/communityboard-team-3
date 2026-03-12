@@ -8,6 +8,7 @@ import com.amalitech.communityboard.model.*;
 import com.amalitech.communityboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,34 +19,44 @@ public class CommentService extends BaseSecurityService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
+    // Read-only transaction — no writes, optimized for queries
+    @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostIdOrderByCreatedAtAsc(postId).stream()
-                .map(this::toResponse).toList();
+        return commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-     public CommentResponse createComment(Long postId, CommentRequest request, User author) {
+    // Wraps comment creation in a transaction — rolls back if save fails
+    @Transactional
+    public CommentResponse createComment(Long postId, CommentRequest request, User author) {
         Post post = postRepository.findById(postId)
-                  .filter(p -> !p.isDeleted())
-                 .orElseThrow(() -> new PostNotFoundException("Post not found"));
+                .filter(p -> !p.isDeleted())
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
 
-         Comment comment = Comment.builder()
-                 .content(request.getContent())
-                 .post(post)
-                 .author(author)
-                 .build();
+        Comment comment = Comment.builder()
+                .content(request.getContent())
+                .post(post)
+                .author(author)
+                .build();
 
-         return toResponse(commentRepository.save(comment));
-     }
+        return toResponse(commentRepository.save(comment));
+    }
 
-     public void deleteComment(Long commentId, User author) {
+    // Wraps soft delete in a transaction — rolls back if save fails
+    @Transactional
+    public void deleteComment(Long commentId, User author) {
         Comment comment = commentRepository.findById(commentId)
-                .filter(p-> !p.isDeleted()).
-                orElseThrow(()-> new CommentNotFoundException("Comment not found"));
-verifyOwnerOrAdmin(comment.getAuthor().getId(), author);
+                .filter(c -> !c.isDeleted())
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
 
-         comment.setDeleted(true);
-         commentRepository.save(comment);
-     }
+        // Verify current user is the comment author or an ADMIN
+        verifyOwnerOrAdmin(comment.getAuthor().getId(), author);
+
+        comment.setDeleted(true);
+        commentRepository.save(comment);
+    }
 
     private CommentResponse toResponse(Comment comment) {
         return CommentResponse.builder()
