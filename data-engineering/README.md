@@ -12,6 +12,7 @@ A production-grade ETL pipeline that extracts operational data from the Communit
 - [Analytics Tables](#analytics-tables)
 - [Data Flow](#data-flow)
 - [Privacy & Security](#privacy--security)
+- [Dashboard](#dashboard)
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Running the Pipeline](#running-the-pipeline)
@@ -57,6 +58,7 @@ A production-grade ETL pipeline that extracts operational data from the Communit
 data-engineering/
 ├── config.py               # Database connection + PipelineConfig (single source of truth)
 ├── db.py                   # SQLAlchemy engine, logging, schema validation
+├── dashboard.py            # Streamlit analytics dashboard with interactive filters
 ├── seed_data.py            # Seeds demo data (30 users, 80 posts, 330 comments)
 ├── etl_pipeline.py         # Legacy entry point (delegates to etl.pipeline)
 ├── requirements.txt        # Python dependencies
@@ -76,6 +78,51 @@ data-engineering/
     ├── pipeline.log
     └── seed_data.log
 ```
+
+---
+
+## Dashboard
+
+An interactive Streamlit dashboard (`dashboard.py`) provides live operational insights from both the source and analytics databases.
+
+### Running the Dashboard
+
+```bash
+cd data-engineering
+streamlit run dashboard.py
+```
+
+The dashboard is accessible at `http://localhost:8501` by default.
+
+### Features
+
+| Feature | Description |
+|---|---|
+| **Overall Metrics** | Total posts, comments, and users (KPI cards) |
+| **Posts per Category** | Donut chart showing post distribution across categories |
+| **Activity Trends** | Spline chart of daily post counts |
+| **Posts by Day of Week** | Grouped bar chart of post counts per day (Monday–Sunday), broken down by category |
+| **Top 5 Contributors** | Decrypted contributor names from the analytics ETL pipeline |
+| **Auto-Refresh** | Dashboard reloads data every 15 minutes via `streamlit-autorefresh` |
+
+### Interactive Filters (Sidebar)
+
+| Filter | Behavior |
+|---|---|
+| **Date Range** | Filters all data to the selected start/end dates |
+| **Hour of Day** | Slider to narrow data by hour (0–23) |
+| **Category** | Multi-select to filter posts by category. When nothing is selected, all categories are shown |
+
+All filters apply to the KPI metrics, pie chart, activity trends, and weekly posts chart. The Top 5 Contributors table always shows all-time data from the analytics database.
+
+### Data Sources
+
+The dashboard reads from two databases:
+
+| Database | Port | Tables Used |
+|---|---|---|
+| Source (operational) | `5433` | `posts`, `comments`, `users`, `categories` |
+| Analytics (ETL output) | `5434` | `analytics_top_contributors` |
 
 ---
 
