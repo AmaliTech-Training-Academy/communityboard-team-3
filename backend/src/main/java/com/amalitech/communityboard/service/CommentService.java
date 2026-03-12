@@ -19,8 +19,7 @@ public class CommentService extends BaseSecurityService {
     private final PostRepository postRepository;
 
     public List<CommentResponse> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostIdOrderByCreatedAtAsc(postId).stream()
-                .filter(c -> !c.isDeleted())
+        return commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId).stream()
                 .map(this::toResponse).toList();
     }
 

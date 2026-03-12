@@ -23,21 +23,6 @@ export function getCategoryDisplayName(
   }
 }
 
-/**
- * Maps backend category names to visual chip variants.
- *
- * Backend categories:
- * - NEWS
- * - EVENT
- * - DISCUSSION
- * - ALERT
- *
- * Design variants (from Figma badges):
- * - event        → purple
- * - lostFound    → red
- * - recommendation → green
- * - helpRequest  → yellow
- */
 export function getChipVariantForCategory(
   categoryName: string | null | undefined,
 ): ChipVariant {
@@ -49,12 +34,18 @@ export function getChipVariantForCategory(
 
   switch (normalized) {
     case 'EVENT':
+    case 'EVENTS':
+      // Events → purple
       return 'event';
     case 'ALERT':
+    case 'ALERTS':
+      // Alert → red
       return 'lostFound';
     case 'DISCUSSION':
+      // Discussion → green
       return 'recommendation';
     case 'NEWS':
+      // News → brownish/yellow
       return 'helpRequest';
     default:
       return 'default';

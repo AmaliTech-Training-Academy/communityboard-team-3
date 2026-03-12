@@ -21,6 +21,25 @@ export type PostsToolbarProps = {
   onCreatePostClick?: () => void;
 };
 
+function getChipVariantForLabel(label: string) {
+  const normalized = label.trim().toUpperCase();
+
+  switch (normalized) {
+    case 'EVENT':
+    case 'EVENTS':
+      return 'event';
+    case 'ALERT':
+    case 'ALERTS':
+      return 'lostFound';
+    case 'DISCUSSION':
+      return 'recommendation';
+    case 'NEWS':
+      return 'helpRequest';
+    default:
+      return 'default';
+  }
+}
+
 /**
  * Toolbar for the posts home page.
  * Mirrors the Figma layout:
@@ -74,20 +93,41 @@ export function PostsToolbar({
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => {
             const isActive = category === activeCategory;
-            const activeClasses =
-              'bg-[color:var(--color-slate-400)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
-            const inactiveClasses =
-              'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
+            const isAll = category === 'All';
+            const variant = getChipVariantForLabel(category);
+            if (isAll) {
+              const allClasses = isActive
+                ? 'bg-[#395362] text-white border-[#395362] font-medium'
+                : 'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => {
+                    onCategoryChange?.(category);
+                  }}
+                  className={[
+                    'inline-flex items-center justify-center whitespace-nowrap',
+                    'rounded-[var(--radius-md)] border px-3 py-0.5 text-body-sm',
+                    'cursor-pointer',
+                    allClasses,
+                  ].join(' ')}
+                >
+                  {category}
+                </button>
+              );
+            }
+
             return (
               <Chip
                 key={category}
-                variant="default"
+                variant={variant}
                 onClick={() => {
                   if (onCategoryChange) {
                     onCategoryChange(category);
                   }
                 }}
-                className={`cursor-pointer ${isActive ? activeClasses : inactiveClasses}`}
+                className="cursor-pointer"
               >
                 {category}
               </Chip>

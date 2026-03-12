@@ -29,10 +29,11 @@ export default function HomePage() {
 
   const toolbarCategories = useMemo(
     () => [
-      { id: 'ALL' as const, label: 'All' },
+      { id: 'ALL' as const, label: 'All', name: null as string | null },
       ...(categories ?? []).map((category) => ({
         id: category.id,
         label: getCategoryDisplayName(category.name),
+        name: category.name,
       })),
     ],
     [categories],
@@ -42,8 +43,11 @@ export default function HomePage() {
     toolbarCategories.find((entry) => entry.id === activeCategoryId)?.label ??
     'All';
 
-  const activeCategoryFilterId =
-    activeCategoryId === 'ALL' ? undefined : activeCategoryId;
+  const activeCategoryBackendName =
+    activeCategoryId === 'ALL'
+      ? undefined
+      : (toolbarCategories.find((entry) => entry.id === activeCategoryId)
+          ?.name ?? undefined);
 
   const effectiveStartDate = startDate && endDate ? startDate : undefined;
   const effectiveEndDate = startDate && endDate ? endDate : undefined;
@@ -87,7 +91,7 @@ export default function HomePage() {
         }}
       />
       <PostList
-        categoryId={activeCategoryFilterId}
+        categoryName={activeCategoryBackendName}
         keyword={keyword}
         startDate={effectiveStartDate}
         endDate={effectiveEndDate}

@@ -17,7 +17,6 @@ import {
 } from '@/hooks/useAnalytics';
 import houseIcon from '@/assets/house.svg';
 import chevronRightIcon from '@/assets/chevron-right.svg';
-import chartColumnsIcon from '@/assets/chart-column.svg';
 import trendingUpIcon from '@/assets/trending-up.svg';
 import messagesIcon from '@/assets/message-circle-more.svg';
 
@@ -112,22 +111,11 @@ export function AnalyticsDashboardView() {
         </button>
         <img src={chevronRightIcon} alt="" className="h-3 w-3" />
         <div className="inline-flex items-center gap-2 rounded-full bg-overlay px-3 py-1">
-          <img src={chartColumnsIcon} alt="" className="h-4 w-4" />
           <Text variant="bodySm" className="text-primary font-medium">
             Analytics
           </Text>
         </div>
       </nav>
-
-      {/* Page heading */}
-      <header className="space-y-1">
-        <Text as="h1" variant="headingAuth" className="text-primary">
-          Analytics
-        </Text>
-        <Text variant="bodyBase" className="text-secondary">
-          Overview of post activity, categories, and top contributors.
-        </Text>
-      </header>
 
       {/* Summary cards */}
       <section className="grid gap-4 md:grid-cols-2 lg:max-w-[480px]">

@@ -12,7 +12,7 @@ export interface GetPostsParams {
    * to the backend search endpoint:
    *   GET /api/posts/search
    */
-  categoryId?: number;
+  category?: string;
   keyword?: string;
   startDate?: string;
   endDate?: string;
@@ -37,14 +37,14 @@ export const postService = {
     const {
       page = 0,
       size = 10,
-      categoryId,
+      category,
       keyword,
       startDate,
       endDate,
     } = params;
 
     const hasSearchFilters =
-      categoryId !== undefined ||
+      Boolean(category) ||
       Boolean(keyword) ||
       Boolean(startDate) ||
       Boolean(endDate);
@@ -55,7 +55,7 @@ export const postService = {
       params: {
         page,
         size,
-        categoryId,
+        category,
         keyword,
         startDate,
         endDate,

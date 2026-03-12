@@ -4,7 +4,10 @@ import { usePosts } from '@/hooks/usePosts';
 import { PostListView } from './PostListView';
 
 type PostListProps = {
-  categoryId?: number;
+  /**
+   * Optional backend category name (e.g. "NEWS", "EVENT").
+   */
+  categoryName?: string;
   keyword?: string;
   startDate?: string;
   endDate?: string;
@@ -18,7 +21,7 @@ type PostListProps = {
  * - a card for each post when data is available
  */
 export function PostList({
-  categoryId,
+  categoryName,
   keyword,
   startDate,
   endDate,
@@ -29,7 +32,7 @@ export function PostList({
   const { data, isLoading } = usePosts({
     page,
     size,
-    categoryId,
+    category: categoryName,
     keyword,
     startDate,
     endDate,
@@ -37,14 +40,14 @@ export function PostList({
 
   useEffect(() => {
     setPage(0);
-  }, [categoryId, keyword, startDate, endDate]);
+  }, [categoryName, keyword, startDate, endDate]);
 
   const posts = data?.content ?? [];
   const totalPages = data?.totalPages ?? 1;
   const canPrev = page > 0;
   const canNext = data ? page < data.totalPages - 1 : false;
   const hasActiveFilters =
-    Boolean(categoryId) ||
+    Boolean(categoryName) ||
     Boolean(keyword) ||
     Boolean(startDate) ||
     Boolean(endDate);
