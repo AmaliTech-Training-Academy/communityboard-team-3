@@ -30,11 +30,11 @@ public class DeletePostTest extends TestBase {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
         if (expectedStatusCode == 204 && postId.equals(2)) {
-            postId = createPost(userToken, "Delete Me", "Temporary content");
+            postId = createPost("user-token", "Delete Me", "Temporary content");
         }
         given()
                 .spec(requestSpec)
-                .auth().oauth2(userToken)
+                .auth().oauth2(resolveToken("user-token"))
         .when()
                 .delete(ApiConfig.POSTS_ENDPOINT + "/" + postId)
         .then()
@@ -49,11 +49,11 @@ public class DeletePostTest extends TestBase {
         @DisplayName("verify that when a post is deleted, it is no longer accessible")
         @Description("Confirms deletion by attempting to fetch the post. Expected: 404 after delete. Actual: Post is removed from view.")
         public void verifyThatWhenPostDeletedItIsInaccessible() {
-                Long postId = createPost(userToken, "Deletable Post", "Will be gone soon");
+                Long postId = createPost("user-token", "Deletable Post", "Will be gone soon");
                 // ...existing code...
         given()
                 .spec(requestSpec)
-                .auth().oauth2(userToken)
+                .auth().oauth2(resolveToken("user-token"))
         .when()
                 .delete(ApiConfig.POSTS_ENDPOINT + "/" + postId)
         .then()

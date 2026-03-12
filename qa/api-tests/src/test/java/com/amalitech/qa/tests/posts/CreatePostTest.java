@@ -18,10 +18,14 @@ import java.util.stream.Stream;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+// Tests for creating new posts.
+// Covers valid, invalid, and edge case scenarios for post creation.
 @Epic("Posts Management API Tests")
 @Feature("US-03 — Create Post")
 public class CreatePostTest extends TestBase {
 
+        // Parameterized test for creating posts.
+        // Each test case is provided by provideCreatePostData().
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCreatePostData")
     @DisplayName("verify that when creating a post with various data sets, the API enforces validation and ownership rules as expected")
@@ -30,7 +34,7 @@ public class CreatePostTest extends TestBase {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         given()
                 .spec(requestSpec)
-                .auth().oauth2(userToken)
+                .auth().oauth2(resolveToken("user-token"))
                 .body(data)
         .when()
                 .post(ApiConfig.POSTS_ENDPOINT)
@@ -38,6 +42,8 @@ public class CreatePostTest extends TestBase {
                 .statusCode(anyOf(is(expectedStatusCode), is(200)));
     }
 
+        // Data provider for create post test cases.
+        // Should return a Stream of Arguments, each containing a Map<String, Object> for a test scenario.
     private static Stream<Arguments> provideCreatePostData() {
         return JsonUtils.getArgumentsFromJson("/data/posts/create.json");
     }
@@ -87,7 +93,7 @@ public class CreatePostTest extends TestBase {
                 try {
                     given()
                             .spec(requestSpec)
-                            .auth().oauth2(userToken)
+                            .auth().oauth2(resolveToken("user-token"))
                             .body(Map.of("title", "Thread " + index, "content", "Content " + index))
                     .when()
                             .post(ApiConfig.POSTS_ENDPOINT)

@@ -1,0 +1,6 @@
+[
+  {
+    "testName": "Get all categories",
+    "expectedStatusCode": 200
+  }
+]

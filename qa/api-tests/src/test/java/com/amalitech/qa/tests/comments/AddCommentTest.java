@@ -1,3 +1,5 @@
+// Tests for adding comments to posts.
+// Covers valid, invalid, and edge case scenarios for comment creation.
 package com.amalitech.qa.tests.comments;
 
 import com.amalitech.qa.base.TestBase;
@@ -25,8 +27,10 @@ public class AddCommentTest extends TestBase {
     @MethodSource("provideAddCommentData")
     @DisplayName("verify that when adding a comment with various data sets, the API behaves as expected")
     @Description("Validates the add comment functionality for different scenarios. Expected: 201 for valid, 400/401/403/404 for invalid or unauthorized. Actual: API returns correct status and response body.")
+	// Parameterized test for adding comments.
+	// Each test case is provided by provideAddCommentData().
     public void verifyThatWhenAddingComment(Map<String, Object> data) {
-	Long postId = (Long) data.get("postId");
+	Long postId = ((Number) data.get("postId")).longValue();
 	String token = (String) data.get("token");
 	int expectedStatusCode = (int) data.get("expectedStatusCode");
 	String content = (String) data.get("content");
@@ -35,7 +39,7 @@ public class AddCommentTest extends TestBase {
 		.spec(requestSpec)
 		.body(Map.of("content", content));
 	if (token != null) {
-	    req = req.auth().oauth2(token);
+	    req = req.auth().oauth2(resolveToken(token));
 	}
 	req.when()
 		.post(String.format(ApiConfig.COMMENTS_ENDPOINT, postId))
@@ -44,7 +48,8 @@ public class AddCommentTest extends TestBase {
     }
 
     private static Stream<Arguments> provideAddCommentData() {
-	// Implement or load from JSON as in posts/auth
-	return Stream.empty();
+	return JsonUtils.getListFromJson("/data/comments/comments.json").stream()
+		.filter(data -> data.get("testName").toString().startsWith("Add"))
+		.map(Arguments::of);
     }
 }

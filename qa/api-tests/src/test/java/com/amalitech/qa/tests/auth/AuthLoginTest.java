@@ -30,24 +30,24 @@ public class AuthLoginTest extends TestBase {
     @SuppressWarnings("unchecked")
     private static final Map<String, String> validUser = (Map<String, String>) JsonUtils.getMapFromJson("/data/auth/common.json").get("validUser");
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("provideLoginData")
-        @DisplayName("verify that when logging in with various credentials, the API enforces authentication and error handling as expected")
-        @Description("Covers login with valid and invalid credentials. Expected: 200 for valid, 401 for invalid. Actual: API grants token or returns error as appropriate.")
-        public void verifyThatWhenLoggingIn(Map<String, Object> data) {
-                int expectedStatusCode = (int) data.get("expectedStatusCode");
-                io.restassured.response.Response response = given()
-                                .spec(requestSpec)
-                                .body(data)
-                .when()
-                                .post(ApiConfig.LOGIN_ENDPOINT);
-                response.then().statusCode(expectedStatusCode);
-                if (expectedStatusCode == 200) {
-                        response.then().body("token", not(emptyOrNullString()));
-                } else if (expectedStatusCode == 401) {
-                        response.then().body("error", equalTo("Invalid credentials"));
-                }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideLoginData")
+    @DisplayName("verify that when logging in with various credentials, the API enforces authentication and error handling as expected")
+    @Description("Covers login with valid and invalid credentials. Expected: 200 for valid, 401 for invalid. Actual: API grants token or returns error as appropriate.")
+    public void verifyThatWhenLoggingIn(Map<String, Object> data) {
+        int expectedStatusCode = (int) data.get("expectedStatusCode");
+        io.restassured.response.Response response = given()
+                .spec(requestSpec)
+                .body(data)
+        .when()
+                .post(ApiConfig.LOGIN_ENDPOINT);
+        response.then().statusCode(expectedStatusCode);
+        if (expectedStatusCode == 200) {
+            response.then().body("token", not(emptyOrNullString()));
+        } else if (expectedStatusCode == 401) {
+            response.then().body("error", equalTo("Invalid credentials"));
         }
+    }
 
     private static Stream<Arguments> provideLoginData() {
         return JsonUtils.getArgumentsFromJson("/data/auth/login.json");

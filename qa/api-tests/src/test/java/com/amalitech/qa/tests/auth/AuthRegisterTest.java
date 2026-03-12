@@ -90,6 +90,8 @@ public class AuthRegisterTest extends TestBase {
         }
 
         @Test
+        // Data provider for registration test cases.
+        // Should return a Stream of Arguments, each containing a Map<String, Object> for a test scenario.
         @DisplayName("verifying that the registration response contract meets all security requirements")
         @Description("Ensures that the registration response meets the API's security standards. " +
                         "Expected Outcome: 201 Created, token presence, and absence of password in body. " +

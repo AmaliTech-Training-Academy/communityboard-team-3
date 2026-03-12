@@ -41,6 +41,18 @@ public class TestBase {
         // Obtain tokens for testing
         userToken = obtainToken("/data/auth/common.json", "validUser");
         adminToken = obtainToken("/data/auth/common.json", "adminUser");
+        System.out.println("DEBUG: userToken=" + (userToken != null ? "obtained" : "NULL"));
+        System.out.println("DEBUG: adminToken=" + (adminToken != null ? "obtained" : "NULL"));
+    }
+
+    protected String resolveToken(String tokenPlaceholder) {
+        if (tokenPlaceholder == null) return "INVALID_OR_NULL_TOKEN";
+        String token = switch (tokenPlaceholder) {
+            case "user-token-1", "user-token" -> userToken;
+            case "admin-token-1", "admin-token" -> adminToken;
+            default -> tokenPlaceholder;
+        };
+        return (token != null) ? token : "INVALID_OR_NULL_TOKEN";
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +76,7 @@ public class TestBase {
     protected Long createPost(String token, String title, String content) {
         return given()
                 .spec(requestSpec)
-                .auth().oauth2(token)
+                .auth().oauth2(resolveToken(token))
                 .body(Map.of("title", title, "content", content))
         .when()
                 .post(ApiConfig.POSTS_ENDPOINT)

@@ -1,3 +1,5 @@
+// Tests for viewing all posts and searching posts.
+// Covers pagination, filtering, and response structure validation.
 package com.amalitech.qa.tests.posts;
 
 import com.amalitech.qa.base.TestBase;
@@ -26,6 +28,8 @@ public class ViewAllPostsTest extends TestBase {
         @MethodSource("provideViewPostsData")
         @DisplayName("verify that when retrieving all posts or searching, the API returns correct paginated/filter results as expected")
         @Description("Covers GET /api/posts and /search endpoints. Expected: 200 OK with paginated/filter data. Actual: API returns correct results and structure.")
+        // Parameterized test for viewing all posts and search scenarios.
+        // Each test case is provided by provideViewPostsData().
         public void verifyThatWhenViewingAllPosts(Map<String, Object> data) {
                 int expectedStatusCode = (int) data.get("expectedStatusCode");
                 boolean isSearch = data.getOrDefault("isSearch", false).equals(true);
@@ -45,6 +49,8 @@ public class ViewAllPostsTest extends TestBase {
                                 .body("content", is(notNullValue()));
         }
 
+    // Data provider for view all posts/search test cases.
+    // Should return a Stream of Arguments, each containing a Map<String, Object> for a test scenario.
     private static Stream<Arguments> provideViewPostsData() {
         return JsonUtils.getArgumentsFromJson("/data/posts/get_all.json");
     }

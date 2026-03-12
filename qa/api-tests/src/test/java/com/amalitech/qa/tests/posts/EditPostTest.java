@@ -30,11 +30,11 @@ public class EditPostTest extends TestBase {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
         if (expectedStatusCode == 200 && postId.equals(1)) {
-            postId = createPost(userToken, "Update Me", "Original Content");
+            postId = createPost("user-token", "Update Me", "Original Content");
         }
         given()
                 .spec(requestSpec)
-                .auth().oauth2(userToken)
+                .auth().oauth2(resolveToken("user-token"))
                 .body(data)
         .when()
                 .put(ApiConfig.POSTS_ENDPOINT + "/" + postId)
@@ -50,11 +50,11 @@ public class EditPostTest extends TestBase {
         @DisplayName("verify that when a user tries to update a post they do not own, the API rejects the request")
         @Description("Ensures authorship is checked. Expected: 403 Forbidden. Actual: Unauthorized access is rejected.")
         public void verifyThatWhenUpdatingPostNotOwner() {
-                Long postId = createPost(userToken, "User A Post", "Content A");
+                Long postId = createPost("user-token", "User A Post", "Content A");
 
         given()
                 .spec(requestSpec)
-                .auth().oauth2(adminToken) // Admin is a different user here
+                .auth().oauth2(resolveToken("admin-token")) // Admin is a different user here
                 .body(Map.of("title", "Updated by B", "content", "Content B"))
         .when()
                 .put(ApiConfig.POSTS_ENDPOINT + "/" + postId)
