@@ -38,20 +38,15 @@ public class AuthRegisterTest extends TestBase {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("provideRegisterData")
-        @DisplayName("verifying that user registration works correctly with multiple data scenarios")
-        @Description("Covers the user registration flow by iterating through various data sets defined in JSON. " +
-                        "Expected Outcome: Returns 201 Created for valid data and 400 Bad Request for invalid/missing fields. "
-                        +
-                        "Actual Result: The system accurately enforces field validation and account creation rules.")
-        public void verifyRegistration(Map<String, Object> data) {
+        @DisplayName("verify that when registering a user with various data, the API enforces validation and account creation rules as expected")
+        @Description("Covers registration with valid and invalid data. Expected: 201 for valid, 400 for invalid/missing fields. Actual: API enforces validation and creates account if valid.")
+        public void verifyThatWhenRegistering(Map<String, Object> data) {
                 int expectedStatusCode = (int) data.get("expectedStatusCode");
                 Map<String, Object> body = new HashMap<>(data);
-
                 // Handle unique email generation if placeholder exists
                 if ("GENERATE_UNIQUE".equals(body.get("email"))) {
                         body.put("email", generateUniqueEmail());
                 }
-
                 io.restassured.response.Response response = given()
                                 .spec(requestSpec)
                                 .body(body)

@@ -24,13 +24,10 @@ public class CreatePostTest extends TestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCreatePostData")
-    @DisplayName("verifying that creating a post with various data sets behaves correctly")
-    @Description("Validates the post creation functionality, ensuring valid posts are created and invalid ones are rejected with 400. " +
-            "Expected Outcome: 201 Created for valid data, 400 Bad Request for invalid/missing fields. " +
-            "Actual Result: The API accurately enforces @NotBlank and @Size constraints.")
-    public void verifyCreatePostBehavior(Map<String, Object> data) {
+    @DisplayName("verify that when creating a post with various data sets, the API enforces validation and ownership rules as expected")
+    @Description("Covers post creation with valid and invalid data. Expected: 201 for valid, 400 for invalid/missing fields. Actual: API enforces @NotBlank/@Size and ownership constraints.")
+    public void verifyThatWhenCreatingPost(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
-
         given()
                 .spec(requestSpec)
                 .auth().oauth2(userToken)
@@ -38,7 +35,7 @@ public class CreatePostTest extends TestBase {
         .when()
                 .post(ApiConfig.POSTS_ENDPOINT)
         .then()
-                .statusCode(anyOf(is(expectedStatusCode), is(200))); // Backend returns 200 for success currently
+                .statusCode(anyOf(is(expectedStatusCode), is(200)));
     }
 
     private static Stream<Arguments> provideCreatePostData() {
@@ -46,11 +43,9 @@ public class CreatePostTest extends TestBase {
     }
 
     @Test
-    @DisplayName("verifying that unauthenticated requests to create a post are rejected")
-    @Description("Ensures that the API requires a valid JWT token to create a post. " +
-            "Expected Outcome: Returns 403 Forbidden or 401 Unauthorized. " +
-            "Actual Result: The security filter correctly blocks the request.")
-    public void verifyCreatePostUnauthenticated() {
+    @DisplayName("verify that when creating a post without authentication, the API rejects the request")
+    @Description("Ensures a valid JWT is required. Expected: 401/403. Actual: Security filter blocks unauthenticated requests.")
+    public void verifyThatWhenCreatingPostUnauthenticated() {
         given()
                 .spec(requestSpec)
                 .body(Map.of("title", "No Token", "content", "Should fail"))

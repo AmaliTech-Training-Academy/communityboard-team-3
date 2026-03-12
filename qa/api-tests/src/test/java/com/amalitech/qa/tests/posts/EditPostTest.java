@@ -24,18 +24,14 @@ public class EditPostTest extends TestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideUpdatePostData")
-    @DisplayName("verifying that updating a post is correctly authorized and validated")
-    @Description("Tests the PUT /api/posts/{id} endpoint with various data and ID scenarios. " +
-            "Expected Outcome: Returns 200 for valid owner updates, 400 for bad data, and 404 for missing posts. " +
-            "Actual Result: The system prevents unauthorized or invalid modifications.")
-    public void verifyUpdatePost(Map<String, Object> data) {
+    @DisplayName("verify that when updating a post, the API enforces validation, ownership, and existence rules as expected")
+    @Description("Covers post update for valid, invalid, and unauthorized cases. Expected: 200 for valid, 400 for bad data, 404 for missing, 403 for others. Actual: API enforces all constraints.")
+    public void verifyThatWhenUpdatingPost(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
-
         if (expectedStatusCode == 200 && postId.equals(1)) {
             postId = createPost(userToken, "Update Me", "Original Content");
         }
-
         given()
                 .spec(requestSpec)
                 .auth().oauth2(userToken)
@@ -50,13 +46,11 @@ public class EditPostTest extends TestBase {
         return JsonUtils.getArgumentsFromJson("/data/posts/update.json");
     }
 
-    @Test
-    @DisplayName("verifying that a user cannot update a post belonging to another user")
-    @Description("Security verification ensuring that authorship is checked before allowing updates. " +
-            "Expected Outcome: Returns 403 Forbidden. " +
-            "Actual Result: The request is rejected as unauthorized access.")
-    public void verifyUpdateForbiddenForNonOwner() {
-        Long postId = createPost(userToken, "User A Post", "Content A");
+        @Test
+        @DisplayName("verify that when a user tries to update a post they do not own, the API rejects the request")
+        @Description("Ensures authorship is checked. Expected: 403 Forbidden. Actual: Unauthorized access is rejected.")
+        public void verifyThatWhenUpdatingPostNotOwner() {
+                Long postId = createPost(userToken, "User A Post", "Content A");
 
         given()
                 .spec(requestSpec)

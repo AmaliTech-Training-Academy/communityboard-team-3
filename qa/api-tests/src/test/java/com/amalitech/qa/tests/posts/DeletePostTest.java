@@ -24,18 +24,14 @@ public class DeletePostTest extends TestBase {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideDeletePostData")
-    @DisplayName("verifying that deleting a post is restricted to owners and handled correctly")
-    @Description("Tests the DELETE /api/posts/{id} endpoint. " +
-            "Expected Outcome: Returns 204 for successful deletion, 404 if post doesn't exist. " +
-            "Actual Result: The system accurately processes valid deletions and rejects invalid ones.")
-    public void verifyDeletePost(Map<String, Object> data) {
+    @DisplayName("verify that when deleting a post, the API enforces ownership and existence rules as expected")
+    @Description("Covers post deletion for valid, non-existent, and unauthorized cases. Expected: 204 for own, 404 for missing, 403 for others. Actual: API enforces ownership and existence.")
+    public void verifyThatWhenDeletingPost(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
-
         if (expectedStatusCode == 204 && postId.equals(2)) {
             postId = createPost(userToken, "Delete Me", "Temporary content");
         }
-
         given()
                 .spec(requestSpec)
                 .auth().oauth2(userToken)
@@ -49,15 +45,12 @@ public class DeletePostTest extends TestBase {
         return JsonUtils.getArgumentsFromJson("/data/posts/delete.json");
     }
 
-    @Test
-    @DisplayName("verifying that a post is no longer accessible after being successfully deleted")
-    @Description("Confirms soft/hard deletion logic by attempting to fetch the post after deletion. " +
-            "Expected Outcome: Fetching returns 404 Not Found. " +
-            "Actual Result: The post is successfully removed from public view.")
-    public void verifyPostInaccessibleAfterDeletion() {
-        Long postId = createPost(userToken, "Deletable Post", "Will be gone soon");
-
-        // Delete
+        @Test
+        @DisplayName("verify that when a post is deleted, it is no longer accessible")
+        @Description("Confirms deletion by attempting to fetch the post. Expected: 404 after delete. Actual: Post is removed from view.")
+        public void verifyThatWhenPostDeletedItIsInaccessible() {
+                Long postId = createPost(userToken, "Deletable Post", "Will be gone soon");
+                // ...existing code...
         given()
                 .spec(requestSpec)
                 .auth().oauth2(userToken)

@@ -1,0 +1,12 @@
+[
+  {
+    "testName": "Get comments for existing post",
+    "postId": 1,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "Get comments for non-existent post",
+    "postId": 9999,
+    "expectedStatusCode": 404
+  }
+]
