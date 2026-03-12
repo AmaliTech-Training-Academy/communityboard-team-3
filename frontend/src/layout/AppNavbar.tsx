@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { Button, Text } from '@/components/ui';
 import pingLogo from '@/assets/ping-logo.svg';
@@ -15,8 +15,10 @@ type AppNavbarProps = {
 export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isAuthenticated = Boolean(user);
+  const isOnAnalytics = location.pathname.startsWith('/analytics');
 
   return (
     <header className="border-b border-default bg-surface px-6">
@@ -40,7 +42,7 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
               {/* Analytics */}
               <Button
                 type="button"
-                variant="ghost"
+                variant={isOnAnalytics ? 'primary' : 'ghost'}
                 size="sm"
                 leftIcon={
                   <img src={chartColumnsIcon} alt="" className="h-4 w-4" />
@@ -182,14 +184,23 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
               <>
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2.5 rounded-lg px-5 py-2.5"
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-5 py-2.5 ${
+                    isOnAnalytics ? 'bg-(--color-primary-900)' : ''
+                  }`}
                   onClick={() => {
                     void navigate('/analytics');
                     setIsMobileMenuOpen(false);
                   }}
                 >
                   <img src={chartColumnsIcon} alt="" className="h-5 w-5" />
-                  <Text variant="bodySm" className="text-primary font-medium">
+                  <Text
+                    variant="bodySm"
+                    className={
+                      isOnAnalytics
+                        ? 'text-white font-medium'
+                        : 'text-primary font-medium'
+                    }
+                  >
                     Analytics
                   </Text>
                 </button>

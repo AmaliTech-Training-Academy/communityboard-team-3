@@ -15,6 +15,7 @@ import {
   usePostsPerCategory,
   useTopContributors,
 } from '@/hooks/useAnalytics';
+import { getCategoryDisplayName } from '@/utils/postCategory';
 import houseIcon from '@/assets/house.svg';
 import chevronRightIcon from '@/assets/chevron-right.svg';
 import trendingUpIcon from '@/assets/trending-up.svg';
@@ -50,6 +51,7 @@ export function AnalyticsDashboardView() {
         );
         return {
           category,
+          label: getCategoryDisplayName(category),
           count: match?.count ?? 0,
         };
       }),
@@ -90,68 +92,63 @@ export function AnalyticsDashboardView() {
     [dailyActivity],
   );
 
-  const hasContributors = Boolean(topContributors && topContributors.length);
+  const hasContributors = Boolean(topContributors?.length);
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex flex-wrap items-center gap-2 text-body-sm-regular"
-      >
+      {/* Breadcrumb – matches post detail breadcrumb styling */}
+      <div className="inline-flex items-center gap-4 rounded-lg border border-default bg-page px-5 py-3">
         <button
           type="button"
-          className="inline-flex items-center gap-1 text-secondary hover:text-primary"
+          className="flex items-center gap-2 text-body-sm-regular text-primary"
           onClick={() => {
             void navigate('/');
           }}
         >
-          <img src={houseIcon} alt="" className="h-4 w-4" />
+          <img src={houseIcon} alt="" className="h-5 w-5" />
           <span>Home</span>
         </button>
-        <img src={chevronRightIcon} alt="" className="h-3 w-3" />
-        <div className="inline-flex items-center gap-2 rounded-full bg-overlay px-3 py-1">
-          <Text variant="bodySm" className="text-primary font-medium">
-            Analytics
-          </Text>
-        </div>
-      </nav>
+        <img src={chevronRightIcon} alt="" className="h-5 w-5 text-muted" />
+        <Text variant="bodySmRegular" className="text-primary">
+          Analytics
+        </Text>
+      </div>
 
       {/* Summary cards */}
       <section className="grid gap-4 md:grid-cols-2 lg:max-w-[480px]">
-        <Card className="flex items-center justify-between px-5 py-4">
-          <div className="space-y-1">
-            <Text variant="bodySm" className="text-secondary font-medium">
+        <Card className="px-5 py-4">
+          <div className="mb-1 flex items-center justify-between gap-3">
+            <Text variant="bodySmRegular" className="text-secondary">
               Total Posts
             </Text>
-            <Text as="p" variant="headingAuth" className="text-primary">
-              {isLoadingCategories ? '—' : totalPosts.toString()}
-            </Text>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--color-primary-50)">
+              <img src={trendingUpIcon} alt="" className="h-4 w-4" />
+            </div>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-overlay">
-            <img src={trendingUpIcon} alt="" className="h-5 w-5" />
-          </div>
+          <Text as="p" variant="headingAuth" className="text-primary">
+            {isLoadingCategories ? '—' : totalPosts.toString()}
+          </Text>
         </Card>
 
-        <Card className="flex items-center justify-between px-5 py-4">
-          <div className="space-y-1">
-            <Text variant="bodySm" className="text-secondary font-medium">
+        <Card className="px-5 py-4">
+          <div className="mb-1 flex items-center justify-between gap-3">
+            <Text variant="bodySmRegular" className="text-secondary">
               Total Comments
             </Text>
-            <Text as="p" variant="headingAuth" className="text-primary">
-              {isLoadingActivity ? '—' : totalComments.toString()}
-            </Text>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--color-primary-50)">
+              <img src={messagesIcon} alt="" className="h-4 w-4" />
+            </div>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-overlay">
-            <img src={messagesIcon} alt="" className="h-5 w-5" />
-          </div>
+          <Text as="p" variant="headingAuth" className="text-primary">
+            {isLoadingActivity ? '—' : totalComments.toString()}
+          </Text>
         </Card>
       </section>
 
       {/* Charts */}
       <section className="grid gap-6 md:grid-cols-2">
-        <Card className="h-[320px] space-y-4 px-5 py-4">
-          <Text variant="bodyBase" className="text-primary font-semibold">
+        <Card className="h-[320px] space-y-4 px-6 py-5">
+          <Text variant="bodySmRegular" className="text-primary font-semibold">
             Posts by Category
           </Text>
           {isLoadingCategories ? (
@@ -160,23 +157,38 @@ export function AnalyticsDashboardView() {
             </Text>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={postsPerCategory}>
+              <BarChart data={postsPerCategory} barCategoryGap={32}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="category" />
+                <XAxis dataKey="label" />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip
+                  cursor={{ fill: 'rgba(15, 40, 57, 0.06)', radius: 4 }}
+                  wrapperStyle={{ outline: 'none' }}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: '1px solid var(--color-slate-300)',
+                    boxShadow:
+                      '0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)',
+                  }}
+                  labelStyle={{ fontSize: 12, color: 'var(--color-secondary)' }}
+                  itemStyle={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: 'var(--color-primary-950)',
+                  }}
+                />
                 <Bar
                   dataKey="count"
                   radius={[4, 4, 0, 0]}
-                  fill="var(--color-primary-600)"
+                  fill="var(--color-primary-950)"
                 />
               </BarChart>
             </ResponsiveContainer>
           )}
         </Card>
 
-        <Card className="h-[320px] space-y-4 px-5 py-4">
-          <Text variant="bodyBase" className="text-primary font-semibold">
+        <Card className="h-[320px] space-y-4 px-6 py-5">
+          <Text variant="bodySmRegular" className="text-primary font-semibold">
             Posts Day of Week
           </Text>
           {isLoadingActivity ? (
@@ -185,11 +197,26 @@ export function AnalyticsDashboardView() {
             </Text>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={postsByDayOfWeek}>
+              <BarChart data={postsByDayOfWeek} barCategoryGap={32}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="day" />
                 <YAxis allowDecimals={false} />
-                <Tooltip />
+                <Tooltip
+                  cursor={{ fill: 'rgba(15, 40, 57, 0.06)', radius: 4 }}
+                  wrapperStyle={{ outline: 'none' }}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: '1px solid var(--color-slate-300)',
+                    boxShadow:
+                      '0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)',
+                  }}
+                  labelStyle={{ fontSize: 12, color: 'var(--color-secondary)' }}
+                  itemStyle={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: 'var(--color-primary-950)',
+                  }}
+                />
                 <Bar
                   dataKey="count"
                   radius={[4, 4, 0, 0]}
