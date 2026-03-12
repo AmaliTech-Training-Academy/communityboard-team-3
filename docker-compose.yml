@@ -31,6 +31,22 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-test:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${TEST_DB_NAME:-communityboard_test}
+      POSTGRES_USER: ${TEST_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${TEST_DB_PASSWORD:-postgres}
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TEST_DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./backend
     ports:
@@ -48,7 +64,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-        # Add this too:
       postgres-analytics:
         condition: service_healthy
 
@@ -103,3 +118,4 @@ services:
 volumes:
   pgdata:
   pgdata_analytics:
+  pgdata_test:
