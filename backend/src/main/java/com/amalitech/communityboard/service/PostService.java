@@ -75,7 +75,7 @@ public class PostService extends BaseSecurityService{
         verifyOwnerOrAdmin(post.getAuthor().getId(), author);
         // Soft delete all comments on this post before deleting the post
         // This ensures cascade consistency without using hard deletes
-        List<Comment> comments = commentRepository.findByPostIdOrderByCreatedAtAsc(post.getId());
+        List<Comment> comments = commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(post.getId());
         comments.forEach(c -> c.setDeleted(true));
         commentRepository.saveAll(comments);
 
@@ -104,7 +104,7 @@ public class PostService extends BaseSecurityService{
                 .authorEmail(post.getAuthor().getEmail())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .commentCount(commentRepository.countByPostId(post.getId()))
+                .commentCount(commentRepository.countByPostIdAndIsDeletedFalse(post.getId()))
                 .build();
     }
 }
