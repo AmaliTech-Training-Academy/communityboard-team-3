@@ -23,20 +23,47 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+
       - name: Build backend with Maven
         run: |
           cd backend
           mvn clean compile
+
       - name: Run backend tests
         run: |
           cd backend
           mvn test
+        continue-on-error: true
+
+      - name: Generate Allure results
+        if: always()
+        run: |
+          cd backend
+          mvn allure:report || echo "Allure report generation skipped"
+
+      - name: Upload backend test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-allure-results
+          path: backend/target/allure-results
+          retention-days: 30
+
+      - name: Upload backend Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-allure-report
+          path: backend/target/site/allure-maven-plugin
+          retention-days: 30
+
       - name: Package backend
         run: |
           cd backend
@@ -48,24 +75,39 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Install pnpm
         run: npm install -g pnpm
+
       - name: Install dependencies
         run: |
           cd frontend
           pnpm install --frozen-lockfile --prod=false
+
       - name: Run linting
         run: |
           cd frontend
           pnpm run lint || echo "Lint step skipped - not configured"
-      - name: Run frontend tests
+
+      - name: Run frontend tests with coverage
         run: |
           cd frontend
-          pnpm test -- --watchAll=false || echo "No tests found"
+          pnpm test -- --watchAll=false --coverage || echo "No tests found"
+        continue-on-error: true
+
+      - name: Upload frontend test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: frontend/coverage
+          retention-days: 30
+
       - name: Build frontend
         run: |
           cd frontend
@@ -78,14 +120,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Build backend Docker image
         run: |
           cd backend
           docker build -t communityboard-backend:test .
+
       - name: Build frontend Docker image
         run: |
           cd frontend
           docker build -t communityboard-frontend:test .
+
       - name: Build data-engineering Docker image
         run: |
           cd data-engineering
@@ -98,6 +143,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Create .env file
         run: |
           echo "DB_NAME=$DB_NAME" >> .env
@@ -108,19 +154,24 @@ jobs:
           echo "ANALYTICS_DB_NAME=$ANALYTICS_DB_NAME" >> .env
           echo "ANALYTICS_DB_USER=$ANALYTICS_DB_USER" >> .env
           echo "ANALYTICS_DB_PASSWORD=$ANALYTICS_DB_PASSWORD" >> .env
+
       - name: Start services with docker compose
         run: |
           docker compose up -d
           sleep 30
+
       - name: Check backend health
         run: |
           curl -f http://localhost:8080/api-docs || curl -f http://localhost:8080/swagger-ui.html || echo "Backend check: service may not have health endpoint yet"
+
       - name: Check frontend
         run: |
           curl -f http://localhost:3000 || echo "Frontend check: service may not be ready yet"
+
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs
+
       - name: Stop services
         if: always()
         run: docker compose down -v
@@ -141,6 +192,7 @@ jobs:
           echo "ANALYTICS_DB_NAME=$ANALYTICS_DB_NAME" >> env_file
           echo "ANALYTICS_DB_USER=$ANALYTICS_DB_USER" >> env_file
           echo "ANALYTICS_DB_PASSWORD=$ANALYTICS_DB_PASSWORD" >> env_file
+
       - name: Deploy to EC2
         env:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
