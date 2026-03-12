@@ -19,3 +19,7 @@ docs-f/
 .env.dev
 .env.test
 .env.local
+
+# Terraform
+devops/terraform/.terraform/
+devops/terraform/terraform.tfstate*
