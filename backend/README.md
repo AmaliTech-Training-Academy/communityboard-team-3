@@ -254,6 +254,72 @@ Only the comment author or ADMIN can delete. Soft delete.
 
 ---
 
+### Analytics
+
+Analytics endpoints read from a separate pre-aggregated analytics database populated by the ETL pipeline. All endpoints are public.
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/analytics/posts-per-category` | None | Post counts per category |
+| GET | `/api/analytics/daily-activity` | None | Daily post and comment activity |
+| GET | `/api/analytics/top-contributors` | None | Top users by post count |
+| GET | `/api/analytics/summary` | None | Global post and comment totals |
+
+#### Posts Per Category
+**Response `200`:**
+```json
+[
+  { "category": "NEWS", "count": 20 },
+  { "category": "EVENT", "count": 15 },
+  { "category": "DISCUSSION", "count": 30 },
+  { "category": "ALERT", "count": 10 }
+]
+```
+
+#### Daily Activity
+**Query params:** `days` (default 30) — number of past days to include
+
+**Example:**
+```
+GET /api/analytics/daily-activity?days=7
+```
+
+**Response `200`:**
+```json
+[
+  { "date": "2026-03-05", "count": 12 },
+  { "date": "2026-03-06", "count": 8 },
+  { "date": "2026-03-07", "count": 15 }
+]
+```
+
+#### Top Contributors
+**Query params:** `limit` (default 10) — number of contributors to return
+
+**Example:**
+```
+GET /api/analytics/top-contributors?limit=5
+```
+
+**Response `200`:**
+```json
+[
+  { "username": "John Doe", "postCount": 25, "contributionRank": 1 },
+  { "username": "Jane Smith", "postCount": 18, "contributionRank": 2 }
+]
+```
+
+#### Summary
+**Response `200`:**
+```json
+{
+  "totalPosts": 80,
+  "totalComments": 323
+}
+```
+
+---
+
 ## Error Responses
 
 All errors return a consistent JSON format:
@@ -297,4 +363,3 @@ All errors return a consistent JSON format:
 | `post.content` | Cannot be blank |
 | `comment.content` | Cannot be blank |
 | `category.name` | Cannot be blank |
-```
