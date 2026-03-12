@@ -12,7 +12,7 @@ export interface GetPostsParams {
    * to the backend search endpoint:
    *   GET /api/posts/search
    */
-  categoryId?: number;
+  category?: string;
   keyword?: string;
   startDate?: string;
   endDate?: string;
@@ -37,14 +37,25 @@ export const postService = {
     const {
       page = 0,
       size = 10,
-      categoryId,
+      category,
       keyword,
       startDate,
       endDate,
     } = params;
 
+    const isDateOnly = (value: string | undefined): value is string =>
+      typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+
+    const normalizedStartDate = isDateOnly(startDate)
+      ? `${startDate}T00:00:00`
+      : startDate;
+
+    const normalizedEndDate = isDateOnly(endDate)
+      ? `${endDate}T23:59:59`
+      : endDate;
+
     const hasSearchFilters =
-      categoryId !== undefined ||
+      Boolean(category) ||
       Boolean(keyword) ||
       Boolean(startDate) ||
       Boolean(endDate);
@@ -55,10 +66,10 @@ export const postService = {
       params: {
         page,
         size,
-        categoryId,
+        category,
         keyword,
-        startDate,
-        endDate,
+        startDate: normalizedStartDate,
+        endDate: normalizedEndDate,
       },
     });
     return data;
@@ -102,6 +113,34 @@ export const postService = {
       payload,
     );
     return data;
+  },
+
+  /**
+   * Update an existing comment on a post.
+   * Mirrors:
+   *   PUT /api/posts/{postId}/comments/{commentId}
+   */
+  async updateComment(
+    postId: number,
+    commentId: number,
+    payload: { content: string },
+  ): Promise<Comment> {
+    const { data } = await apiClient.put<Comment>(
+      `${BASE_PATH}/${postId.toString()}/comments/${commentId.toString()}`,
+      payload,
+    );
+    return data;
+  },
+
+  /**
+   * Delete a comment from a post.
+   * Mirrors:
+   *   DELETE /api/posts/{postId}/comments/{commentId}
+   */
+  async deleteComment(postId: number, commentId: number): Promise<void> {
+    await apiClient.delete(
+      `${BASE_PATH}/${postId.toString()}/comments/${commentId.toString()}`,
+    );
   },
 
   /**

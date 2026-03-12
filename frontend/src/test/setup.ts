@@ -3,8 +3,8 @@ import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './server';
 
-if (!window.matchMedia) {
-  Object.defineProperty(window, 'matchMedia', {
+if (typeof globalThis.matchMedia !== 'function') {
+  Object.defineProperty(globalThis, 'matchMedia', {
     writable: true,
     value: (query: string) => ({
       matches: false,

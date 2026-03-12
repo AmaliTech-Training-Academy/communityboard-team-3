@@ -30,7 +30,7 @@ export function PostCard({ post, onClick }: Readonly<PostCardProps>) {
 
   return (
     <button type="button" onClick={onClick} className="w-full text-left">
-      <Card className="w-full bg-surface p-6 hover:bg-overlay focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-primary)">
+      <Card className="w-full rounded-[14px] bg-surface p-6 hover:bg-overlay focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-primary)">
         <div className="flex flex-col gap-3">
           {/* Header row: title + category badge */}
           <div className="flex items-start justify-between gap-3">
@@ -41,14 +41,14 @@ export function PostCard({ post, onClick }: Readonly<PostCardProps>) {
           </div>
 
           {/* Body preview */}
-          <Text variant="bodyBase" className="text-secondary">
+          <Text variant="bodyBase" className="text-secondary font-normal">
             {preview}
           </Text>
 
           {/* Footer row: author + time left, comments right */}
           <div className="mt-2 flex items-center justify-between gap-3 border-t border-default pt-1.5">
             <div className="flex items-center gap-4">
-              <Text variant="bodySmRegular" className="text-secondary">
+              <Text variant="bodySm" className="text-secondary">
                 {post.authorName}
               </Text>
               <div className="flex items-center gap-1">

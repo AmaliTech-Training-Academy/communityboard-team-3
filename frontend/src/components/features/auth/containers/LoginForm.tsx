@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -16,9 +16,18 @@ import {
 } from '@/components/features/auth/schemas';
 import { useAuth } from '@/hooks/useAuth';
 
+function getSafeReturnUrl(returnUrl: string | null): string | null {
+  if (!returnUrl || !returnUrl.startsWith('/') || returnUrl.startsWith('//')) {
+    return null;
+  }
+  return returnUrl;
+}
+
 export function LoginForm() {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnUrl = getSafeReturnUrl(searchParams.get('returnUrl'));
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const form = useForm<LoginSchema>({
@@ -37,7 +46,7 @@ export function LoginForm() {
         password: values.password,
       });
 
-      void navigate('/');
+      void navigate(returnUrl ?? '/', { replace: true });
     } catch {
       //
     }
@@ -99,7 +108,11 @@ export function LoginForm() {
           </AuthSubmitButton>
           <AuthSwitchLink
             prompt="Don’t have an account?"
-            to="/register"
+            to={
+              returnUrl
+                ? `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+                : '/register'
+            }
             cta="Create one now"
           />
         </div>

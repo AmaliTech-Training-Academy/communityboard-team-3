@@ -2,6 +2,7 @@ import { apiClient, tokenStore, AUTH_STORAGE_MODE } from '@/services/api';
 import type {
   AuthResponse,
   AuthUser,
+  BackendAuthResponse,
   LoginRequest,
   RegisterRequest,
 } from '@/types/auth';
@@ -39,56 +40,53 @@ const userStore = {
 
 export const authService = {
   async login(payload: LoginRequest): Promise<AuthResponse> {
-    const { data } = await apiClient.post<AuthResponse>('/auth/login', payload);
+    const { data } = await apiClient.post<BackendAuthResponse>(
+      '/auth/login',
+      payload,
+    );
+
+    const adapted: AuthResponse = {
+      token: data.token,
+      email: data.data.email,
+      name: data.data.name,
+      role: data.data.role,
+    };
 
     tokenStore.setTokens({
-      accessToken: data.token,
-      refreshToken: data.refreshToken,
+      accessToken: adapted.token,
     });
     userStore.set({
-      email: data.email,
-      name: data.name,
-      role: data.role,
+      email: data.data.email,
+      name: data.data.name,
+      role: data.data.role,
     });
 
-    return data;
+    return adapted;
   },
 
   async register(payload: RegisterRequest): Promise<AuthResponse> {
-    const { data } = await apiClient.post<AuthResponse>(
+    const { data } = await apiClient.post<BackendAuthResponse>(
       '/auth/register',
       payload,
     );
 
-    tokenStore.setTokens({
-      accessToken: data.token,
-      refreshToken: data.refreshToken,
-    });
-    userStore.set({
-      email: data.email,
-      name: data.name,
-      role: data.role,
-    });
-
-    return data;
-  },
-
-  async refreshSession(): Promise<AuthResponse> {
-    const { data } = await apiClient.post<AuthResponse>('/auth/refresh', {
-      refreshToken: tokenStore.getRefreshToken(),
-    });
+    const adapted: AuthResponse = {
+      token: data.token,
+      email: data.data.email,
+      name: data.data.name,
+      role: data.data.role,
+    };
 
     tokenStore.setTokens({
-      accessToken: data.token,
-      refreshToken: data.refreshToken ?? tokenStore.getRefreshToken(),
+      accessToken: adapted.token,
     });
     userStore.set({
-      email: data.email,
-      name: data.name,
-      role: data.role,
+      email: data.data.email,
+      name: data.data.name,
+      role: data.data.role,
     });
 
-    return data;
+    return adapted;
   },
 
   logout(): void {

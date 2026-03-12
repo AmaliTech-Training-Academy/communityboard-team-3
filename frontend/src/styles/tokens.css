@@ -63,6 +63,9 @@
   --color-error-700: #c81e1e;
   --color-accent-orange: #b54000;
 
+  --color-brand-blue-700: #393cc9;
+  --color-chip-light-blue-fill: #cde6fc;
+
   /* ---------- Semantic Tokens ---------- */
   --color-bg-page: var(--color-off-white);
   --color-bg-surface: var(--color-off-white);

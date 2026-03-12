@@ -4,24 +4,24 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
+  type TooltipProps,
   XAxis,
   YAxis,
 } from 'recharts';
-import { Card, Text } from '@/components/ui';
+import { Card, Skeleton, Text } from '@/components/ui';
 import {
   useDailyActivity,
   usePostsPerCategory,
   useTopContributors,
 } from '@/hooks/useAnalytics';
+import { getCategoryDisplayName } from '@/utils/postCategory';
 import houseIcon from '@/assets/house.svg';
 import chevronRightIcon from '@/assets/chevron-right.svg';
-import chartColumnsIcon from '@/assets/chart-column.svg';
 import trendingUpIcon from '@/assets/trending-up.svg';
 import messagesIcon from '@/assets/message-circle-more.svg';
-
-const ALL_CATEGORIES = ['NEWS', 'EVENT', 'DISCUSSION', 'ALERT'] as const;
 
 const DAY_OF_WEEK_LABELS: { key: number; label: string }[] = [
   { key: 1, label: 'Mon' },
@@ -32,6 +32,68 @@ const DAY_OF_WEEK_LABELS: { key: number; label: string }[] = [
   { key: 6, label: 'Sat' },
   { key: 0, label: 'Sun' },
 ];
+
+const AXIS_TICK_STYLE = {
+  fontSize: 12,
+  fill: 'var(--color-text-muted)',
+  fontWeight: 500,
+} as const;
+
+type AxisTickPayload = {
+  value?: string;
+};
+
+type CategoryTickProps = {
+  x?: number;
+  y?: number;
+  payload?: AxisTickPayload;
+};
+
+function splitCategoryLabel(label: string): string[] {
+  if (label === 'Recommendations') return ['Recommendati', 'ons'];
+  return [label];
+}
+
+function CategoryTick({ x = 0, y = 0, payload }: Readonly<CategoryTickProps>) {
+  const label = payload?.value ?? '';
+  const lines = splitCategoryLabel(label);
+
+  return (
+    <g transform={`translate(${String(x)},${String(y)})`}>
+      <text
+        y={12}
+        textAnchor="middle"
+        fill="var(--color-text-muted)"
+        fontSize={12}
+        fontWeight={500}
+      >
+        {lines.map((line, index) => (
+          <tspan
+            key={`${label}-${String(index)}`}
+            x={0}
+            dy={index === 0 ? 0 : 18}
+          >
+            {line}
+          </tspan>
+        ))}
+      </text>
+    </g>
+  );
+}
+
+function CountTooltip({
+  active,
+  payload,
+}: Readonly<TooltipProps<number, string>>) {
+  const value = payload?.[0]?.value;
+  if (!active || value == null) return null;
+
+  return (
+    <div className="flex h-8 items-center justify-center rounded-lg bg-(--color-primary-900) px-4 text-[12px] font-medium leading-[1.5] text-inverse">
+      Count: {String(value)}
+    </div>
+  );
+}
 
 export function AnalyticsDashboardView() {
   const navigate = useNavigate();
@@ -45,19 +107,15 @@ export function AnalyticsDashboardView() {
 
   const postsPerCategory = useMemo(
     () =>
-      ALL_CATEGORIES.map((category) => {
-        const match = postsPerCategoryRaw?.find(
-          (entry) => entry.category === category,
-        );
-        return {
-          category,
-          count: match?.count ?? 0,
-        };
-      }),
+      (postsPerCategoryRaw ?? []).map((entry) => ({
+        category: entry.category,
+        label: getCategoryDisplayName(entry.category),
+        count: entry.count,
+      })),
     [postsPerCategoryRaw],
   );
 
-  const totalPosts = useMemo(
+  const totalPostsFromCategories = useMemo(
     () => postsPerCategory.reduce((sum, entry) => sum + entry.count, 0),
     [postsPerCategory],
   );
@@ -86,144 +144,224 @@ export function AnalyticsDashboardView() {
     }));
   }, [dailyActivity]);
 
-  const totalComments = useMemo(
+  const totalCommentsFromActivity = useMemo(
     () => (dailyActivity ?? []).reduce((sum, entry) => sum + entry.count, 0),
     [dailyActivity],
   );
 
-  const hasContributors = Boolean(topContributors && topContributors.length);
+  const totalPosts: number = totalPostsFromCategories;
+  const totalComments: number = totalCommentsFromActivity;
+
+  const hasContributors = Boolean(topContributors?.length);
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex flex-wrap items-center gap-2 text-body-sm-regular"
-      >
+    <div className="flex flex-col gap-8">
+      <div className="inline-flex self-start items-center gap-4 rounded-lg border border-default bg-page px-5 py-3">
         <button
           type="button"
-          className="inline-flex items-center gap-1 text-secondary hover:text-primary"
+          className="flex items-center gap-2 text-body-sm-regular text-primary"
           onClick={() => {
             void navigate('/');
           }}
         >
-          <img src={houseIcon} alt="" className="h-4 w-4" />
+          <img src={houseIcon} alt="" className="h-5 w-5" />
           <span>Home</span>
         </button>
-        <img src={chevronRightIcon} alt="" className="h-3 w-3" />
-        <div className="inline-flex items-center gap-2 rounded-full bg-overlay px-3 py-1">
-          <img src={chartColumnsIcon} alt="" className="h-4 w-4" />
-          <Text variant="bodySm" className="text-primary font-medium">
-            Analytics
-          </Text>
-        </div>
-      </nav>
-
-      {/* Page heading */}
-      <header className="space-y-1">
-        <Text as="h1" variant="headingAuth" className="text-primary">
+        <img src={chevronRightIcon} alt="" className="h-5 w-5 text-muted" />
+        <Text variant="bodySmRegular" className="text-primary">
           Analytics
         </Text>
-        <Text variant="bodyBase" className="text-secondary">
-          Overview of post activity, categories, and top contributors.
-        </Text>
-      </header>
+      </div>
 
-      {/* Summary cards */}
-      <section className="grid gap-4 md:grid-cols-2 lg:max-w-[480px]">
-        <Card className="flex items-center justify-between px-5 py-4">
-          <div className="space-y-1">
-            <Text variant="bodySm" className="text-secondary font-medium">
+      <section className="mt-8 flex w-full max-w-[811px] flex-col gap-8 sm:flex-row">
+        <Card className="min-h-[168px] w-full rounded-[14px] p-6 sm:w-[389.328px]">
+          <div className="flex items-center justify-between">
+            <Text
+              as="p"
+              className="text-[24px] font-medium leading-[1.5] text-[color:var(--color-slate-700)]"
+            >
               Total Posts
             </Text>
-            <Text as="p" variant="headingAuth" className="text-primary">
-              {isLoadingCategories ? '—' : totalPosts.toString()}
-            </Text>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-(--color-chip-light-blue-fill) p-2">
+              <img src={trendingUpIcon} alt="" className="h-5 w-5" />
+            </div>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-overlay">
-            <img src={trendingUpIcon} alt="" className="h-5 w-5" />
-          </div>
+          {isLoadingCategories ? (
+            <Skeleton className="mt-2 h-[48px] w-24 rounded-[10px]" />
+          ) : (
+            <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
+              {totalPosts.toString()}
+            </p>
+          )}
         </Card>
 
-        <Card className="flex items-center justify-between px-5 py-4">
-          <div className="space-y-1">
-            <Text variant="bodySm" className="text-secondary font-medium">
+        <Card className="min-h-[168px] w-full rounded-[14px] p-6 sm:w-[389.328px]">
+          <div className="flex items-center justify-between">
+            <Text
+              as="p"
+              className="text-[24px] font-medium leading-[1.5] text-[color:var(--color-slate-700)]"
+            >
               Total Comments
             </Text>
-            <Text as="p" variant="headingAuth" className="text-primary">
-              {isLoadingActivity ? '—' : totalComments.toString()}
-            </Text>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-(--color-chip-light-blue-fill) p-2">
+              <img src={messagesIcon} alt="" className="h-5 w-5" />
+            </div>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-overlay">
-            <img src={messagesIcon} alt="" className="h-5 w-5" />
-          </div>
+          {isLoadingActivity ? (
+            <Skeleton className="mt-2 h-[48px] w-24 rounded-[10px]" />
+          ) : (
+            <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
+              {totalComments.toString()}
+            </p>
+          )}
         </Card>
       </section>
 
-      {/* Charts */}
-      <section className="grid gap-6 md:grid-cols-2">
-        <Card className="h-[320px] space-y-4 px-5 py-4">
-          <Text variant="bodyBase" className="text-primary font-semibold">
+      <section className="flex flex-col gap-8 md:flex-row md:gap-[50px]">
+        <Card className="flex h-[362.75px] w-full flex-col gap-4 rounded-lg p-4 md:w-[576px]">
+          <Text
+            as="h2"
+            className="py-2 font-[var(--font-family-heading)] text-[24px] font-semibold leading-[1.5] text-[color:var(--color-primary)]"
+          >
             Posts by Category
           </Text>
+
           {isLoadingCategories ? (
-            <Text variant="bodySm" className="text-secondary">
-              Loading posts by category...
-            </Text>
+            <div className="h-[262.75px] w-full">
+              <Skeleton variant="card" className="h-full w-full rounded-lg" />
+            </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={postsPerCategory}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="category" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar
-                  dataKey="count"
-                  radius={[4, 4, 0, 0]}
-                  fill="var(--color-primary-600)"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-[262.75px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={postsPerCategory} barCategoryGap={72}>
+                  <CartesianGrid
+                    vertical={false}
+                    stroke="var(--color-slate-300)"
+                    strokeDasharray="4 4"
+                  />
+                  <ReferenceLine
+                    ifOverflow="extendDomain"
+                    y={20}
+                    stroke="var(--color-brand-blue-700)"
+                    strokeDasharray="4 4"
+                  />
+                  <XAxis
+                    dataKey="label"
+                    height={36}
+                    axisLine={false}
+                    tickLine={false}
+                    interval={0}
+                    tick={(props: CategoryTickProps) => (
+                      <CategoryTick {...props} />
+                    )}
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    width={20}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={AXIS_TICK_STYLE}
+                  />
+                  <Tooltip cursor={false} content={<CountTooltip />} />
+                  <Bar
+                    dataKey="count"
+                    barSize={74}
+                    fill="var(--color-slate-700)"
+                    radius={0}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </Card>
 
-        <Card className="h-[320px] space-y-4 px-5 py-4">
-          <Text variant="bodyBase" className="text-primary font-semibold">
+        <Card className="flex h-[362.75px] w-full flex-col gap-4 rounded-lg p-4 md:w-[576px]">
+          <Text
+            as="h2"
+            className="py-2 font-[var(--font-family-heading)] text-[24px] font-semibold leading-[1.5] text-[color:var(--color-primary)]"
+          >
             Posts Day of Week
           </Text>
+
           {isLoadingActivity ? (
-            <Text variant="bodySm" className="text-secondary">
-              Loading posts by day of week...
-            </Text>
+            <div className="h-[248.75px] w-full">
+              <Skeleton variant="card" className="h-full w-full rounded-lg" />
+            </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={postsByDayOfWeek}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar
-                  dataKey="count"
-                  radius={[4, 4, 0, 0]}
-                  fill="var(--color-primary-600)"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-[248.75px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={postsByDayOfWeek} barCategoryGap={24}>
+                  <CartesianGrid
+                    vertical={false}
+                    stroke="var(--color-slate-300)"
+                    strokeDasharray="4 4"
+                  />
+                  <ReferenceLine
+                    ifOverflow="extendDomain"
+                    y={20}
+                    stroke="var(--color-brand-blue-700)"
+                    strokeDasharray="4 4"
+                  />
+                  <XAxis
+                    dataKey="day"
+                    height={36}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={AXIS_TICK_STYLE}
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    width={20}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={AXIS_TICK_STYLE}
+                  />
+                  <Tooltip cursor={false} content={<CountTooltip />} />
+                  <Bar
+                    dataKey="count"
+                    barSize={50}
+                    fill="var(--color-slate-700)"
+                    radius={0}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </Card>
       </section>
 
-      {/* Top contributors table */}
-      <Card className="space-y-4 px-5 py-4">
-        <Text variant="bodyBase" className="text-primary font-semibold">
+      <section className="flex flex-col gap-4">
+        <Text
+          as="h2"
+          className="text-[16px] font-semibold leading-[1.5] text-[color:var(--color-primary)]"
+        >
           Top 10 Contributors
         </Text>
+
         {(() => {
           if (isLoadingContributors) {
             return (
-              <Text variant="bodySm" className="text-secondary">
-                Loading top contributors...
-              </Text>
+              <div className="overflow-x-auto rounded-lg border border-default bg-surface">
+                <div className="min-w-full">
+                  <div className="flex h-14 items-center gap-4 bg-(--color-slate-300) px-4">
+                    <Skeleton className="h-4 w-16 rounded-[999px]" />
+                    <Skeleton className="h-4 w-24 rounded-[999px]" />
+                    <Skeleton className="h-4 w-16 rounded-[999px]" />
+                  </div>
+                  {Array.from({ length: 6 }, (_, i) => `row-${String(i)}`).map(
+                    (key) => (
+                      <div
+                        key={key}
+                        className="flex h-14 items-center gap-4 border-b border-default px-4 last:border-b-0"
+                      >
+                        <Skeleton className="h-4 w-10 rounded-[999px]" />
+                        <Skeleton className="h-4 w-48 rounded-[999px]" />
+                        <Skeleton className="h-4 w-12 rounded-[999px]" />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
             );
           }
 
@@ -236,17 +374,17 @@ export function AnalyticsDashboardView() {
           }
 
           return (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-default bg-surface">
               <table className="min-w-full border-collapse text-left">
-                <thead className="bg-overlay">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-bodySmRegular text-secondary font-medium">
+                <thead className="bg-(--color-slate-300)">
+                  <tr className="h-14">
+                    <th className="w-[96px] px-4 py-4 text-[14px] font-medium leading-[1.5] text-[color:var(--color-slate-700)]">
                       Ranks
                     </th>
-                    <th className="px-4 py-2 text-left text-bodySmRegular text-secondary font-medium">
+                    <th className="px-4 py-4 text-[14px] font-medium leading-[1.5] text-[color:var(--color-slate-700)]">
                       Name
                     </th>
-                    <th className="px-4 py-2 text-left text-bodySmRegular text-secondary font-medium">
+                    <th className="w-[140px] px-4 py-4 text-[14px] font-medium leading-[1.5] text-[color:var(--color-slate-700)]">
                       Posts
                     </th>
                   </tr>
@@ -255,22 +393,15 @@ export function AnalyticsDashboardView() {
                   {topContributors.map((contributor, index) => (
                     <tr
                       key={contributor.username}
-                      className="border-b border-default last:border-b-0"
+                      className="h-14 border-b border-default last:border-b-0"
                     >
-                      <td className="px-4 py-2 align-middle text-bodySm text-secondary">
+                      <td className="px-4 py-4 text-[16px] font-normal leading-[1.5] text-[color:var(--color-primary)]">
                         {index + 1}
                       </td>
-                      <td className="px-4 py-2 align-middle">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-overlay text-xs font-medium text-inverse">
-                            {contributor.username.charAt(0).toUpperCase()}
-                          </div>
-                          <Text variant="bodyBase" className="text-primary">
-                            {contributor.username}
-                          </Text>
-                        </div>
+                      <td className="px-4 py-4 text-[16px] font-normal leading-[1.5] text-[color:var(--color-primary)]">
+                        {contributor.username}
                       </td>
-                      <td className="px-4 py-2 align-middle text-bodySm text-secondary">
+                      <td className="px-4 py-4 text-[16px] font-normal leading-[1.5] text-[color:var(--color-primary)]">
                         {contributor.postCount}
                       </td>
                     </tr>
@@ -280,7 +411,7 @@ export function AnalyticsDashboardView() {
             </div>
           );
         })()}
-      </Card>
+      </section>
     </div>
   );
 }
