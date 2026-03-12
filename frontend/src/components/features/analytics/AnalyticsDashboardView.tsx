@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Card, Text } from '@/components/ui';
+import { Card, Skeleton, Text } from '@/components/ui';
 import {
   useDailyActivity,
   usePostsPerCategory,
@@ -186,9 +186,13 @@ export function AnalyticsDashboardView() {
               <img src={trendingUpIcon} alt="" className="h-5 w-5" />
             </div>
           </div>
-          <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
-            {isLoadingCategories ? '—' : totalPosts.toString()}
-          </p>
+          {isLoadingCategories ? (
+            <Skeleton className="mt-2 h-[48px] w-24 rounded-[10px]" />
+          ) : (
+            <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
+              {totalPosts.toString()}
+            </p>
+          )}
         </Card>
 
         <Card className="min-h-[168px] w-full rounded-[14px] p-6 sm:w-[389.328px]">
@@ -203,9 +207,13 @@ export function AnalyticsDashboardView() {
               <img src={messagesIcon} alt="" className="h-5 w-5" />
             </div>
           </div>
-          <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
-            {isLoadingActivity ? '—' : totalComments.toString()}
-          </p>
+          {isLoadingActivity ? (
+            <Skeleton className="mt-2 h-[48px] w-24 rounded-[10px]" />
+          ) : (
+            <p className="font-[var(--font-family-heading)] text-[48px] font-bold leading-[1.5] text-[color:var(--color-primary)]">
+              {totalComments.toString()}
+            </p>
+          )}
         </Card>
       </section>
 
@@ -219,9 +227,9 @@ export function AnalyticsDashboardView() {
           </Text>
 
           {isLoadingCategories ? (
-            <Text variant="bodySm" className="text-secondary">
-              Loading posts by category...
-            </Text>
+            <div className="h-[262.75px] w-full">
+              <Skeleton variant="card" className="h-full w-full rounded-lg" />
+            </div>
           ) : (
             <div className="h-[262.75px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -276,9 +284,9 @@ export function AnalyticsDashboardView() {
           </Text>
 
           {isLoadingActivity ? (
-            <Text variant="bodySm" className="text-secondary">
-              Loading posts by day of week...
-            </Text>
+            <div className="h-[248.75px] w-full">
+              <Skeleton variant="card" className="h-full w-full rounded-lg" />
+            </div>
           ) : (
             <div className="h-[248.75px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -333,9 +341,27 @@ export function AnalyticsDashboardView() {
         {(() => {
           if (isLoadingContributors) {
             return (
-              <Text variant="bodySm" className="text-secondary">
-                Loading top contributors...
-              </Text>
+              <div className="overflow-x-auto rounded-lg border border-default bg-surface">
+                <div className="min-w-full">
+                  <div className="flex h-14 items-center gap-4 bg-(--color-slate-300) px-4">
+                    <Skeleton className="h-4 w-16 rounded-[999px]" />
+                    <Skeleton className="h-4 w-24 rounded-[999px]" />
+                    <Skeleton className="h-4 w-16 rounded-[999px]" />
+                  </div>
+                  {Array.from({ length: 6 }, (_, i) => `row-${String(i)}`).map(
+                    (key) => (
+                      <div
+                        key={key}
+                        className="flex h-14 items-center gap-4 border-b border-default px-4 last:border-b-0"
+                      >
+                        <Skeleton className="h-4 w-10 rounded-[999px]" />
+                        <Skeleton className="h-4 w-48 rounded-[999px]" />
+                        <Skeleton className="h-4 w-12 rounded-[999px]" />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
             );
           }
 

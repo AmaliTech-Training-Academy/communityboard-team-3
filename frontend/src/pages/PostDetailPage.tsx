@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router';
 import { useMemo, useState } from 'react';
 import { AppShell } from '@/layout/AppShell';
-import { PageLoader } from '@/components/ui/PageLoader';
 import { formatRelativeTime } from '@/utils/date';
 import { usePostDetail } from '@/hooks/usePostDetail';
 import { PostDetailView } from '@/components/features/posts/PostDetailView';
@@ -13,8 +12,10 @@ import type { PostFormModalValues } from '@/components/features/posts/PostFormMo
 import { useCategories } from '@/hooks/useCategories';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { postService } from '@/services/postService';
 import { usePostComments } from '@/hooks/usePostComments';
+import { postService } from '@/services/postService';
+import { useDeletePost } from '@/hooks/useDeletePost';
+import { PostDetailSkeleton } from '@/components/features/posts/PostDetailSkeleton';
 
 export default function PostDetailPage() {
   const navigate = useNavigate();
@@ -27,21 +28,16 @@ export default function PostDetailPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { data: categories } = useCategories();
   const isMobile = useIsMobile();
+  const deletePostState = useDeletePost();
 
-  const {
-    comments: commentsState,
-    commentDraft,
-    commentError,
-    isSubmitting: isSubmittingComment,
-    setCommentDraft,
-    addComment,
-    deleteComment,
-    updateComment,
-  } = usePostComments(postId, comments, isCommentsLoading);
+  const postCommentsState = usePostComments(
+    postId,
+    comments,
+    isCommentsLoading,
+  );
 
   const effectivePost = currentPost ?? post ?? null;
 
@@ -58,12 +54,15 @@ export default function PostDetailPage() {
   const isAdmin = user?.role === 'ADMIN';
 
   const handleDeleteComment = (commentId: number): void => {
-    const fn = deleteComment as (id: number) => Promise<void>;
+    const fn = postCommentsState.deleteComment as (id: number) => Promise<void>;
     void fn(commentId);
   };
 
   const handleUpdateComment = (commentId: number, content: string): void => {
-    const fn = updateComment as (id: number, next: string) => Promise<void>;
+    const fn = postCommentsState.updateComment as (
+      id: number,
+      next: string,
+    ) => Promise<void>;
     void fn(commentId, content);
   };
 
@@ -74,19 +73,20 @@ export default function PostDetailPage() {
 
   const handleDelete = async (postIdToDelete: number): Promise<void> => {
     try {
-      setIsDeleting(true);
-      await (postService.deletePost as (id: number) => Promise<void>)(
-        postIdToDelete,
-      );
-      void navigate('/');
-    } finally {
-      setIsDeleting(false);
+      await deletePostState.deletePost(postIdToDelete);
       setIsDeleteDialogOpen(false);
+      void navigate('/');
+    } catch {
+      // Toast handled by hook; allow retry/cancel in dialog.
     }
   };
 
   if (isPostLoading) {
-    return <PageLoader label="Loading post details..." />;
+    return (
+      <AppShell>
+        <PostDetailSkeleton />
+      </AppShell>
+    );
   }
 
   if (!effectivePost || postId === null || !derived) {
@@ -135,17 +135,21 @@ export default function PostDetailPage() {
         updatedRelative={updatedRelative}
         categoryLabel={derived.categoryLabel}
         chipVariant={derived.chipVariant}
-        comments={commentsState}
+        comments={postCommentsState.comments}
         isCommentsLoading={isCommentsLoading}
         getCommentTimeLabel={(iso) => formatRelativeTime(iso)}
-        commentDraft={commentDraft}
-        onCommentDraftChange={setCommentDraft}
+        commentDraft={postCommentsState.commentDraft}
+        onCommentDraftChange={postCommentsState.setCommentDraft}
         onAddComment={() => {
-          void addComment();
+          void postCommentsState.addComment();
         }}
         isAuthenticated={isAuthenticated}
-        commentError={typeof commentError === 'string' ? commentError : null}
-        isSubmittingComment={isSubmittingComment}
+        commentError={
+          typeof postCommentsState.commentError === 'string'
+            ? postCommentsState.commentError
+            : null
+        }
+        isSubmittingComment={postCommentsState.isSubmitting}
         currentUserName={currentUserName}
         isAdmin={isAdmin}
         onDeleteComment={handleDeleteComment}
@@ -177,9 +181,9 @@ export default function PostDetailPage() {
         description="Are you sure you want to delete this post? This action cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
-        isConfirming={isDeleting}
+        isConfirming={deletePostState.isLoading}
         onCancel={() => {
-          if (isDeleting) return;
+          if (deletePostState.isLoading) return;
           setIsDeleteDialogOpen(false);
         }}
         onConfirm={() => {

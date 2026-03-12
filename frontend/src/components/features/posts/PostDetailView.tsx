@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { Button, Chip, Text } from '@/components/ui';
+import { Button, Chip, Skeleton, Text, TextField } from '@/components/ui';
 import houseIcon from '@/assets/house.svg';
 import chevronRightIcon from '@/assets/chevron-right.svg';
 import clockIcon from '@/assets/clock.svg';
@@ -81,6 +81,10 @@ export function PostDetailView({
   const hasComments = totalComments > 0;
   const showEmptyState = !isCommentsLoading && !hasComments;
   const commentList = comments ?? [];
+  const loadingCommentKeys = Array.from(
+    { length: 3 },
+    (_, i) => `comment-skel-${String(i)}`,
+  );
 
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingDraft, setEditingDraft] = useState('');
@@ -227,9 +231,28 @@ export function PostDetailView({
           </div>
 
           {isCommentsLoading ? (
-            <Text variant="bodySmRegular" className="text-muted">
-              Loading comments...
-            </Text>
+            <div className="flex flex-col">
+              {loadingCommentKeys.map((key) => (
+                <div
+                  key={key}
+                  className="flex flex-col gap-4 border-t border-default py-6 md:flex-row md:items-start md:justify-between"
+                >
+                  <div className="flex flex-1 flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton variant="avatar" className="h-12 w-12" />
+                      <div className="flex flex-col gap-[6px]">
+                        <Skeleton className="h-4 w-32 rounded-[999px]" />
+                        <Skeleton className="h-3 w-20 rounded-[999px]" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Skeleton className="h-3 w-full max-w-[720px] rounded-[999px]" />
+                      <Skeleton className="h-3 w-full max-w-[560px] rounded-[999px]" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : null}
 
           {showEmptyState ? (
@@ -279,54 +302,54 @@ export function PostDetailView({
                       </div>
 
                       {isEditing ? (
-                        <div className="space-y-3">
-                          <div className="flex h-40 w-full flex-col items-center gap-3">
-                            <div className="flex-1 w-full rounded-lg border border-strong bg-overlay px-4 py-3">
-                              <textarea
-                                value={editingDraft}
-                                onChange={(event) => {
-                                  setEditingDraft(event.target.value);
-                                }}
-                                className="h-full w-full resize-none bg-transparent text-[14px] font-normal leading-[1.5] text-secondary outline-none placeholder:text-secondary"
-                                placeholder="Edit your comment..."
-                              />
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap gap-3">
-                            <Button
-                              type="button"
-                              variant="primary"
-                              className="px-5 py-2.5"
-                              disabled={
-                                isSubmittingComment || !editingDraft.trim()
-                              }
-                              onClick={() => {
-                                if (!editingDraft.trim()) return;
-                                onUpdateComment?.(
-                                  comment.id,
-                                  editingDraft.trim(),
-                                );
-                                setEditingCommentId(null);
-                                setEditingDraft('');
+                        <div className="flex flex-col gap-4">
+                          <div className="w-full max-w-[421px]">
+                            <TextField
+                              aria-label="Edit comment"
+                              value={editingDraft}
+                              onChange={(event) => {
+                                setEditingDraft(event.target.value);
                               }}
-                            >
-                              {isSubmittingComment
-                                ? 'Saving...'
-                                : 'Save changes'}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              className="px-5 py-2.5"
-                              disabled={isSubmittingComment}
-                              onClick={() => {
-                                setEditingCommentId(null);
-                                setEditingDraft('');
+                              onKeyDown={(event) => {
+                                if (event.key === 'Escape') {
+                                  setEditingCommentId(null);
+                                  setEditingDraft('');
+                                  return;
+                                }
+
+                                if (event.key === 'Enter') {
+                                  event.preventDefault();
+                                  if (!editingDraft.trim()) return;
+                                  onUpdateComment?.(
+                                    comment.id,
+                                    editingDraft.trim(),
+                                  );
+                                  setEditingCommentId(null);
+                                  setEditingDraft('');
+                                }
                               }}
-                            >
-                              Cancel
-                            </Button>
+                              className="text-secondary"
+                            />
                           </div>
+                          <Button
+                            type="button"
+                            variant="primary"
+                            className="w-[136px]"
+                            disabled={
+                              isSubmittingComment || !editingDraft.trim()
+                            }
+                            onClick={() => {
+                              if (!editingDraft.trim()) return;
+                              onUpdateComment?.(
+                                comment.id,
+                                editingDraft.trim(),
+                              );
+                              setEditingCommentId(null);
+                              setEditingDraft('');
+                            }}
+                          >
+                            Save Changes
+                          </Button>
                         </div>
                       ) : (
                         <Text
@@ -338,7 +361,7 @@ export function PostDetailView({
                       )}
                     </div>
 
-                    {canManageComment ? (
+                    {canManageComment && !isEditing ? (
                       <div className="mt-2 flex items-center gap-4 md:mt-0">
                         <button
                           type="button"
