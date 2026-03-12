@@ -100,16 +100,14 @@ jobs:
         uses: actions/checkout@v3
       - name: Create .env file
         run: |
-          cat > .env << ENVFILE
-          DB_NAME=${{ vars.DB_NAME }}
-          DB_USER=${{ vars.DB_USER }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          ETL_KMS_KEY=${{ secrets.ETL_KMS_KEY }}
-          ANALYTICS_DB_NAME=${{ vars.ANALYTICS_DB_NAME }}
-          ANALYTICS_DB_USER=${{ vars.ANALYTICS_DB_USER }}
-          ANALYTICS_DB_PASSWORD=${{ secrets.ANALYTICS_DB_PASSWORD }}
-          ENVFILE
+          echo "DB_NAME=$DB_NAME" >> .env
+          echo "DB_USER=$DB_USER" >> .env
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+          echo "JWT_SECRET=$JWT_SECRET" >> .env
+          echo "ETL_KMS_KEY=$ETL_KMS_KEY" >> .env
+          echo "ANALYTICS_DB_NAME=$ANALYTICS_DB_NAME" >> .env
+          echo "ANALYTICS_DB_USER=$ANALYTICS_DB_USER" >> .env
+          echo "ANALYTICS_DB_PASSWORD=$ANALYTICS_DB_PASSWORD" >> .env
       - name: Start services with docker compose
         run: |
           docker compose up -d
@@ -137,30 +135,22 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ETL_KMS_KEY: ${{ secrets.ETL_KMS_KEY }}
-          ANALYTICS_DB_NAME: ${{ vars.ANALYTICS_DB_NAME }}
-          ANALYTICS_DB_USER: ${{ vars.ANALYTICS_DB_USER }}
-          ANALYTICS_DB_PASSWORD: ${{ secrets.ANALYTICS_DB_PASSWORD }}
         run: |
           echo "$SSH_KEY" > deploy_key
           chmod 600 deploy_key
           ssh -o StrictHostKeyChecking=no -i deploy_key ubuntu@$EC2_HOST "
             cd /home/ubuntu/communityboard-team-3 &&
             git pull origin main &&
-            cat > .env << 'ENVFILE'
-          DB_NAME=$DB_NAME
-          DB_USER=$DB_USER
-          DB_PASSWORD=$DB_PASSWORD
-          JWT_SECRET=$JWT_SECRET
-          ETL_KMS_KEY=$ETL_KMS_KEY
-          ANALYTICS_DB_NAME=$ANALYTICS_DB_NAME
-          ANALYTICS_DB_USER=$ANALYTICS_DB_USER
-          ANALYTICS_DB_PASSWORD=$ANALYTICS_DB_PASSWORD
-          ENVFILE
+            cat > .env << ENVFILE
+DB_NAME=$DB_NAME
+DB_USER=$DB_USER
+DB_PASSWORD=$DB_PASSWORD
+JWT_SECRET=$JWT_SECRET
+ETL_KMS_KEY=$ETL_KMS_KEY
+ANALYTICS_DB_NAME=$ANALYTICS_DB_NAME
+ANALYTICS_DB_USER=$ANALYTICS_DB_USER
+ANALYTICS_DB_PASSWORD=$ANALYTICS_DB_PASSWORD
+ENVFILE
             docker compose down &&
             docker compose up -d --build
           "
