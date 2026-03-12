@@ -15,6 +15,7 @@ logs/
 .husky/
 AGENTS.md
 docs-f/
+.venv/
 # Environment files (keep .example only)
 .env.dev
 .env.test
