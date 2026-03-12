@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { useMemo, useState } from 'react';
 import { AppShell } from '@/layout/AppShell';
 import { PageLoader } from '@/components/ui/PageLoader';
@@ -18,6 +18,7 @@ import { usePostComments } from '@/hooks/usePostComments';
 
 export default function PostDetailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { postId, post, isPostLoading, comments, isCommentsLoading, derived } =
     usePostDetail();
   const [currentPost, setCurrentPost] = useState<PostSummary | null>(
@@ -143,7 +144,8 @@ export default function PostDetailPage() {
         isAdmin={isAdmin}
         onDeleteComment={handleDeleteComment}
         onRequestLogin={() => {
-          void navigate('/login');
+          const returnUrl = encodeURIComponent(location.pathname);
+          void navigate(`/login?returnUrl=${returnUrl}`);
         }}
         onBackHome={() => {
           void navigate('/');

@@ -204,7 +204,7 @@ export function PostDetailView({
             <div>
               <Button
                 type="button"
-                variant="secondary"
+                variant="primary"
                 className="px-5 py-2.5"
                 onClick={onRequestLogin}
               >

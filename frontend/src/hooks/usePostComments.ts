@@ -5,6 +5,12 @@ import type { ApiError } from '@/types/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 
+function getErrorStatus(error: unknown): number | null {
+  if (!error || typeof error !== 'object') return null;
+  const maybe = error as Partial<ApiError>;
+  return typeof maybe.status === 'number' ? maybe.status : null;
+}
+
 export interface UsePostCommentsResult {
   comments: Comment[] | null;
   commentDraft: string;
@@ -65,18 +71,13 @@ export function usePostComments(
       setCommentDraft('');
       setCommentError(null);
     } catch (error) {
-      const apiError = error as ApiError | (Error & ApiError);
-
-      if (typeof apiError === 'object' && apiError && 'status' in apiError) {
-        const status = (apiError as ApiError).status;
-
-        if (status === 401) {
-          toast.error({
-            title: 'Session expired',
-            description: 'Please log in again to add a comment.',
-          });
-          return;
-        }
+      const status = getErrorStatus(error);
+      if (status === 401) {
+        toast.error({
+          title: 'Session expired',
+          description: 'Please log in again to add a comment.',
+        });
+        return;
       }
 
       toast.error({
@@ -103,43 +104,32 @@ export function usePostComments(
       setIsSubmitting(true);
       await postService.deleteComment(postId, commentId);
       setComments((prev) =>
-        prev
-          ? prev.filter((comment) => Number(comment.id) !== Number(commentId))
-          : prev,
+        prev ? prev.filter((comment) => comment.id !== commentId) : prev,
       );
     } catch (error) {
-      const apiError = error as ApiError | (Error & ApiError);
+      const status = getErrorStatus(error);
+      if (status === 401) {
+        toast.error({
+          title: 'Session expired',
+          description: 'Please log in again to manage comments.',
+        });
+        return;
+      }
 
-      if (typeof apiError === 'object' && apiError && 'status' in apiError) {
-        const status = (apiError as ApiError).status;
+      if (status === 403) {
+        toast.error({
+          title: 'Not allowed',
+          description: 'You can only delete your own comments.',
+        });
+        return;
+      }
 
-        if (status === 401) {
-          toast.error({
-            title: 'Session expired',
-            description: 'Please log in again to manage comments.',
-          });
-          return;
-        }
-
-        if (status === 403) {
-          toast.error({
-            title: 'Not allowed',
-            description: 'You can only delete your own comments.',
-          });
-          return;
-        }
-
-        if (status === 404) {
-          // Comment does not exist on the server anymore – treat as deleted.
-          setComments((prev) =>
-            prev
-              ? prev.filter(
-                  (comment) => Number(comment.id) !== Number(commentId),
-                )
-              : prev,
-          );
-          return;
-        }
+      if (status === 404) {
+        // Comment does not exist on the server anymore – treat as deleted.
+        setComments((prev) =>
+          prev ? prev.filter((comment) => comment.id !== commentId) : prev,
+        );
+        return;
       }
 
       toast.error({

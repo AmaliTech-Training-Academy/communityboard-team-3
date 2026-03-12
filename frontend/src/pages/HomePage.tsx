@@ -66,7 +66,7 @@ export default function HomePage() {
         }}
         onCreatePostClick={() => {
           if (!isAuthenticated) {
-            void navigate('/login');
+            void navigate('/login?returnUrl=%2Fposts%2Fnew');
             return;
           }
           if (isMobile) {
