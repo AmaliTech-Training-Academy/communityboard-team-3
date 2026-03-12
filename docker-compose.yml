@@ -72,7 +72,7 @@ services:
 
   data-etl:
     build: ./data-engineering
-    command: python -m etl.pipeline
+    command: python -m etl.pipeline --schedule 60
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
