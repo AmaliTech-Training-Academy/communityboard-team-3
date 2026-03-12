@@ -24,6 +24,17 @@ public class JsonUtils {
         }
     }
 
+    public static List<Map<String, Object>> getListFromJson(String resourcePath) {
+        try (InputStream is = JsonUtils.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new RuntimeException("Resource not found: " + resourcePath);
+            }
+            return mapper.readValue(is, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read JSON data from " + resourcePath, e);
+        }
+    }
+
     public static Map<String, Object> getMapFromJson(String resourcePath) {
         try (InputStream is = JsonUtils.class.getResourceAsStream(resourcePath)) {
             if (is == null) {
