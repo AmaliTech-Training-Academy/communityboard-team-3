@@ -57,6 +57,20 @@ public class CommentService extends BaseSecurityService {
         comment.setDeleted(true);
         commentRepository.save(comment);
     }
+    @Transactional
+    public CommentResponse updateComment(Long commentId, CommentRequest request, User author) {
+        Comment comment = commentRepository.findById(commentId)
+                .filter(c -> !c.isDeleted())
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
+
+        // Only the comment author can update — admins cannot edit someone else's comment
+        if (!comment.getAuthor().getId().equals(author.getId())) {
+            throw new UnauthorizedException("Not authorized to update this comment");
+        }
+
+        comment.setContent(request.getContent());
+        return toResponse(commentRepository.save(comment));
+    }
 
     private CommentResponse toResponse(Comment comment) {
         return CommentResponse.builder()
