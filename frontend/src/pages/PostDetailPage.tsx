@@ -40,6 +40,7 @@ export default function PostDetailPage() {
     setCommentDraft,
     addComment,
     deleteComment,
+    updateComment,
   } = usePostComments(postId, comments, isCommentsLoading);
 
   const effectivePost = currentPost ?? post ?? null;
@@ -59,6 +60,11 @@ export default function PostDetailPage() {
   const handleDeleteComment = (commentId: number): void => {
     const fn = deleteComment as (id: number) => Promise<void>;
     void fn(commentId);
+  };
+
+  const handleUpdateComment = (commentId: number, content: string): void => {
+    const fn = updateComment as (id: number, next: string) => Promise<void>;
+    void fn(commentId, content);
   };
 
   const updatedRelative =
@@ -143,6 +149,7 @@ export default function PostDetailPage() {
         currentUserName={currentUserName}
         isAdmin={isAdmin}
         onDeleteComment={handleDeleteComment}
+        onUpdateComment={handleUpdateComment}
         onRequestLogin={() => {
           const returnUrl = encodeURIComponent(location.pathname);
           void navigate(`/login?returnUrl=${returnUrl}`);

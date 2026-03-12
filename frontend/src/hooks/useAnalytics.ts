@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   analyticsService,
+  type AnalyticsSummary,
   type DailyActivityDatum,
   type PostsPerCategoryDatum,
   type TopContributorDatum,
@@ -19,6 +20,11 @@ export interface UseDailyActivityResult {
 
 export interface UseTopContributorsResult {
   data: TopContributorDatum[] | null;
+  isLoading: boolean;
+}
+
+export interface UseAnalyticsSummaryResult {
+  data: AnalyticsSummary | null;
   isLoading: boolean;
 }
 
@@ -123,6 +129,41 @@ export function useTopContributors(limit: number): UseTopContributorsResult {
       isMounted = false;
     };
   }, [limit, toast]);
+
+  return { data, isLoading };
+}
+
+export function useAnalyticsSummary(): UseAnalyticsSummaryResult {
+  const toast = useToast();
+  const [data, setData] = useState<AnalyticsSummary | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    analyticsService
+      .getSummary()
+      .then((response) => {
+        if (!isMounted) return;
+        setData(response);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        toast.error({
+          title: 'Failed to load analytics summary',
+          description: 'Please try again later.',
+        });
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [toast]);
 
   return { data, isLoading };
 }

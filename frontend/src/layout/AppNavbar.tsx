@@ -12,6 +12,18 @@ type AppNavbarProps = {
   showUserInfo?: boolean;
 };
 
+function getInitials(name: string | undefined | null): string {
+  const raw = name?.trim();
+  if (!raw) return 'JD';
+
+  const parts = raw.split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? '';
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : '';
+  const initials = `${first}${last}`.toUpperCase();
+
+  return initials.length >= 2 ? initials.slice(0, 2) : initials.padEnd(2, 'D');
+}
+
 export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -43,10 +55,20 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
               <Button
                 type="button"
                 variant={isOnAnalytics ? 'primary' : 'ghost'}
-                size="sm"
+                size="md"
                 leftIcon={
-                  <img src={chartColumnsIcon} alt="" className="h-4 w-4" />
+                  <img
+                    src={chartColumnsIcon}
+                    alt=""
+                    className={`h-5 w-5 ${isOnAnalytics ? 'brightness-0 invert' : ''}`}
+                  />
                 }
+                className={[
+                  'px-5 py-2.5',
+                  isOnAnalytics ? null : 'text-[#061c2a]',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 onClick={() => {
                   void navigate('/analytics');
                 }}
@@ -56,16 +78,24 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
 
               {/* User info */}
               {showUserInfo ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-overlay text-xs font-medium text-inverse">
-                    {user?.name ? user.name.charAt(0) : 'JD'}
+                <div className="flex items-center gap-[10px]">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c3c3c2]">
+                    <span className="text-[12px] font-medium leading-[12px] text-[#222220]">
+                      {getInitials(user?.name)}
+                    </span>
                   </div>
-                  <div className="flex flex-col">
-                    <Text variant="bodySm" className="text-primary">
+                  <div className="flex flex-col gap-1">
+                    <Text
+                      variant="bodySm"
+                      className="text-[14px] font-semibold leading-[14px] text-[color:var(--color-primary-900)]"
+                    >
                       {user?.name ?? 'John Doe'}
                     </Text>
-                    <Text variant="bodySmRegular" className="text-muted">
-                      {user?.email ?? 'johndoe@gmail.com'}
+                    <Text
+                      variant="bodySmRegular"
+                      className="text-[12px] font-normal leading-[12px] text-[color:var(--color-slate-700)]"
+                    >
+                      {user?.email ?? 'Johndoe@gmail.com'}
                     </Text>
                   </div>
                 </div>
@@ -75,9 +105,9 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
-                className="text-danger"
-                leftIcon={<img src={logoutIcon} alt="" className="h-4 w-4" />}
+                size="md"
+                className="px-5 py-2.5 text-danger"
+                leftIcon={<img src={logoutIcon} alt="" className="h-5 w-5" />}
                 onClick={logout}
               >
                 Log out
@@ -147,17 +177,22 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
             <div className="flex items-center justify-between gap-6 pb-4">
               {isAuthenticated && showUserInfo ? (
                 <div className="flex flex-1 items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-overlay text-xs font-medium text-inverse">
-                    {user?.name ? user.name.charAt(0) : 'JD'}
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c3c3c2]">
+                    <span className="text-[12px] font-medium leading-[12px] text-[#222220]">
+                      {getInitials(user?.name)}
+                    </span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <Text
                       variant="bodySm"
-                      className="text-primary font-semibold"
+                      className="text-[14px] font-semibold leading-[14px] text-[color:var(--color-primary-900)]"
                     >
                       {user?.name ?? 'John Doe'}
                     </Text>
-                    <Text variant="bodySmRegular" className="text-secondary">
+                    <Text
+                      variant="bodySmRegular"
+                      className="text-[12px] font-normal leading-[12px] text-[color:var(--color-slate-700)]"
+                    >
                       {user?.email ?? 'Johndoe@gmail.com'}
                     </Text>
                   </div>
@@ -192,7 +227,11 @@ export function AppNavbar({ showUserInfo = true }: Readonly<AppNavbarProps>) {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  <img src={chartColumnsIcon} alt="" className="h-5 w-5" />
+                  <img
+                    src={chartColumnsIcon}
+                    alt=""
+                    className={`h-5 w-5 ${isOnAnalytics ? 'brightness-0 invert' : ''}`}
+                  />
                   <Text
                     variant="bodySm"
                     className={

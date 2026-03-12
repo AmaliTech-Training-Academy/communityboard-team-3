@@ -48,7 +48,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [loginLockedUntil, setLoginLockedUntil] = useState<number | null>(null);
   const toast = useToastContext();
 
-  const checkAuthOnMount = useCallback(async (): Promise<void> => {
+  const checkAuthOnMount = useCallback((): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
@@ -61,6 +61,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     }
 
     setIsLoading(false);
+    return Promise.resolve();
   }, []);
 
   useEffect(() => {

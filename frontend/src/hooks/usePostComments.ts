@@ -19,6 +19,7 @@ export interface UsePostCommentsResult {
   setCommentDraft: (next: string) => void;
   addComment: () => Promise<void>;
   deleteComment: (commentId: number) => Promise<void>;
+  updateComment: (commentId: number, content: string) => Promise<void>;
 }
 
 export function usePostComments(
@@ -145,6 +146,84 @@ export function usePostComments(
     }
   };
 
+  const updateComment = async (
+    commentId: number,
+    content: string,
+  ): Promise<void> => {
+    if (!postId) return;
+
+    if (!isAuthenticated || !user) {
+      toast.error({
+        title: 'Login required',
+        description: 'Please log in to edit a comment.',
+      });
+      return;
+    }
+
+    const trimmed = content.trim();
+    if (!trimmed) {
+      toast.error({
+        title: 'Comment required',
+        description: 'Please enter a comment before saving.',
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const updated = await postService.updateComment(postId, commentId, {
+        content: trimmed,
+      });
+      setComments((prev) =>
+        prev
+          ? prev.map((comment) =>
+              comment.id === commentId ? updated : comment,
+            )
+          : prev,
+      );
+      toast.success({
+        title: 'Comment updated',
+        description: 'Your changes have been saved.',
+      });
+    } catch (error) {
+      const status = getErrorStatus(error);
+      if (status === 401) {
+        toast.error({
+          title: 'Session expired',
+          description: 'Please log in again to edit comments.',
+        });
+        return;
+      }
+
+      if (status === 403) {
+        toast.error({
+          title: 'Not allowed',
+          description: 'You can only edit your own comments.',
+        });
+        return;
+      }
+
+      if (status === 404) {
+        // Comment does not exist on the server anymore – treat as deleted.
+        setComments((prev) =>
+          prev ? prev.filter((comment) => comment.id !== commentId) : prev,
+        );
+        toast.error({
+          title: 'Comment not found',
+          description: 'This comment no longer exists.',
+        });
+        return;
+      }
+
+      toast.error({
+        title: 'Failed to update comment',
+        description: 'Something went wrong while saving your changes.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     comments,
     commentDraft,
@@ -158,5 +237,6 @@ export function usePostComments(
     },
     addComment,
     deleteComment,
+    updateComment,
   };
 }

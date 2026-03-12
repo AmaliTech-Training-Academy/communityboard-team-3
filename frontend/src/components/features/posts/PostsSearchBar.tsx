@@ -26,7 +26,7 @@ export function PostsSearchBar({
   onClear,
 }: Readonly<PostsSearchBarProps>) {
   return (
-    <div className="flex h-[44px] w-full items-stretch gap-[10px]">
+    <div className="flex h-[42px] w-full items-stretch gap-3">
       <div className="flex-1">
         <TextField
           value={value}
@@ -41,6 +41,7 @@ export function PostsSearchBar({
           }}
           placeholder="Search by title of post..."
           aria-label="Search posts by title"
+          className="placeholder:text-secondary"
           leftIcon={<img src={searchIcon} alt="Search" className="h-4 w-4" />}
           rightIcon={<img src={clearIcon} alt="" className="h-4 w-4" />}
           rightIconAriaLabel="Clear search"
@@ -57,10 +58,10 @@ export function PostsSearchBar({
         <Button
           aria-label="Search posts"
           variant="primary"
-          className="h-full px-[12px]"
+          className="h-full rounded-lg border border-(--color-primary-900) px-3 py-2.5"
           onClick={onSubmit}
         >
-          <img src={searchOnDarkIcon} alt="Search" className="h-4 w-4" />
+          <img src={searchOnDarkIcon} alt="Search" className="h-5 w-5" />
         </Button>
       </div>
     </div>

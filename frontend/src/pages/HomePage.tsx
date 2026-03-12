@@ -49,8 +49,10 @@ export default function HomePage() {
       : (toolbarCategories.find((entry) => entry.id === activeCategoryId)
           ?.name ?? undefined);
 
-  const effectiveStartDate = startDate && endDate ? startDate : undefined;
-  const effectiveEndDate = startDate && endDate ? endDate : undefined;
+  const hasValidDateRange =
+    Boolean(startDate) && Boolean(endDate) && endDate >= startDate;
+  const effectiveStartDate = hasValidDateRange ? startDate : undefined;
+  const effectiveEndDate = hasValidDateRange ? endDate : undefined;
 
   return (
     <AppShell>

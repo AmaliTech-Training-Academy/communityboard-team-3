@@ -1,4 +1,4 @@
-import { Button, Chip, Text } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import plusIcon from '@/assets/plus.svg';
 import { PostsSearchBar } from './PostsSearchBar';
 
@@ -21,25 +21,6 @@ export type PostsToolbarProps = {
   onCreatePostClick?: () => void;
 };
 
-function getChipVariantForLabel(label: string) {
-  const normalized = label.trim().toUpperCase();
-
-  switch (normalized) {
-    case 'EVENT':
-    case 'EVENTS':
-      return 'event';
-    case 'ALERT':
-    case 'ALERTS':
-      return 'lostFound';
-    case 'DISCUSSION':
-      return 'recommendation';
-    case 'NEWS':
-      return 'helpRequest';
-    default:
-      return 'default';
-  }
-}
-
 /**
  * Toolbar for the posts home page.
  * Mirrors the Figma layout:
@@ -57,7 +38,7 @@ export function PostsToolbar({
   onCreatePostClick,
 }: Readonly<PostsToolbarProps>) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-8">
       {/* Top row: search + primary action */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="w-full max-w-[691px]">
@@ -87,50 +68,35 @@ export function PostsToolbar({
 
       {/* Categories row */}
       <div className="flex flex-wrap items-center gap-4">
-        <Text variant="bodyBase" className="text-primary">
+        <Text
+          variant="bodyBase"
+          className="font-normal text-[color:var(--color-primary-900)]"
+        >
           Categories:
         </Text>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-[10px]">
           {categories.map((category) => {
             const isActive = category === activeCategory;
-            const isAll = category === 'All';
-            const variant = getChipVariantForLabel(category);
-            if (isAll) {
-              const allClasses = isActive
-                ? 'bg-[#395362] text-white border-[#395362] font-medium'
-                : 'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
-              return (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => {
-                    onCategoryChange?.(category);
-                  }}
-                  className={[
-                    'inline-flex items-center justify-center whitespace-nowrap',
-                    'rounded-[var(--radius-md)] border px-3 py-0.5 text-body-sm',
-                    'cursor-pointer',
-                    allClasses,
-                  ].join(' ')}
-                >
-                  {category}
-                </button>
-              );
-            }
 
             return (
-              <Chip
+              <button
                 key={category}
-                variant={variant}
+                type="button"
                 onClick={() => {
-                  if (onCategoryChange) {
-                    onCategoryChange(category);
-                  }
+                  onCategoryChange?.(category);
                 }}
-                className="cursor-pointer"
+                className={[
+                  'inline-flex items-center justify-center whitespace-nowrap',
+                  'rounded-[6px] border border-[color:var(--color-slate-700)] px-3 py-0.5 text-body-sm',
+                  'cursor-pointer',
+                  'text-[color:var(--color-primary-900)]',
+                  isActive ? 'bg-(--color-slate-400)' : 'bg-surface',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
               >
                 {category}
-              </Chip>
+              </button>
             );
           })}
         </div>

@@ -122,6 +122,29 @@ apiClient.interceptors.request.use((config) => {
   const accessToken = tokenStore.getAccessToken();
   if (!accessToken) return config;
 
+  const method = (config.method ?? 'get').toLowerCase();
+  const rawUrl = config.url ?? '';
+  const urlWithoutQuery = rawUrl.split('?')[0] ?? '';
+  const pathname = (() => {
+    if (
+      urlWithoutQuery.startsWith('http://') ||
+      urlWithoutQuery.startsWith('https://')
+    ) {
+      try {
+        return new URL(urlWithoutQuery).pathname;
+      } catch {
+        return urlWithoutQuery;
+      }
+    }
+    return urlWithoutQuery;
+  })();
+
+  const isPublicRead =
+    method === 'get' &&
+    (pathname.startsWith('/posts') || pathname.startsWith('/categories'));
+
+  if (isPublicRead) return config;
+
   const headers = AxiosHeaders.from(config.headers);
   headers.set('Authorization', `Bearer ${accessToken}`);
   config.headers = headers;
@@ -130,7 +153,7 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  (error: AxiosError) => {
     const status = error.response?.status;
 
     if (status === 401) {
