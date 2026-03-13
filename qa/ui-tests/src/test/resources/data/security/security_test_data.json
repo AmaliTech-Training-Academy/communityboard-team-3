@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-SEC-001",
+    "testName": "verifying that when logging in, the password is not visible in the URL",
+    "url": "http://localhost:3000/login",
+    "steps": "1. Log in and inspect the URL.",
+    "expected": "Password/token not present in URL bar",
+    "priority": "HIGH",
+    "description": "Ensures sensitive information is not exposed in the browser URL.",
+    "impact": "Protects user credentials from exposure.",
+    "actual": "",
+    "category": "Security"
+  }
+  // ...more test cases for each scenario as per your list...
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "TC-AUTH-001",
+    "description": "Verifying that when a user enters valid credentials, they are redirected to the dashboard.",
+    "email": "user@amalitech.com",
+    "password": "password123",
+    "expectedResult": "Redirected to dashboard",
+    "severity": "CRITICAL"
+  },
+  {
+    "id": "TC-AUTH-002",
+    "description": "Verifying that when a user enters a valid username but an incorrect password, an error message is shown.",
+    "email": "user@amalitech.com",
+    "password": "wrongpassword",
+    "expectedResult": "Error message shown",
+    "severity": "HIGH"
+  },
+  {
+    "id": "TC-AUTH-003",
+    "description": "Verifying that when a user enters a non-existent username, an error message is shown.",
+    "email": "nonexistent@example.com",
+    "password": "anypassword",
+    "expectedResult": "Error message shown",
+    "severity": "HIGH"
+  },
+  {
+    "id": "TC-AUTH-006",
+    "description": "Verifying that when a user clicks login without filling any fields, validation errors are shown.",
+    "email": "",
+    "password": "",
+    "expectedResult": "Validation errors shown",
+    "severity": "HIGH"
+  }
+]

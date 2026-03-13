@@ -1,0 +1,12 @@
+[
+  {"testName": "Add valid comment to post 1", "postId": 1, "token": "user-token-1", "content": "This is a valid comment.", "expectedStatusCode": 201},
+  {"testName": "Add comment with missing content", "postId": 1, "token": "user-token-1", "content": "", "expectedStatusCode": 400},
+  {"testName": "Add comment without token (unauthenticated)", "postId": 1, "content": "Should fail due to missing token.", "expectedStatusCode": 401},
+  {"testName": "Delete existing comment as owner", "postId": 1, "commentId": 10, "token": "user-token-1", "expectedStatusCode": 204},
+  {"testName": "Delete non-existent comment", "postId": 1, "commentId": 9999, "token": "user-token-1", "expectedStatusCode": 404},
+  {"testName": "Update comment with valid data", "postId": 1, "commentId": 10, "token": "user-token-1", "newContent": "Updated comment content.", "expectedStatusCode": 200},
+  {"testName": "Update comment with empty content", "postId": 1, "commentId": 10, "token": "user-token-1", "newContent": "", "expectedStatusCode": 400},
+  {"testName": "Get all comments for post 1", "postId": 1, "token": "user-token-1", "single": false, "expectedStatusCode": 200},
+  {"testName": "Get single comment for post 1", "postId": 1, "commentId": 10, "token": "user-token-1", "single": true, "expectedStatusCode": 200},
+  {"testName": "Get single comment for non-existent post", "postId": 9999, "commentId": 10, "token": "user-token-1", "single": true, "expectedStatusCode": 404}
+]

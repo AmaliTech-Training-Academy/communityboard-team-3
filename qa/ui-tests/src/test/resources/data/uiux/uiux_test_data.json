@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-UI-001",
+    "testName": "verifying that when navigating to each main page, the page title is correct",
+    "url": "http://localhost:3000/home",
+    "steps": "1. Navigate to each main page. 2. Check browser tab title.",
+    "expected": "Each page has a descriptive, correct title",
+    "priority": "MEDIUM",
+    "description": "Ensures that each page has a proper title for accessibility and clarity.",
+    "impact": "Improves accessibility and user understanding.",
+    "actual": "",
+    "category": "UI/UX"
+  }
+  // ...more test cases for each scenario as per your list...
+]

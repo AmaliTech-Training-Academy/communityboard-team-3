@@ -38,20 +38,15 @@ public class AuthRegisterTest extends TestBase {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("provideRegisterData")
-        @DisplayName("Verify Registration Functionality with Various Data")
-        @Description("Covers the user registration flow by iterating through various data sets defined in JSON. " +
-                        "Expected Outcome: Returns 201 Created for valid data and 400 Bad Request for invalid/missing fields. "
-                        +
-                        "Actual Result: The system accurately enforces field validation and account creation rules.")
-        public void verifyRegistration(Map<String, Object> data) {
+        @DisplayName("verify that when registering a user with various data, the API enforces validation and account creation rules as expected")
+        @Description("Covers registration with valid and invalid data. Expected: 201 for valid, 400 for invalid/missing fields. Actual: API enforces validation and creates account if valid.")
+        public void verifying_that_when_registering_with_various_data_the_api_enforces_validation_and_account_creation_rules(Map<String, Object> data) {
                 int expectedStatusCode = (int) data.get("expectedStatusCode");
                 Map<String, Object> body = new HashMap<>(data);
-
                 // Handle unique email generation if placeholder exists
                 if ("GENERATE_UNIQUE".equals(body.get("email"))) {
                         body.put("email", generateUniqueEmail());
                 }
-
                 io.restassured.response.Response response = given()
                                 .spec(requestSpec)
                                 .body(body)
@@ -70,12 +65,12 @@ public class AuthRegisterTest extends TestBase {
         }
 
         @Test
-        @DisplayName("Verify Registration Fails for Duplicate Email")
+        @DisplayName("verifying that the system prevents multiple registrations with the same email")
         @Description("Confirms the system's ability to prevent duplicate registrations. " +
                         "Expected Outcome: Returns 400 Bad Request with message 'This email is already in use' on second attempt. "
                         +
                         "Actual Result: The database constraint/service logic correctly blocks identical email registration.")
-        public void verifyRegistrationFailsForDuplicateEmail() {
+        public void verifying_that_when_registering_with_duplicate_email_the_system_prevents_multiple_registrations() {
                 String email = generateUniqueEmail();
                 Map<String, String> body = new HashMap<>(validUser);
                 body.put("name", "Duplicate User");
@@ -95,11 +90,13 @@ public class AuthRegisterTest extends TestBase {
         }
 
         @Test
-        @DisplayName("Verify Registration Response Contract")
+        // Data provider for registration test cases.
+        // Should return a Stream of Arguments, each containing a Map<String, Object> for a test scenario.
+        @DisplayName("verifying that the registration response contract meets all security requirements")
         @Description("Ensures that the registration response meets the API's security standards. " +
                         "Expected Outcome: 201 Created, token presence, and absence of password in body. " +
                         "Actual Result: The response schema adheres to the defined security contract.")
-        public void verifyRegistrationResponseContract() {
+        public void verifying_that_when_registering_the_response_contract_meets_all_security_requirements() {
                 Map<String, String> requestBody = new HashMap<>(validUser);
                 requestBody.put("name", "Contract User");
                 requestBody.put("email", generateUniqueEmail());

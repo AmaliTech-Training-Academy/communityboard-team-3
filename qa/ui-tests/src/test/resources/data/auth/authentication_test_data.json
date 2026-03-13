@@ -1,0 +1,31 @@
+[
+  {
+    "id": "TC-AUTH-001",
+    "testName": "verifying that when a valid login is performed",
+    "username": "validUser",
+    "password": "validPass",
+    "url": "http://localhost:3000/login",
+    "expected": "Redirected to dashboard",
+    "priority": "HIGH",
+    "description": "A user with valid credentials should be able to log in and access the dashboard. This test ensures the login mechanism works for legitimate users.",
+    "steps": "1. Open login page. 2. Enter valid username and password. 3. Click login.",
+    "impact": "Critical for user access and security.",
+    "actual": "",
+    "category": "Authentication"
+  },
+  {
+    "id": "TC-AUTH-002",
+    "testName": "verifying that when an invalid password is entered",
+    "username": "validUser",
+    "password": "wrongPass",
+    "url": "http://localhost:3000/login",
+    "expected": "Error message shown, stays on login page",
+    "priority": "HIGH",
+    "description": "Ensures that users cannot log in with an incorrect password, protecting against unauthorized access.",
+    "steps": "1. Open login page. 2. Enter valid username and wrong password. 3. Click login.",
+    "impact": "Prevents unauthorized access.",
+    "actual": "",
+    "category": "Authentication"
+  }
+  // ...more test cases for each scenario as per your list...
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "testName": "verifying that a single post can be retrieved successfully with a valid ID",
+    "postId": 1,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that a 404 error is returned for a non-existent post ID",
+    "postId": 9999,
+    "expectedStatusCode": 404
+  }
+]
