@@ -1,0 +1,8 @@
+[
+  {
+    "id": "TC-PERF-001",
+    "description": "Verifying that the homepage load time is within acceptable limits.",
+    "url": "/",
+    "maxLoadTimeMs": 3000
+  }
+]

@@ -30,7 +30,7 @@ public class ViewAllPostsTest extends TestBase {
         @Description("Covers GET /api/posts and /search endpoints. Expected: 200 OK with paginated/filter data. Actual: API returns correct results and structure.")
         // Parameterized test for viewing all posts and search scenarios.
         // Each test case is provided by provideViewPostsData().
-        public void verifyThatWhenViewingAllPosts(Map<String, Object> data) {
+        public void verifying_that_when_viewing_all_posts_the_api_returns_the_complete_list(Map<String, Object> data) {
                 int expectedStatusCode = (int) data.get("expectedStatusCode");
                 boolean isSearch = data.getOrDefault("isSearch", false).equals(true);
                 String endpoint = isSearch ? ApiConfig.POSTS_ENDPOINT + "/search" : ApiConfig.POSTS_ENDPOINT;
@@ -58,7 +58,7 @@ public class ViewAllPostsTest extends TestBase {
     @Test
     @DisplayName("verify that when retrieving posts, the response structure contains all required public fields and no sensitive data")
     @Description("Validates response fields. Expected: id, title, content, authorName, createdAt. Actual: Only public fields present, no sensitive data.")
-    public void verifyThatWhenViewingPostsResponseStructure() {
+        public void verifying_that_when_viewing_posts_the_response_structure_is_correct() {
         given()
                 .spec(requestSpec)
                 .queryParam("page", 0)

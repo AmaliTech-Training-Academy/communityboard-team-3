@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-PERF-001",
+    "testName": "verifying that when the homepage is loaded, it loads within 3 seconds",
+    "url": "http://localhost:3000/home",
+    "steps": "1. Record time from navigation to main content visible.",
+    "expected": "Page loads within 3 seconds",
+    "priority": "HIGH",
+    "description": "Ensures the homepage loads quickly for a good user experience.",
+    "impact": "Improves user retention and satisfaction.",
+    "actual": "",
+    "category": "Performance"
+  }
+  // ...more test cases for each scenario as per your list...
+]

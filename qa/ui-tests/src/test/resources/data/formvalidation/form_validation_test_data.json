@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-FORM-001",
+    "testName": "verifying that when required fields are empty, validation errors are shown",
+    "url": "http://localhost:3000/form",
+    "steps": "1. Submit form with no fields filled.",
+    "expected": "All required fields show validation errors",
+    "priority": "HIGH",
+    "description": "Ensures that the form cannot be submitted without required fields.",
+    "impact": "Prevents incomplete data submission.",
+    "actual": "",
+    "category": "Form Validation"
+  }
+  // ...more test cases for each scenario as per your list...
+]

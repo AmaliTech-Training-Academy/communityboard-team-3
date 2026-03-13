@@ -27,7 +27,7 @@ public class CombinedFilterTest extends TestBase {
     @MethodSource("provideCombinedFilterData")
     @DisplayName("verify that when combining search, category, and date filters, the API returns the correct intersection of results")
     @Description("Covers all filter combinations, empty results, narrowing, and correct intersection. Expected: 200 with correct results or 400 for errors. Actual: API returns correct status and data.")
-    public void verifyThatWhenCombiningFilters(Map<String, Object> data) {
+    public void verifying_that_when_combining_filters_the_api_returns_results_matching_all_criteria(Map<String, Object> data) {
         // Build the request with optional authentication and all filter parameters
         var req = given().spec(requestSpec);
         if (data.get("token") != null) req = req.auth().oauth2(resolveToken((String) data.get("token")));

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "TC-FORM-002",
+    "description": "Verifying that when an invalid email format is entered, an error message is shown.",
+    "email": "notanemail",
+    "expectedResult": "Email format validation error shown"
+  },
+  {
+    "id": "TC-FORM-004",
+    "description": "Verifying that when a password is too short, an error message is shown.",
+    "password": "123",
+    "expectedResult": "Password minimum length error shown"
+  }
+]

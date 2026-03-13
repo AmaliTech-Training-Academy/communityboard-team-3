@@ -37,7 +37,7 @@ public class KeywordSearchTest extends TestBase {
     @DisplayName("Verify keyword search returns correct results for title, body, case, and special characters")
     @Description("Covers keyword search in title/body, case insensitivity, special chars, long strings, empty/no match, and unauthenticated. Expected: 200 with correct results or 400/401 for errors. Actual: API returns correct status and data.")
     @Severity(SeverityLevel.NORMAL)
-    public void verifyThatWhenSearchingByKeyword(Map<String, Object> data, String testName) {
+    public void verifying_that_when_searching_by_keyword_the_api_returns_matching_results(Map<String, Object> data, String testName) {
         // Build the request with optional authentication and search parameter
         var req = given().spec(requestSpec);
         if (data.get("token") != null) req = req.auth().oauth2(resolveToken((String) data.get("token")));

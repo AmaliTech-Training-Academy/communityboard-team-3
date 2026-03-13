@@ -27,7 +27,7 @@ public class DateRangerFilterTest extends TestBase {
 	@MethodSource("provideDateRangeFilterData")
 	@DisplayName("verify that when filtering posts by date range, the API returns posts within the range and handles edge cases and errors")
 	@Description("Covers valid/invalid date ranges, formats, single day, boundaries, missing params. Expected: 200 with correct results or 400 for errors. Actual: API returns correct status and data.")
-	public void verifyThatWhenFilteringByDateRange(Map<String, Object> data) {
+	public void verifying_that_when_filtering_by_date_range_the_api_returns_results_within_the_range(Map<String, Object> data) {
 		// Build the request with optional authentication and date range parameters
 		var req = given().spec(requestSpec);
 		if (data.get("token") != null) req = req.auth().oauth2(resolveToken((String) data.get("token")));

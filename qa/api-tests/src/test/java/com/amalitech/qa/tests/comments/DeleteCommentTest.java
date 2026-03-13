@@ -29,7 +29,7 @@ public class DeleteCommentTest extends TestBase {
     @MethodSource("provideDeleteCommentData")
     @DisplayName("verify that when deleting a comment, the API enforces permissions and cascade rules correctly")
     @Description("Checks comment deletion, including cascade delete when a post is removed. Expected: 204 for own, 404/403 for others or missing. Actual: API returns correct status and comment is removed if allowed.")
-    public void verifyThatWhenDeletingComment(Map<String, Object> data) {
+	public void verifying_that_when_deleting_a_comment_with_valid_id_the_comment_is_removed(Map<String, Object> data) {
 	Long postId = ((Number) data.get("postId")).longValue();
 	Long commentId = data.get("commentId") != null ? ((Number) data.get("commentId")).longValue() : null;
 	String token = (String) data.get("token");

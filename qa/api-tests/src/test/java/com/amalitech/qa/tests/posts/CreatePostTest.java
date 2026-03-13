@@ -30,7 +30,7 @@ public class CreatePostTest extends TestBase {
     @MethodSource("provideCreatePostData")
     @DisplayName("verify that when creating a post with various data sets, the API enforces validation and ownership rules as expected")
     @Description("Covers post creation with valid and invalid data. Expected: 201 for valid, 400 for invalid/missing fields. Actual: API enforces @NotBlank/@Size and ownership constraints.")
-    public void verifyThatWhenCreatingPost(Map<String, Object> data) {
+        public void verifying_that_when_creating_a_post_with_valid_data_the_post_is_created(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         given()
                 .spec(requestSpec)
@@ -51,7 +51,7 @@ public class CreatePostTest extends TestBase {
     @Test
     @DisplayName("verify that when creating a post without authentication, the API rejects the request")
     @Description("Ensures a valid JWT is required. Expected: 401/403. Actual: Security filter blocks unauthenticated requests.")
-    public void verifyThatWhenCreatingPostUnauthenticated() {
+        public void verifying_that_when_creating_a_post_unauthenticated_the_api_returns_an_error() {
         given()
                 .spec(requestSpec)
                 .body(Map.of("title", "No Token", "content", "Should fail"))
@@ -66,7 +66,7 @@ public class CreatePostTest extends TestBase {
     @Description("Ensures that the API rejects invalid or malformed tokens. " +
             "Expected Outcome: Returns 403 Forbidden or 401 Unauthorized. " +
             "Actual Result: The JWT validation logic correctly identifies the invalid token.")
-    public void verifyCreatePostInvalidToken() {
+        public void verifying_that_when_creating_a_post_with_invalid_token_the_api_returns_an_error() {
         given()
                 .spec(requestSpec)
                 .auth().oauth2("invalid.token.structure")
@@ -82,7 +82,7 @@ public class CreatePostTest extends TestBase {
     @Description("Spawns multiple threads to create posts concurrently. " +
             "Expected Outcome: All valid requests result in successful post creation with distinct IDs. " +
             "Actual Result: The database consistency and transaction isolation are maintained.")
-    public void verifyConcurrentCreation() throws InterruptedException {
+        public void verifying_that_when_creating_posts_concurrently_the_api_handles_race_conditions() throws InterruptedException {
         int threadCount = 5;
         java.util.concurrent.ExecutorService service = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
         java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(threadCount);

@@ -36,7 +36,7 @@ public class PaginationWithFilterTest extends TestBase {
     @DisplayName("Verify paginating search and filter results returns correct pages, counts, and handles invalid values")
     @Description("Covers pagination with search/filter, correct total count, empty last page, invalid page/limit. Expected: 200 with correct results or 400 for errors. Actual: API returns correct status and data.")
     @Severity(SeverityLevel.NORMAL)
-    public void verifyThatWhenPaginatingSearchAndFilter(Map<String, Object> data, String testName) {
+    public void verifying_that_when_paginating_with_search_and_filter_the_api_returns_correct_results(Map<String, Object> data, String testName) {
         // Build the request with optional authentication and all pagination/filter parameters
         var req = given().spec(requestSpec);
         if (data.get("token") != null) req = req.auth().oauth2(resolveToken((String) data.get("token")));

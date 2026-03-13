@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-CRUD-001",
+    "testName": "verifying that when a new item is created",
+    "url": "http://localhost:3000/items",
+    "steps": "1. Click create. 2. Fill fields. 3. Submit.",
+    "expected": "Item appears in list, success notification shown",
+    "priority": "HIGH",
+    "description": "Checks that new items can be created and are visible in the list.",
+    "impact": "Ensures data can be added by users.",
+    "actual": "",
+    "category": "CRUD"
+  }
+  // ...more test cases for each scenario as per your list...
+]

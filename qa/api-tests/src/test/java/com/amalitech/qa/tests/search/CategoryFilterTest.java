@@ -27,7 +27,7 @@ public class CategoryFilterTest extends TestBase {
 	@MethodSource("provideCategoryFilterData")
 	@DisplayName("verify that when filtering posts by category, the API returns only posts in the specified category and handles errors")
 	@Description("Covers valid/invalid/missing category, case insensitivity, empty, unauthenticated. Expected: 200 with correct results or 400/401 for errors. Actual: API returns correct status and data.")
-	public void verifyThatWhenFilteringByCategory(Map<String, Object> data) {
+	public void verifying_that_when_filtering_by_category_the_api_returns_filtered_results(Map<String, Object> data) {
 		// Build the request with optional authentication and category parameter
 		var req = given().spec(requestSpec);
 		if (data.get("token") != null) req = req.auth().oauth2(resolveToken((String) data.get("token")));

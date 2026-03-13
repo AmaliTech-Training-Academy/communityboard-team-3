@@ -26,7 +26,7 @@ public class DeletePostTest extends TestBase {
     @MethodSource("provideDeletePostData")
     @DisplayName("verify that when deleting a post, the API enforces ownership and existence rules as expected")
     @Description("Covers post deletion for valid, non-existent, and unauthorized cases. Expected: 204 for own, 404 for missing, 403 for others. Actual: API enforces ownership and existence.")
-    public void verifyThatWhenDeletingPost(Map<String, Object> data) {
+        public void verifying_that_when_deleting_a_post_with_valid_id_the_post_is_removed(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
         if (expectedStatusCode == 204 && postId.equals(2)) {
@@ -48,7 +48,7 @@ public class DeletePostTest extends TestBase {
         @Test
         @DisplayName("verify that when a post is deleted, it is no longer accessible")
         @Description("Confirms deletion by attempting to fetch the post. Expected: 404 after delete. Actual: Post is removed from view.")
-        public void verifyThatWhenPostDeletedItIsInaccessible() {
+        public void verifying_that_when_a_post_is_deleted_it_is_inaccessible() {
                 Long postId = createPost("user-token", "Deletable Post", "Will be gone soon");
                 // ...existing code...
         given()
@@ -73,7 +73,7 @@ public class DeletePostTest extends TestBase {
     @Description("Security check for the deletion endpoint. " +
             "Expected Outcome: Returns 401 or 403. " +
             "Actual Result: Blocked by security filters.")
-    public void verifyDeleteUnauthenticated() {
+        public void verifying_that_when_deleting_a_post_unauthenticated_the_api_returns_an_error() {
         given()
                 .spec(requestSpec)
         .when()

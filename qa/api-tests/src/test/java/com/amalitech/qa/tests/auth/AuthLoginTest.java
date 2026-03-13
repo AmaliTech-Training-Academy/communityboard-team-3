@@ -34,7 +34,7 @@ public class AuthLoginTest extends TestBase {
     @MethodSource("provideLoginData")
     @DisplayName("verify that when logging in with various credentials, the API enforces authentication and error handling as expected")
     @Description("Covers login with valid and invalid credentials. Expected: 200 for valid, 401 for invalid. Actual: API grants token or returns error as appropriate.")
-    public void verifyThatWhenLoggingIn(Map<String, Object> data) {
+        public void verifying_that_when_logging_in_with_various_credentials_the_api_enforces_authentication_and_error_handling(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         io.restassured.response.Response response = given()
                 .spec(requestSpec)
@@ -58,7 +58,7 @@ public class AuthLoginTest extends TestBase {
     @Description("Ensures that the authentication token received after a successful login is a valid JWT and functional. " +
             "Expected Outcome: A 3-segment JWT is returned, work on protected endpoints, and fakes are rejected. " +
             "Actual Result: The token system correctly manages access and rejects malformed credentials.")
-    public void verifyTokenBehaviorAndJWTStructure() {
+        public void verifying_that_when_a_valid_token_is_issued_it_is_structurally_valid_and_works_on_protected_endpoints() {
         String token = given()
                 .spec(requestSpec)
                 .body(validUser)
@@ -93,7 +93,7 @@ public class AuthLoginTest extends TestBase {
     @Description("Validates the security and format of the login response body and headers. " +
             "Expected Outcome: Response has JSON content type and contains no password field. " +
             "Actual Result: The response body follows security protocols by excluding sensitive data.")
-    public void verifyLoginResponseContract() {
+        public void verifying_that_when_logging_in_the_response_adheres_to_the_expected_security_contract() {
         given()
                 .spec(requestSpec)
                 .body(validUser)

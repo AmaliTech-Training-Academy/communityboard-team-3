@@ -29,7 +29,7 @@ public class UpdateCommentTest extends TestBase {
     @Description("Validates the update comment functionality for different scenarios. Expected: 200 for valid, 400/403 for invalid or unauthorized. Actual: API returns correct status and updates content if allowed.")
     // Parameterized test for updating comments.
     // Each test case is provided by provideUpdateCommentData().
-    public void verifyThatWhenUpdatingComment(Map<String, Object> data) {
+        public void verifying_that_when_updating_a_comment_with_valid_data_the_comment_is_updated(Map<String, Object> data) {
         Long postId = ((Number) data.get("postId")).longValue();
         Long commentId = ((Number) data.get("commentId")).longValue();
         String token = (String) data.get("token");

@@ -40,7 +40,7 @@ public class AuthRegisterTest extends TestBase {
         @MethodSource("provideRegisterData")
         @DisplayName("verify that when registering a user with various data, the API enforces validation and account creation rules as expected")
         @Description("Covers registration with valid and invalid data. Expected: 201 for valid, 400 for invalid/missing fields. Actual: API enforces validation and creates account if valid.")
-        public void verifyThatWhenRegistering(Map<String, Object> data) {
+        public void verifying_that_when_registering_with_various_data_the_api_enforces_validation_and_account_creation_rules(Map<String, Object> data) {
                 int expectedStatusCode = (int) data.get("expectedStatusCode");
                 Map<String, Object> body = new HashMap<>(data);
                 // Handle unique email generation if placeholder exists
@@ -70,7 +70,7 @@ public class AuthRegisterTest extends TestBase {
                         "Expected Outcome: Returns 400 Bad Request with message 'This email is already in use' on second attempt. "
                         +
                         "Actual Result: The database constraint/service logic correctly blocks identical email registration.")
-        public void verifyRegistrationFailsForDuplicateEmail() {
+        public void verifying_that_when_registering_with_duplicate_email_the_system_prevents_multiple_registrations() {
                 String email = generateUniqueEmail();
                 Map<String, String> body = new HashMap<>(validUser);
                 body.put("name", "Duplicate User");
@@ -96,7 +96,7 @@ public class AuthRegisterTest extends TestBase {
         @Description("Ensures that the registration response meets the API's security standards. " +
                         "Expected Outcome: 201 Created, token presence, and absence of password in body. " +
                         "Actual Result: The response schema adheres to the defined security contract.")
-        public void verifyRegistrationResponseContract() {
+        public void verifying_that_when_registering_the_response_contract_meets_all_security_requirements() {
                 Map<String, String> requestBody = new HashMap<>(validUser);
                 requestBody.put("name", "Contract User");
                 requestBody.put("email", generateUniqueEmail());

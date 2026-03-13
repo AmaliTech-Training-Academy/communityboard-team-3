@@ -26,7 +26,7 @@ public class ViewSinglePostTest extends TestBase {
     @MethodSource("provideSinglePostData")
     @DisplayName("verify that when retrieving a single post by ID, the API returns the correct data or error as expected")
     @Description("Covers GET /api/posts/{id} for valid and invalid IDs. Expected: 200 for valid, 404 for missing. Actual: API returns correct status and data.")
-    public void verifyThatWhenViewingSinglePost(Map<String, Object> data) {
+        public void verifying_that_when_viewing_a_single_post_with_valid_id_the_post_details_are_returned(Map<String, Object> data) {
         int expectedStatusCode = (int) data.get("expectedStatusCode");
         Object postId = data.get("postId");
         given()
@@ -44,7 +44,7 @@ public class ViewSinglePostTest extends TestBase {
     @Test
     @DisplayName("verify that when retrieving a post with a malformed ID, the API returns a 400 error")
     @Description("Checks for non-numeric/invalid ID. Expected: 400 Bad Request. Actual: Application catches format error.")
-    public void verifyThatWhenViewingPostWithMalformedId() {
+        public void verifying_that_when_viewing_a_post_with_malformed_id_the_api_returns_an_error() {
         given()
                 .spec(requestSpec)
         .when()

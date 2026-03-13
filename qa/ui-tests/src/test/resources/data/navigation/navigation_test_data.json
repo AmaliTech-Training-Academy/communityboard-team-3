@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-NAV-001",
+    "testName": "verifying that when the logo is clicked, it redirects to home",
+    "url": "http://localhost:3000/dashboard",
+    "steps": "1. Click logo from any inner page.",
+    "expected": "Navigated to homepage",
+    "priority": "MEDIUM",
+    "description": "Ensures the logo always brings users back to the homepage, improving navigation.",
+    "impact": "Improves user experience and navigation.",
+    "actual": "",
+    "category": "Navigation"
+  }
+  // ...more test cases for each scenario as per your list...
+]

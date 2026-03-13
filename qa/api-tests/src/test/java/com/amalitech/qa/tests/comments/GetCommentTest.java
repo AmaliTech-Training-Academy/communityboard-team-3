@@ -25,7 +25,7 @@ public class GetCommentTest extends TestBase {
     @MethodSource("provideGetCommentData")
     @DisplayName("verify that when retrieving comments, the API returns the correct data or error codes")
     @Description("Checks retrieval of single and multiple comments, including edge cases. Expected: 200 for valid, 404 for non-existent. Actual: API returns correct status and data structure.")
-    public void verifyThatWhenGettingComments(Map<String, Object> data) {
+    public void verifying_that_when_getting_comments_with_valid_post_id_the_comments_are_returned(Map<String, Object> data) {
         Long postId = ((Number) data.get("postId")).longValue();
         Long commentId = data.get("commentId") != null ? ((Number) data.get("commentId")).longValue() : null;
         int expectedStatusCode = (int) data.get("expectedStatusCode");

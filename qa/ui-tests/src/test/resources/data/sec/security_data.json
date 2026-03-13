@@ -1,0 +1,8 @@
+[
+  {
+    "id": "TC-SEC-002",
+    "description": "Verifying that a regular user cannot access the admin route directly.",
+    "route": "/admin",
+    "expectedResult": "Access denied"
+  }
+]

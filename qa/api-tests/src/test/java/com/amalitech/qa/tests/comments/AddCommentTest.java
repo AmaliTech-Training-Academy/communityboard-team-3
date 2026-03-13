@@ -29,7 +29,7 @@ public class AddCommentTest extends TestBase {
     @Description("Validates the add comment functionality for different scenarios. Expected: 201 for valid, 400/401/403/404 for invalid or unauthorized. Actual: API returns correct status and response body.")
 	// Parameterized test for adding comments.
 	// Each test case is provided by provideAddCommentData().
-    public void verifyThatWhenAddingComment(Map<String, Object> data) {
+	public void verifying_that_when_adding_a_comment_with_valid_data_the_comment_is_created(Map<String, Object> data) {
 	Long postId = ((Number) data.get("postId")).longValue();
 	String token = (String) data.get("token");
 	int expectedStatusCode = (int) data.get("expectedStatusCode");
