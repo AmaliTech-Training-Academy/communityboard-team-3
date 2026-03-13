@@ -53,7 +53,7 @@ export function usePosts(params?: GetPostsParams): UsePostsResult {
   }, [
     params?.page,
     params?.size,
-    params?.categoryId,
+    params?.category,
     params?.keyword,
     params?.startDate,
     params?.endDate,

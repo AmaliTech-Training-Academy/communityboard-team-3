@@ -78,9 +78,17 @@ export function Button({
       className={buttonClassName}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-      {leftIcon ? <span className="h-4 w-4">{leftIcon}</span> : null}
+      {leftIcon ? (
+        <span className="inline-flex shrink-0 items-center justify-center">
+          {leftIcon}
+        </span>
+      ) : null}
       {children}
-      {rightIcon ? <span className="h-4 w-4">{rightIcon}</span> : null}
+      {rightIcon ? (
+        <span className="inline-flex shrink-0 items-center justify-center">
+          {rightIcon}
+        </span>
+      ) : null}
     </button>
   );
 }

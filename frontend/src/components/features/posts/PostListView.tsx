@@ -84,10 +84,10 @@ export function PostListView({
       ))}
 
       <div className="mt-6 flex items-center justify-end">
-        <div className="inline-flex overflow-hidden rounded-lg border border-default bg-page">
+        <div className="inline-flex h-[33px] overflow-hidden rounded-[4px] border border-default bg-surface">
           <button
             type="button"
-            className="px-3 py-1.5 text-body-sm text-primary font-medium disabled:cursor-not-allowed disabled:opacity-60 hover:bg-overlay"
+            className="h-full bg-surface px-3 py-1.5 text-body-sm font-medium text-[color:var(--color-primary-900)] disabled:cursor-not-allowed disabled:opacity-60 hover:bg-overlay"
             disabled={!canPrev}
             onClick={onPrev}
           >
@@ -95,16 +95,13 @@ export function PostListView({
           </button>
 
           {pageWindow.map((pageNumber) => {
-            const isActive = pageNumber === page + 1;
             return (
               <button
                 key={pageNumber}
                 type="button"
-                aria-current={isActive ? 'page' : undefined}
                 className={[
-                  'px-3 py-1.5 text-body-sm text-primary font-medium hover:bg-overlay',
+                  'h-full bg-surface px-3 py-1.5 text-body-sm font-medium text-[color:var(--color-primary-900)] hover:bg-overlay',
                   'border-l border-default',
-                  isActive ? 'bg-overlay' : 'bg-page',
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -119,7 +116,7 @@ export function PostListView({
 
           <button
             type="button"
-            className="px-3 py-1.5 text-body-sm text-primary font-medium border-l border-default disabled:cursor-not-allowed disabled:opacity-60 hover:bg-overlay"
+            className="h-full bg-surface px-3 py-1.5 text-body-sm font-medium text-[color:var(--color-primary-900)] border-l border-default disabled:cursor-not-allowed disabled:opacity-60 hover:bg-overlay"
             disabled={!canNext}
             onClick={onNext}
           >

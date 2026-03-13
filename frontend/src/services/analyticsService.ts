@@ -1,7 +1,7 @@
 import { apiClient } from '@/services/api';
 
 export type PostsPerCategoryDatum = {
-  category: 'NEWS' | 'EVENT' | 'DISCUSSION' | 'ALERT';
+  category: string;
   count: number;
 };
 
@@ -13,6 +13,11 @@ export type DailyActivityDatum = {
 export type TopContributorDatum = {
   username: string;
   postCount: number;
+};
+
+export type AnalyticsSummary = {
+  totalPosts: number;
+  totalComments: number;
 };
 
 const BASE_PATH = '/analytics';
@@ -41,6 +46,13 @@ export const analyticsService = {
       {
         params: { limit },
       },
+    );
+    return data;
+  },
+
+  async getSummary(): Promise<AnalyticsSummary> {
+    const { data } = await apiClient.get<AnalyticsSummary>(
+      `${BASE_PATH}/summary`,
     );
     return data;
   },

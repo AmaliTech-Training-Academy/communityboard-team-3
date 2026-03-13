@@ -1,4 +1,5 @@
 import type { RouteObject } from 'react-router';
+import { Outlet } from 'react-router';
 import { PublicRoute, ProtectedRoute } from '@/components/common';
 import RegisterPage from '@/pages/RegisterPage';
 import LoginPage from '@/pages/LoginPage';
@@ -11,13 +12,18 @@ import AnalyticsDashboardPage from '@/pages/AnalyticsDashboardPage';
 export const routes: RouteObject[] = [
   {
     path: '/',
-    element: <ProtectedRoute />,
+    element: <Outlet />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'posts/new', element: <CreatePostPage /> },
       { path: 'posts/:id', element: <PostDetailPage /> },
-      { path: 'posts/:id/edit', element: <EditPostPage /> },
-      { path: 'analytics', element: <AnalyticsDashboardPage /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: 'posts/new', element: <CreatePostPage /> },
+          { path: 'posts/:id/edit', element: <EditPostPage /> },
+          { path: 'analytics', element: <AnalyticsDashboardPage /> },
+        ],
+      },
     ],
   },
   {

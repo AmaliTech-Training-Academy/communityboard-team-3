@@ -1,9 +1,5 @@
-import axios, {
-  AxiosError,
-  AxiosHeaders,
-  type InternalAxiosRequestConfig,
-} from 'axios';
-import type { ApiError, AuthResponse } from '@/types/auth';
+import axios, { AxiosError, AxiosHeaders } from 'axios';
+import type { ApiError } from '@/types/auth';
 
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api';
@@ -75,9 +71,6 @@ export const AUTH_STORAGE_MODE: AuthStorageMode =
   (import.meta.env.VITE_AUTH_STORAGE_MODE as AuthStorageMode | undefined) ??
   'local';
 
-// TODO(security-migration): Switch default to `memory` after backend ships:
-// 1) POST /api/auth/refresh
-// 2) HttpOnly/Secure refresh-token cookie policy
 const activeTokenStorage: TokenStorage =
   AUTH_STORAGE_MODE === 'memory'
     ? memoryTokenStorage
@@ -97,8 +90,6 @@ export const tokenStore = {
     activeTokenStorage.clear();
   },
 };
-
-type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 const normalizeApiError = (error: AxiosError): ApiError => {
   const status = error.response?.status ?? 0;
@@ -127,36 +118,32 @@ export const apiClient = axios.create({
   },
 });
 
-const refreshClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 15_000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-let refreshPromise: Promise<string> | null = null;
-
-const requestRefreshToken = async (): Promise<string> => {
-  const refreshToken = tokenStore.getRefreshToken();
-  if (!refreshToken) {
-    throw new Error('No refresh token available');
-  }
-
-  const response = await refreshClient.post<AuthResponse>('/auth/refresh', {
-    refreshToken,
-  });
-  const nextAccessToken = response.data.token;
-  tokenStore.setTokens({
-    accessToken: nextAccessToken,
-    refreshToken: response.data.refreshToken ?? refreshToken,
-  });
-  return nextAccessToken;
-};
-
 apiClient.interceptors.request.use((config) => {
   const accessToken = tokenStore.getAccessToken();
   if (!accessToken) return config;
+
+  const method = (config.method ?? 'get').toLowerCase();
+  const rawUrl = config.url ?? '';
+  const urlWithoutQuery = rawUrl.split('?')[0] ?? '';
+  const pathname = (() => {
+    if (
+      urlWithoutQuery.startsWith('http://') ||
+      urlWithoutQuery.startsWith('https://')
+    ) {
+      try {
+        return new URL(urlWithoutQuery).pathname;
+      } catch {
+        return urlWithoutQuery;
+      }
+    }
+    return urlWithoutQuery;
+  })();
+
+  const isPublicRead =
+    method === 'get' &&
+    (pathname.startsWith('/posts') || pathname.startsWith('/categories'));
+
+  if (isPublicRead) return config;
 
   const headers = AxiosHeaders.from(config.headers);
   headers.set('Authorization', `Bearer ${accessToken}`);
@@ -166,41 +153,14 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalConfig = error.config as RetriableConfig | undefined;
+  (error: AxiosError) => {
     const status = error.response?.status;
 
-    const shouldTryRefresh =
-      status === 401 &&
-      Boolean(originalConfig) &&
-      !originalConfig?._retry &&
-      Boolean(tokenStore.getRefreshToken());
-
-    if (!shouldTryRefresh) {
-      if (status === 401) tokenStore.clear();
-      throw toThrowableApiError(error);
-    }
-
-    if (!originalConfig) {
-      throw toThrowableApiError(error);
-    }
-
-    originalConfig._retry = true;
-
-    try {
-      refreshPromise ??= requestRefreshToken();
-      const nextAccessToken = await refreshPromise;
-      refreshPromise = null;
-
-      const headers = AxiosHeaders.from(originalConfig.headers);
-      headers.set('Authorization', `Bearer ${nextAccessToken}`);
-      originalConfig.headers = headers;
-
-      return await apiClient(originalConfig);
-    } catch {
-      refreshPromise = null;
+    if (status === 401) {
+      // No refresh flow implemented – clear any stored tokens and surface the error.
       tokenStore.clear();
-      throw toThrowableApiError(error);
     }
+
+    throw toThrowableApiError(error);
   },
 );

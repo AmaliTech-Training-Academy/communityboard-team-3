@@ -21,6 +21,7 @@ import time
 import logging
 from datetime import datetime
 
+import schedule
 import pandas as pd
 from sqlalchemy.engine import Engine
 
@@ -164,7 +165,14 @@ def run_pipeline(source_engine: Engine, analytics_engine: Engine) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="CommunityBoard ETL Pipeline")
-    parser.parse_args()
+    parser.add_argument(
+        "--schedule",
+        type=int,
+        metavar="MINUTES",
+        default=0,
+        help="Re-run the pipeline every N minutes (0 = run once and exit)",
+    )
+    args = parser.parse_args()
 
     logger.info("=" * 60)
     logger.info("CommunityBoard ETL Pipeline v1.0 (incremental)")
@@ -172,13 +180,24 @@ def main() -> None:
 
     source_engine = get_engine()
     analytics_engine = get_analytics_engine()
-    summary = run_pipeline(source_engine, analytics_engine)
 
-    logger.info("─" * 60)
-    logger.info("Summary:")
-    for table, rows in summary.get("tables", {}).items():
-        logger.info("  %-40s %d rows", table, rows)
-    logger.info("=" * 60)
+    def _run_and_log():
+        summary = run_pipeline(source_engine, analytics_engine)
+        logger.info("─" * 60)
+        logger.info("Summary:")
+        for table, rows in summary.get("tables", {}).items():
+            logger.info("  %-40s %d rows", table, rows)
+        logger.info("=" * 60)
+
+    # Always run once immediately
+    _run_and_log()
+
+    if args.schedule > 0:
+        logger.info("Scheduling: re-run every %d minute(s). Press Ctrl+C to stop.", args.schedule)
+        schedule.every(args.schedule).minutes.do(_run_and_log)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 
 if __name__ == "__main__":

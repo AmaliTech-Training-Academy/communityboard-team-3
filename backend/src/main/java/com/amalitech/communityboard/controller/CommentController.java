@@ -67,4 +67,16 @@ public class CommentController {
         commentService.deleteComment(commentId, principal.getUser());
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{commentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CommentResponse> updateComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @Valid @RequestBody CommentRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(
+                commentService.updateComment(commentId, request, principal.getUser())
+        );
+    }
 }

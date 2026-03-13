@@ -1,4 +1,4 @@
-import { Button, Chip, Text } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import plusIcon from '@/assets/plus.svg';
 import { PostsSearchBar } from './PostsSearchBar';
 
@@ -38,7 +38,7 @@ export function PostsToolbar({
   onCreatePostClick,
 }: Readonly<PostsToolbarProps>) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-8">
       {/* Top row: search + primary action */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="w-full max-w-[691px]">
@@ -68,29 +68,35 @@ export function PostsToolbar({
 
       {/* Categories row */}
       <div className="flex flex-wrap items-center gap-4">
-        <Text variant="bodyBase" className="text-primary">
+        <Text
+          variant="bodyBase"
+          className="font-normal text-[color:var(--color-primary-900)]"
+        >
           Categories:
         </Text>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-[10px]">
           {categories.map((category) => {
             const isActive = category === activeCategory;
-            const activeClasses =
-              'bg-[color:var(--color-slate-400)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
-            const inactiveClasses =
-              'bg-[color:var(--color-slate-200)] text-[color:var(--color-primary-950)] border-[color:var(--color-slate-700)]';
+
             return (
-              <Chip
+              <button
                 key={category}
-                variant="default"
+                type="button"
                 onClick={() => {
-                  if (onCategoryChange) {
-                    onCategoryChange(category);
-                  }
+                  onCategoryChange?.(category);
                 }}
-                className={`cursor-pointer ${isActive ? activeClasses : inactiveClasses}`}
+                className={[
+                  'inline-flex items-center justify-center whitespace-nowrap',
+                  'rounded-[6px] border border-[color:var(--color-slate-700)] px-3 py-0.5 text-body-sm',
+                  'cursor-pointer',
+                  'text-[color:var(--color-primary-900)]',
+                  isActive ? 'bg-(--color-slate-400)' : 'bg-surface',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
               >
                 {category}
-              </Chip>
+              </button>
             );
           })}
         </div>
