@@ -28,6 +28,11 @@ export default function PostDetailPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleteCommentDialogOpen, setIsDeleteCommentDialogOpen] =
+    useState(false);
+  const [commentIdToDelete, setCommentIdToDelete] = useState<number | null>(
+    null,
+  );
   const { user, isAuthenticated } = useAuth();
   const { data: categories } = useCategories();
   const isMobile = useIsMobile();
@@ -54,8 +59,8 @@ export default function PostDetailPage() {
   const isAdmin = user?.role === 'ADMIN';
 
   const handleDeleteComment = (commentId: number): void => {
-    const fn = postCommentsState.deleteComment as (id: number) => Promise<void>;
-    void fn(commentId);
+    setCommentIdToDelete(commentId);
+    setIsDeleteCommentDialogOpen(true);
   };
 
   const handleUpdateComment = (commentId: number, content: string): void => {
@@ -189,6 +194,29 @@ export default function PostDetailPage() {
         onConfirm={() => {
           if (!postId) return;
           void handleDelete(postId);
+        }}
+      />
+      <ConfirmDialog
+        isOpen={isDeleteCommentDialogOpen}
+        title="Delete comment?"
+        description="Are you sure you want to delete this comment? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        isConfirming={postCommentsState.isSubmitting}
+        onCancel={() => {
+          if (postCommentsState.isSubmitting) return;
+          setIsDeleteCommentDialogOpen(false);
+          setCommentIdToDelete(null);
+        }}
+        onConfirm={() => {
+          if (commentIdToDelete === null) return;
+          const fn = postCommentsState.deleteComment as (
+            id: number,
+          ) => Promise<void>;
+          void fn(commentIdToDelete).finally(() => {
+            setIsDeleteCommentDialogOpen(false);
+            setCommentIdToDelete(null);
+          });
         }}
       />
     </AppShell>

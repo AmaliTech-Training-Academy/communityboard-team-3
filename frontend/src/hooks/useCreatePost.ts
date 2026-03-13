@@ -20,6 +20,17 @@ export function useCreatePost(): UseCreatePostResult {
     setIsLoading(true);
     setError(null);
 
+    if (payload.categoryId === null) {
+      const message = 'Category is required.';
+      setError(message);
+      toast.error({
+        title: 'Failed to create post',
+        description: message,
+      });
+      setIsLoading(false);
+      throw new Error(message);
+    }
+
     try {
       const post = await postService.createPost(payload);
       toast.success({

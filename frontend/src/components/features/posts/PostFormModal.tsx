@@ -77,6 +77,8 @@ export function PostFormModal({
 
   if (!isOpen) return null;
 
+  const hasCategories = categories.length > 0;
+
   const handleChange =
     (field: keyof PostFormValues) =>
     (
@@ -105,8 +107,14 @@ export function PostFormModal({
     if (!values.title.trim()) {
       nextErrors.title = 'Title is required.';
     }
-    if (!values.categoryId) {
+    if (!hasCategories) {
+      nextErrors.category = 'No categories available.';
+    } else if (typeof values.categoryId !== 'number') {
       nextErrors.category = 'Category is required.';
+    } else if (
+      !categories.some((category) => category.id === values.categoryId)
+    ) {
+      nextErrors.category = 'Please select a valid category.';
     }
     if (!values.content.trim()) {
       nextErrors.content = 'Content is required.';
@@ -129,10 +137,13 @@ export function PostFormModal({
 
   const disableForm = isSubmitting;
 
-  const selectedCategoryLabel =
+  const selectedCategory =
     typeof values.categoryId === 'number'
-      ? categories.find((category) => category.id === values.categoryId)?.name
-      : '';
+      ? (categories.find((category) => category.id === values.categoryId) ??
+        null)
+      : null;
+
+  const selectedCategoryLabel = selectedCategory?.name ?? '';
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4">
@@ -169,7 +180,9 @@ export function PostFormModal({
             >
               Post Title
             </label>
-            <div className="input-token flex items-center gap-[10px]">
+            <div
+              className={`${errors.title ? 'input-token-error' : 'input-token'} flex items-center gap-[10px]`}
+            >
               <input
                 id="post-title"
                 type="text"
@@ -196,12 +209,13 @@ export function PostFormModal({
             <div className="relative" id="post-category">
               <button
                 type="button"
-                className="input-token flex w-full items-center justify-between gap-[10px] px-4 py-3 text-left"
+                className={`${errors.category ? 'input-token-error' : 'input-token'} flex w-full items-center justify-between gap-[10px] px-4 py-3 text-left`}
                 onClick={() => {
                   if (disableForm) return;
+                  if (!hasCategories) return;
                   setIsCategoryOpen((previous) => !previous);
                 }}
-                disabled={disableForm}
+                disabled={disableForm || !hasCategories}
                 aria-haspopup="listbox"
                 aria-expanded={isCategoryOpen}
               >
@@ -256,7 +270,9 @@ export function PostFormModal({
             >
               Content
             </label>
-            <div className="rounded-lg border border-default bg-overlay px-4 py-3">
+            <div
+              className={`rounded-lg border px-4 py-3 ${errors.content ? 'border-danger bg-danger-soft' : 'border-default bg-overlay'}`}
+            >
               <textarea
                 id="post-content"
                 className="h-40 w-full resize-none bg-transparent text-body-sm-regular text-secondary outline-none"

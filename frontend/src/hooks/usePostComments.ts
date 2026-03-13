@@ -71,6 +71,10 @@ export function usePostComments(
       });
       setCommentDraft('');
       setCommentError(null);
+      toast.success({
+        title: 'Comment added',
+        description: 'Your comment has been posted.',
+      });
     } catch (error) {
       const status = getErrorStatus(error);
       if (status === 401) {
