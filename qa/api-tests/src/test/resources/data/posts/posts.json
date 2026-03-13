@@ -1,0 +1,21 @@
+[
+  {
+    "testName": "Create valid post",
+    "title": "Welcome to the Community",
+    "content": "This is our brand new community board!",
+    "categoryId": 1,
+    "expectedStatusCode": 201
+  },
+  {
+    "testName": "Create post with missing title",
+    "content": "I forgot the title",
+    "categoryId": 2,
+    "expectedStatusCode": 400
+  },
+  {
+    "testName": "Create post with missing content",
+    "title": "Short Title",
+    "categoryId": 3,
+    "expectedStatusCode": 400
+  }
+]

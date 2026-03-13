@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-UI-001",
+    "description": "Verifying that each main page has a descriptive and correct browser tab title.",
+    "url": "/",
+    "expectedTitle": "CommunityBoard"
+  },
+  {
+    "id": "TC-UI-002",
+    "description": "Verifying that the layout adapts correctly when resized to mobile dimensions.",
+    "url": "/",
+    "width": 375,
+    "height": 667
+  }
+]

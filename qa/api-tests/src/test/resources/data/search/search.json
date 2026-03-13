@@ -1,0 +1,12 @@
+[
+  {"testName": "Search by keyword 'Town' in title", "type": "keyword", "search": "Town", "expectedStatusCode": 200},
+  {"testName": "Search by keyword 'Community' in body", "type": "keyword", "search": "Community", "expectedStatusCode": 200},
+  {"testName": "Category filter NEWS", "type": "category", "category": "NEWS", "expectedStatusCode": 200},
+  {"testName": "Category filter EVENTS", "type": "category", "category": "EVENTS", "expectedStatusCode": 200},
+  {"testName": "Date range filter valid", "type": "date", "from": "2024-01-01", "to": "2024-12-31", "expectedStatusCode": 200},
+  {"testName": "Date range filter invalid format", "type": "date", "from": "2024/01/01", "to": "2024/12/31", "expectedStatusCode": 400},
+  {"testName": "Combined filter: keyword + category + date", "type": "combined", "search": "Town", "category": "NEWS", "from": "2024-01-01", "to": "2024-12-31", "expectedStatusCode": 200},
+  {"testName": "Pagination: page 1, limit 2", "type": "pagination", "page": 1, "size": 2, "expectedStatusCode": 200},
+  {"testName": "Pagination: invalid page", "type": "pagination", "page": -1, "size": 2, "expectedStatusCode": 400},
+  {"testName": "Search with no results", "type": "keyword", "search": "XYZ123NONEXISTENT", "expectedStatusCode": 200}
+]

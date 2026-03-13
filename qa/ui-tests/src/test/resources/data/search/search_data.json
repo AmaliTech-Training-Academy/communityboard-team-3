@@ -1,0 +1,14 @@
+[
+  {
+    "id": "TC-SRCH-001",
+    "description": "Verifying that when a valid known term is searched, matching results are displayed.",
+    "keyword": "Test",
+    "expectedResult": "Matching results displayed"
+  },
+  {
+    "id": "TC-SRCH-002",
+    "description": "Verifying that when a non-existent term is searched, an empty state is shown.",
+    "keyword": "xyznonexistentitem999",
+    "expectedResult": "No results found"
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-SRCH-001",
+    "testName": "verifying that when a valid search term is entered, matching results are displayed",
+    "url": "http://localhost:3000/search",
+    "steps": "1. Type a valid known term. 2. Click search.",
+    "expected": "Matching results displayed",
+    "priority": "HIGH",
+    "description": "Ensures that the search functionality returns correct results for valid queries.",
+    "impact": "Improves data discoverability.",
+    "actual": "",
+    "category": "Search"
+  }
+  // ...more test cases for each scenario as per your list...
+]

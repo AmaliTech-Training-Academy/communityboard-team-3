@@ -1,0 +1,10 @@
+[
+  {
+    "id": "TC-CRUD-001",
+    "description": "Verifying that when a user creates a new post, it appears in the list.",
+    "title": "Automation Test Post",
+    "category": "Discussion",
+    "content": "This is a post created by automation framework.",
+    "expectedResult": "Item appears in list"
+  }
+]

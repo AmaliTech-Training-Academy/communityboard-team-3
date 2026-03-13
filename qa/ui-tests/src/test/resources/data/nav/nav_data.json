@@ -1,0 +1,15 @@
+[
+  {
+    "id": "TC-NAV-001",
+    "description": "Verifying that when clicking the logo from an inner page, user is navigated to homepage.",
+    "startUrl": "/login",
+    "expectedUrl": "/"
+  },
+  {
+    "id": "TC-NAV-002",
+    "description": "Verifying that when clicking the Analytics link, user is navigated to analytics page.",
+    "startUrl": "/",
+    "clickElement": "Analytics",
+    "expectedUrl": "/analytics"
+  }
+]

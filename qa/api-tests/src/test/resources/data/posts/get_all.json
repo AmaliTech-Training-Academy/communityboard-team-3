@@ -1,0 +1,32 @@
+[
+  {
+    "testName": "verifying that all posts are retrieved successfully",
+    "page": 0,
+    "size": 10,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that pagination works correctly for different page sizes",
+    "page": 0,
+    "size": 2,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that pagination works correctly for different page numbers",
+    "page": 1,
+    "size": 2,
+    "expectedStatusCode": 200
+  },
+  {
+    "testName": "verifying that filtering by keyword returns the correct matching posts",
+    "keyword": "Community",
+    "expectedStatusCode": 200,
+    "isSearch": true
+  },
+  {
+    "testName": "verifying that filtering by category ID returns only posts from that category",
+    "categoryId": 1,
+    "expectedStatusCode": 200,
+    "isSearch": true
+  }
+]

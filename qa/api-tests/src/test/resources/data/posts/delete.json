@@ -1,0 +1,12 @@
+[
+  {
+    "testName": "verifying that the owner can successfully delete their post",
+    "postId": 2,
+    "expectedStatusCode": 204
+  },
+  {
+    "testName": "verifying that deleting a non-existent post returns a 404 error",
+    "postId": 9999,
+    "expectedStatusCode": 404
+  }
+]
