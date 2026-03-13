@@ -35,6 +35,7 @@ export function TextField({
 
   const hasError = Boolean(error);
   const messageId = `${inputId}-message`;
+  const iconClassName = hasError ? 'text-danger' : 'text-muted';
 
   const fieldClassName = [
     'flex items-center gap-[10px]',
@@ -63,7 +64,7 @@ export function TextField({
 
       <div className={fieldClassName}>
         {leftIcon ? (
-          <span className="h-4 w-4 text-muted">{leftIcon}</span>
+          <span className={`h-4 w-4 ${iconClassName}`}>{leftIcon}</span>
         ) : null}
         <input
           {...inputProps}
@@ -78,12 +79,12 @@ export function TextField({
               type="button"
               aria-label={rightIconAriaLabel ?? 'Toggle input visibility'}
               onClick={onRightIconClick}
-              className="h-4 w-4 cursor-pointer text-muted"
+              className={`h-4 w-4 cursor-pointer ${iconClassName}`}
             >
               {rightIcon}
             </button>
           ) : (
-            <span className="h-4 w-4 text-muted">{rightIcon}</span>
+            <span className={`h-4 w-4 ${iconClassName}`}>{rightIcon}</span>
           )
         ) : null}
       </div>

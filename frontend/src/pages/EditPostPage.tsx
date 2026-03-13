@@ -58,12 +58,16 @@ function EditPostForm({
     setIsCategoryOpen(false);
   }, [initialValues]);
 
+  const hasCategories = categories.length > 0;
   const disableForm = isSubmitting;
 
-  const selectedCategoryLabel =
+  const selectedCategory =
     typeof values.categoryId === 'number'
-      ? categories.find((category) => category.id === values.categoryId)?.name
-      : '';
+      ? (categories.find((category) => category.id === values.categoryId) ??
+        null)
+      : null;
+
+  const selectedCategoryLabel = selectedCategory?.name ?? '';
 
   const handleSubmit = async (
     event: React.SyntheticEvent<HTMLFormElement>,
@@ -75,8 +79,14 @@ function EditPostForm({
     if (!values.title.trim()) {
       nextErrors.title = 'Title is required.';
     }
-    if (!values.categoryId) {
+    if (!hasCategories) {
+      nextErrors.category = 'No categories available.';
+    } else if (typeof values.categoryId !== 'number') {
       nextErrors.category = 'Category is required.';
+    } else if (
+      !categories.some((category) => category.id === values.categoryId)
+    ) {
+      nextErrors.category = 'Please select a valid category.';
     }
     if (!values.content.trim()) {
       nextErrors.content = 'Content is required.';
@@ -109,7 +119,9 @@ function EditPostForm({
         >
           Post Title
         </label>
-        <div className="input-token flex items-center gap-[10px]">
+        <div
+          className={`${errors.title ? 'input-token-error' : 'input-token'} flex items-center gap-[10px]`}
+        >
           <input
             id="edit-post-title-page"
             type="text"
@@ -140,12 +152,13 @@ function EditPostForm({
         <div className="relative" id="edit-post-category-page">
           <button
             type="button"
-            className="input-token flex w-full items-center justify-between gap-[10px] px-4 py-3 text-left"
+            className={`${errors.category ? 'input-token-error' : 'input-token'} flex w-full items-center justify-between gap-[10px] px-4 py-3 text-left`}
             onClick={() => {
               if (disableForm) return;
+              if (!hasCategories) return;
               setIsCategoryOpen((previous) => !previous);
             }}
-            disabled={disableForm}
+            disabled={disableForm || !hasCategories}
             aria-haspopup="listbox"
             aria-expanded={isCategoryOpen}
           >
@@ -200,7 +213,9 @@ function EditPostForm({
         >
           Content
         </label>
-        <div className="rounded-lg border border-default bg-overlay px-4 py-3">
+        <div
+          className={`rounded-lg border px-4 py-3 ${errors.content ? 'border-danger bg-danger-soft' : 'border-default bg-overlay'}`}
+        >
           <textarea
             id="edit-post-content-page"
             className="h-40 w-full resize-none bg-transparent text-body-sm-regular text-secondary outline-none"

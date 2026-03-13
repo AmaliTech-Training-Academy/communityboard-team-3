@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AppShell } from '@/layout/AppShell';
 import { PostsToolbar } from '@/components/features/posts/PostsToolbar';
@@ -26,6 +26,23 @@ export default function HomePage() {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
   const { createPost, isLoading: isCreatingPost } = useCreatePost();
+
+  useEffect(() => {
+    const trimmed = searchInput.trim();
+
+    if (!trimmed) {
+      setKeyword('');
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setKeyword(trimmed);
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [searchInput]);
 
   const toolbarCategories = useMemo(
     () => [
